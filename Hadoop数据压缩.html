@@ -1,0 +1,509 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Hadoop数据压缩 - Big Data</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Big Data</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="hadoop数据压缩"><a class="header" href="#hadoop数据压缩">Hadoop数据压缩</a></h1>
+<ul>
+<li><a href="#41-%E6%A6%82%E8%BF%B0">4.1 概述</a></li>
+<li><a href="#42-mapreduce%E6%94%AF%E6%8C%81%E7%9A%84%E5%8E%8B%E7%BC%A9%E7%BC%96%E7%A0%81">4.2 MapReduce支持的压缩编码</a></li>
+<li><a href="#43-%E5%8E%8B%E7%BC%A9%E6%96%B9%E5%BC%8F%E9%80%89%E6%8B%A9">4.3 压缩方式选择</a>
+<ul>
+<li><a href="#431-gzip%E5%8E%8B%E7%BC%A9">4.3.1 Gzip压缩</a></li>
+<li><a href="#432-bzip2%E5%8E%8B%E7%BC%A9">4.3.2 Bzip2压缩</a></li>
+<li><a href="#433-lzo%E5%8E%8B%E7%BC%A9">4.3.3 Lzo压缩</a></li>
+<li><a href="#434-snappy%E5%8E%8B%E7%BC%A9">4.3.4 Snappy压缩</a></li>
+<li><a href="#435-%E5%8E%8B%E7%BC%A9%E4%BD%8D%E7%BD%AE%E9%80%89%E6%8B%A9">4.3.5 压缩位置选择</a></li>
+</ul>
+</li>
+<li><a href="#44-%E5%8E%8B%E7%BC%A9%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE">4.4 压缩参数配置</a></li>
+<li><a href="#45-%E5%8E%8B%E7%BC%A9%E5%AE%9E%E6%93%8D%E6%A1%88%E4%BE%8B">4.5 压缩实操案例</a>
+<ul>
+<li><a href="#451-map%E8%BE%93%E5%87%BA%E7%AB%AF%E9%87%87%E7%94%A8%E5%8E%8B%E7%BC%A9">4.5.1 Map输出端采用压缩</a></li>
+<li><a href="#452-reduce%E8%BE%93%E5%87%BA%E7%AB%AF%E9%87%87%E7%94%A8%E5%8E%8B%E7%BC%A9">4.5.2 Reduce输出端采用压缩</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="41-概述"><a class="header" href="#41-概述">4.1 概述</a></h2>
+<p><strong>1</strong>）压缩的好处和坏处</p>
+<p>好处：减少磁盘IO、减少磁盘存储空间。</p>
+<p>坏处：增加CPU开销。</p>
+<p><strong>2</strong>）压缩原则</p>
+<p>（1）运算密集型的Job，少用压缩</p>
+<p>（2）IO密集型的Job，多用压缩</p>
+<h2 id="42-mapreduce支持的压缩编码"><a class="header" href="#42-mapreduce支持的压缩编码">4.2 MapReduce支持的压缩编码</a></h2>
+<p>1）压缩算法对比介绍</p>
+<div class="table-wrapper"><table><thead><tr><th>压缩格式</th><th>Hadoop自带？</th><th>算法</th><th>文件扩展名</th><th>是否可切片</th><th>换成压缩格式后，原来的程序是否需要修改</th></tr></thead><tbody>
+<tr><td>DEFLATE</td><td>是，直接使用</td><td>DEFLATE</td><td>.deflate</td><td>否</td><td>和文本处理一样，不需要修改</td></tr>
+<tr><td>Gzip</td><td>是，直接使用</td><td>DEFLATE</td><td>.gz</td><td>否</td><td>和文本处理一样，不需要修改</td></tr>
+<tr><td>bzip2</td><td>是，直接使用</td><td>bzip2</td><td>.bz2</td><td>是</td><td>和文本处理一样，不需要修改</td></tr>
+<tr><td>LZO</td><td>否，需要安装</td><td>LZO</td><td>.lzo</td><td>是</td><td>需要建索引，还需要指定输入格式</td></tr>
+<tr><td>Snappy</td><td>是，直接使用</td><td>Snappy</td><td>.snappy</td><td>否</td><td>和文本处理一样，不需要修改</td></tr>
+</tbody></table>
+</div>
+<p>2）压缩性能的比较</p>
+<div class="table-wrapper"><table><thead><tr><th>压缩算法</th><th>原始文件大小</th><th>压缩文件大小</th><th>压缩速度</th><th>解压速度</th></tr></thead><tbody>
+<tr><td>gzip</td><td>8.3GB</td><td>1.8GB</td><td>17.5MB/s</td><td>58MB/s</td></tr>
+<tr><td>bzip2</td><td>8.3GB</td><td>1.1GB</td><td>2.4MB/s</td><td>9.5MB/s</td></tr>
+<tr><td>LZO</td><td>8.3GB</td><td>2.9GB</td><td>49.3MB/s</td><td>74.6MB/s</td></tr>
+</tbody></table>
+</div>
+<p><a href="http://google.github.io/snappy/">http://google.github.io/snappy/</a></p>
+<p>Snappy is a compression/decompression library. It does not aim for maximum compression, or compatibility with any other compression library; instead, it aims for very high speeds and reasonable compression. For instance, compared to the fastest mode of zlib, Snappy is an order of magnitude faster for most inputs, but the resulting compressed files are anywhere from 20% to 100% bigger.On a single core of a Core i7 processor in 64-bit mode, Snappy compresses at about 250 MB/sec or more and decompresses at about 500 MB/sec or more.</p>
+<h2 id="43-压缩方式选择"><a class="header" href="#43-压缩方式选择">4.3 压缩方式选择</a></h2>
+<p>​ 压缩方式选择时重点考虑：压缩/解压缩速度、压缩率（压缩后存储大小）、压缩后是否可以支持切片。</p>
+<h3 id="431-gzip压缩"><a class="header" href="#431-gzip压缩">4.3.1 Gzip压缩</a></h3>
+<p>优点：压缩率比较高</p>
+<p>缺点：不支持Split；压缩/解压速度一般</p>
+<h3 id="432-bzip2压缩"><a class="header" href="#432-bzip2压缩">4.3.2 Bzip2压缩</a></h3>
+<p>优点：压缩率高；支持Split</p>
+<p>缺点：压缩/解压速度慢</p>
+<h3 id="433-lzo压缩"><a class="header" href="#433-lzo压缩">4.3.3 Lzo压缩</a></h3>
+<p>优点：压缩/解压速度比较快；支持Split</p>
+<p>缺点：压缩率一般；想支持切片需要额外创建索引</p>
+<h3 id="434-snappy压缩"><a class="header" href="#434-snappy压缩">4.3.4 Snappy压缩</a></h3>
+<p>优点：压缩和解压缩速度快</p>
+<p>缺点：不支持Split；压缩率一般</p>
+<p>注意：使用Snappy需要Hadoop3.x及Linux Kernel 7.5+</p>
+<h3 id="435-压缩位置选择"><a class="header" href="#435-压缩位置选择">4.3.5 压缩位置选择</a></h3>
+<p>压缩可以在MapReduce作用的任意阶段启用。</p>
+<p><img src="https://image.3001.net/images/20221110/16680589476259.png" alt="image-20221110134223786" /></p>
+<h2 id="44-压缩参数配置"><a class="header" href="#44-压缩参数配置">4.4 压缩参数配置</a></h2>
+<p>1）为了支持多种压缩/解压缩算法，Hadoop引入了编码/解码器</p>
+<div class="table-wrapper"><table><thead><tr><th>压缩格式</th><th>对应的编码/解码器</th></tr></thead><tbody>
+<tr><td>DEFLATE</td><td>org.apache.hadoop.io.compress.DefaultCodec</td></tr>
+<tr><td>gzip</td><td>org.apache.hadoop.io.compress.GzipCodec</td></tr>
+<tr><td>bzip2</td><td>org.apache.hadoop.io.compress.BZip2Codec</td></tr>
+<tr><td>LZO</td><td>com.hadoop.compression.lzo.LzopCodec</td></tr>
+<tr><td>Snappy</td><td>org.apache.hadoop.io.compress.SnappyCodec</td></tr>
+</tbody></table>
+</div>
+<p>查看相关信息使用<code>hadoop checknative</code>命令</p>
+<p>2）要在Hadoop中启用压缩，可以配置如下参数</p>
+<div class="table-wrapper"><table><thead><tr><th>参数</th><th>默认值</th><th>阶段</th><th>建议</th></tr></thead><tbody>
+<tr><td>io.compression.codecs （在core-site.xml中配置）</td><td>无，这个需要在命令行输入hadoop checknative查看</td><td>输入压缩</td><td>Hadoop使用文件扩展名判断是否支持某种编解码器</td></tr>
+<tr><td>mapreduce.map.output.compress（在mapred-site.xml中配置）</td><td>false</td><td>mapper输出</td><td>这个参数设为true启用压缩</td></tr>
+<tr><td>mapreduce.map.output.compress.codec（在mapred-site.xml中配置）</td><td>org.apache.hadoop.io.compress.DefaultCodec</td><td>mapper输出</td><td>企业多使用LZO或Snappy编解码器在此阶段压缩数据</td></tr>
+<tr><td>mapreduce.output.fileoutputformat.compress（在mapred-site.xml中配置）</td><td>false</td><td>reducer输出</td><td>这个参数设为true启用压缩</td></tr>
+<tr><td>mapreduce.output.fileoutputformat.compress.codec（在mapred-site.xml中配置）</td><td>org.apache.hadoop.io.compress.DefaultCodec</td><td>reducer输出</td><td>使用标准工具或者编解码器，如gzip和bzip2</td></tr>
+</tbody></table>
+</div>
+<h2 id="45-压缩实操案例"><a class="header" href="#45-压缩实操案例">4.5 压缩实操案例</a></h2>
+<h3 id="451-map输出端采用压缩"><a class="header" href="#451-map输出端采用压缩">4.5.1 Map输出端采用压缩</a></h3>
+<p>即使你的MapReduce的输入输出文件都是未压缩的文件，你仍然可以对Map任务的中间结果输出做压缩，因为它要写在硬盘并且通过网络传输到Reduce节点，对其压缩可以提高很多性能，这些工作只要设置两个属性即可，我们来看下代码怎么设置。</p>
+<p>1）开启并设置map端输出压缩</p>
+<pre><code class="language-java">package com.atguigu.mapreduce.compress;  
+import java.io.IOException;  
+import org.apache.hadoop.conf.Configuration;  
+import org.apache.hadoop.fs.Path;  
+import org.apache.hadoop.io.IntWritable;  
+import org.apache.hadoop.io.Text;  
+import org.apache.hadoop.io.compress.BZip2Codec;	  
+import org.apache.hadoop.io.compress.CompressionCodec;  
+import org.apache.hadoop.io.compress.GzipCodec;  
+import org.apache.hadoop.mapreduce.Job;  
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;  
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;  
+  
+public class WordCountDriver {  
+  
+	public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {  
+  
+		Configuration conf = new Configuration();  
+  
+		// 开启map端输出压缩  
+		conf.setBoolean("mapreduce.map.output.compress", true);  
+  
+		// 设置map端输出压缩方式  
+		conf.setClass("mapreduce.map.output.compress.codec", BZip2Codec.class,CompressionCodec.class);  
+  
+		Job job = Job.getInstance(conf);  
+  
+		job.setJarByClass(WordCountDriver.class);  
+  
+		job.setMapperClass(WordCountMapper.class);  
+		job.setReducerClass(WordCountReducer.class);  
+  
+		job.setMapOutputKeyClass(Text.class);  
+		job.setMapOutputValueClass(IntWritable.class);  
+  
+		job.setOutputKeyClass(Text.class);  
+		job.setOutputValueClass(IntWritable.class);  
+  
+		FileInputFormat.setInputPaths(job, new Path(args[0]));  
+		FileOutputFormat.setOutputPath(job, new Path(args[1]));  
+  
+		boolean result = job.waitForCompletion(true);  
+  
+		System.exit(result ? 0 : 1);  
+	}  
+}
+</code></pre>
+<p>2）Mapper保持不变</p>
+<pre><code class="language-java">package com.atguigu.mapreduce.compress;  
+import java.io.IOException;  
+import org.apache.hadoop.io.IntWritable;  
+import org.apache.hadoop.io.LongWritable;  
+import org.apache.hadoop.io.Text;  
+import org.apache.hadoop.mapreduce.Mapper;  
+  
+public class WordCountMapper extends Mapper&lt;LongWritable, Text, Text, IntWritable&gt;{  
+  
+	Text k = new Text();  
+	IntWritable v = new IntWritable(1);  
+  
+	@Override  
+	protected void map(LongWritable key, Text value, Context context)throws IOException, InterruptedException {  
+  
+		// 1 获取一行  
+		String line = value.toString();  
+  
+		// 2 切割  
+		String[] words = line.split(" ");  
+  
+		// 3 循环写出  
+		for(String word:words){  
+			k.set(word);  
+			context.write(k, v);  
+		}  
+	}  
+}
+</code></pre>
+<p>3）Reducer保持不变</p>
+<pre><code class="language-java">package com.atguigu.mapreduce.compress;  
+import java.io.IOException;  
+import org.apache.hadoop.io.IntWritable;  
+import org.apache.hadoop.io.Text;  
+import org.apache.hadoop.mapreduce.Reducer;  
+  
+public class WordCountReducer extends Reducer&lt;Text, IntWritable, Text, IntWritable&gt;{  
+  
+	IntWritable v = new IntWritable();  
+  
+	@Override  
+	protected void reduce(Text key, Iterable&lt;IntWritable&gt; values,  
+			Context context) throws IOException, InterruptedException {  
+		  
+		int sum = 0;  
+  
+		// 1 汇总  
+		for(IntWritable value:values){  
+			sum += value.get();  
+		}  
+		  
+         v.set(sum);  
+  
+         // 2 输出  
+		context.write(key, v);  
+	}  
+}
+</code></pre>
+<h3 id="452-reduce输出端采用压缩"><a class="header" href="#452-reduce输出端采用压缩">4.5.2 Reduce输出端采用压缩</a></h3>
+<p>基于WordCount案例处理。</p>
+<p>1）修改驱动，开启并设置reduce端输出压缩</p>
+<pre><code class="language-java">package com.atguigu.mapreduce.compress;  
+import java.io.IOException;  
+import org.apache.hadoop.conf.Configuration;  
+import org.apache.hadoop.fs.Path;  
+import org.apache.hadoop.io.IntWritable;  
+import org.apache.hadoop.io.Text;  
+import org.apache.hadoop.io.compress.BZip2Codec;  
+import org.apache.hadoop.io.compress.DefaultCodec;  
+import org.apache.hadoop.io.compress.GzipCodec;  
+import org.apache.hadoop.io.compress.Lz4Codec;  
+import org.apache.hadoop.io.compress.SnappyCodec;  
+import org.apache.hadoop.mapreduce.Job;  
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;  
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;  
+  
+public class WordCountDriver {  
+  
+	public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {  
+		  
+		Configuration conf = new Configuration();  
+		  
+		Job job = Job.getInstance(conf);  
+		  
+		job.setJarByClass(WordCountDriver.class);  
+		  
+		job.setMapperClass(WordCountMapper.class);  
+		job.setReducerClass(WordCountReducer.class);  
+		  
+		job.setMapOutputKeyClass(Text.class);  
+		job.setMapOutputValueClass(IntWritable.class);  
+		  
+		job.setOutputKeyClass(Text.class);  
+		job.setOutputValueClass(IntWritable.class);  
+		  
+		FileInputFormat.setInputPaths(job, new Path(args[0]));  
+		FileOutputFormat.setOutputPath(job, new Path(args[1]));  
+		  
+		// 开启reduce端输出压缩  
+		FileOutputFormat.setCompressOutput(job, true);  
+  
+		// 设置压缩的方式  
+	    FileOutputFormat.setOutputCompressorClass(job, BZip2Codec.class);   
+//	    FileOutputFormat.setOutputCompressorClass(job, GzipCodec.class);   
+//	    FileOutputFormat.setOutputCompressorClass(job, DefaultCodec.class);   
+	      
+		boolean result = job.waitForCompletion(true);  
+		  
+		System.exit(result?0:1);  
+	}  
+}
+</code></pre>
+<p>2）Mapper保持不变</p>
+<pre><code class="language-java">package com.atguigu.mapreduce.compress;  
+import java.io.IOException;  
+import org.apache.hadoop.io.IntWritable;  
+import org.apache.hadoop.io.LongWritable;  
+import org.apache.hadoop.io.Text;  
+import org.apache.hadoop.mapreduce.Mapper;  
+  
+public class WordCountMapper extends Mapper&lt;LongWritable, Text, Text, IntWritable&gt;{  
+  
+	Text k = new Text();  
+	IntWritable v = new IntWritable(1);  
+  
+	@Override  
+	protected void map(LongWritable key, Text value, Context context)throws IOException, InterruptedException {  
+  
+		// 1 获取一行  
+		String line = value.toString();  
+  
+		// 2 切割  
+		String[] words = line.split(" ");  
+  
+		// 3 循环写出  
+		for(String word:words){  
+			k.set(word);  
+			context.write(k, v);  
+		}  
+	}  
+}
+</code></pre>
+<p>3）Reducer保持不变</p>
+<pre><code class="language-java">package com.atguigu.mapreduce.compress;  
+import java.io.IOException;  
+import org.apache.hadoop.io.IntWritable;  
+import org.apache.hadoop.io.Text;  
+import org.apache.hadoop.mapreduce.Reducer;  
+  
+public class WordCountReducer extends Reducer&lt;Text, IntWritable, Text, IntWritable&gt;{  
+  
+	IntWritable v = new IntWritable();  
+  
+	@Override  
+	protected void reduce(Text key, Iterable&lt;IntWritable&gt; values,  
+			Context context) throws IOException, InterruptedException {  
+		  
+		int sum = 0;  
+  
+		// 1 汇总  
+		for(IntWritable value:values){  
+			sum += value.get();  
+		}  
+		  
+         v.set(sum);  
+  
+         // 2 输出  
+		context.write(key, v);  
+	}  
+}
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="MapReduce框架原理.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="MapReduce框架原理.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

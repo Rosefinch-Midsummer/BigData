@@ -3,8 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Page not found - Big Data</title>
-        <base href="/">
+        <title>MapReduce - Big Data</title>
 
 
         <!-- Custom HTML head -->
@@ -153,14 +152,94 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="document-not-found-404"><a class="header" href="#document-not-found-404">Document not found (404)</a></h1>
-<p>This URL is invalid, sorry. Please use the navigation bar or search to continue.</p>
+                        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="mapreduce"><a class="header" href="#mapreduce">MapReduce</a></h1>
+<ul>
+<li><a href="#%E6%A6%82%E8%A7%88">概览</a></li>
+<li><a href="#mapreduce-%E5%BC%80%E5%8F%91%E6%80%BB%E7%BB%93">MapReduce 开发总结</a></li>
+<li><a href="#%E5%B8%B8%E8%A7%81%E9%94%99%E8%AF%AF%E5%8F%8A%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88">常见错误及解决方案</a></li>
+</ul>
+<h2 id="概览"><a class="header" href="#概览">概览</a></h2>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img/20241102144251.png" alt="" /></p>
+<p><a href="https://yangmour.github.io/2022/11/02/%E5%A4%A7%E6%95%B0%E6%8D%AE/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%90%AD%E5%BB%BA%E7%8E%AF%E5%A2%83/hadoop-3.1.3/04_%E5%B0%9A%E7%A1%85%E8%B0%B7%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%8A%80%E6%9C%AF%E4%B9%8BHadoop%EF%BC%88MapReduce%EF%BC%89V3.3/">完整博文来源</a></p>
+<h2 id="mapreduce-开发总结"><a class="header" href="#mapreduce-开发总结">MapReduce 开发总结</a></h2>
+<p><strong>1</strong>）输入数据接口：InputFormat</p>
+<p>（1）默认使用的实现类是：TextInputFormat</p>
+<p>（2）TextInputFormat 的功能逻辑是：一次读一行文本，然后将该行的起始偏移量作为 key，行内容作为 value 返回。</p>
+<p>（3）CombineTextInputFormat 可以把多个小文件合并成一个切片处理，提高处理效率。</p>
+<p><strong>2</strong>）逻辑处理接口：Mapper</p>
+<p>用户根据业务需求实现其中三个方法：map ()、setup () 和 cleanup ()</p>
+<p><strong>3</strong>）Partitioner 分区</p>
+<p>（1）有默认实现 HashPartitioner，逻辑是根据 key 的哈希值和 numReduces 来返回一个分区号；<code>key.hashCode ()&amp;Integer.MAXVALUE % numReduces</code></p>
+<p>（2）如果业务上有特别的需求，可以自定义分区。</p>
+<p><strong>4</strong>）Comparable 排序</p>
+<p>（1）当我们用自定义的对象作为 key 来输出时，就必须要实现 <code>WritableComparable</code> 接口，重写其中的 <code>compareTo ()</code> 方法。</p>
+<p>（2）部分排序：对最终输出的每一个文件进行内部排序。</p>
+<p>（3）全排序：对所有数据进行排序，通常只有一个 Reduce。</p>
+<p>（4）二次排序：排序的条件有两个。</p>
+<p><strong>5</strong>）Combiner 合并</p>
+<p>Combiner 合并可以提高程序执行效率，减少 IO 传输。但是使用时必须不能影响原有的业务处理结果。</p>
+<p><strong>6</strong>）逻辑处理接口：Reducer</p>
+<p>用户根据业务需求实现其中三个方法：reduce ()、setup () 和 cleanup ()</p>
+<p><strong>7</strong>）输出数据接口：OutputFormat</p>
+<p>（1）默认实现类是 TextOutputFormat，功能逻辑是：将每一个 KV 对，向目标文本文件输出一行。</p>
+<p>（2）用户还可以自定义 OutputFormat。</p>
+<h2 id="常见错误及解决方案"><a class="header" href="#常见错误及解决方案">常见错误及解决方案</a></h2>
+<p>1）导包容易出错。尤其 Text 和 CombineTextInputFormat。</p>
+<p>2）Mapper 中第一个输入的参数必须是 LongWritable 或者 NullWritable，不可以是 IntWritable. 报的错误是类型转换异常。</p>
+<p>3）java.lang.Exception: java.io.IOException: Illegal partition for 13926435656 (4)，说明 Partition 和 ReduceTask 个数没对上，调整 ReduceTask 个数。</p>
+<p>4）如果分区数不是 1，但是 reducetask 为 1，是否执行分区过程。答案是：不执行分区过程。因为在 MapTask 的源码中，执行分区的前提是先判断 ReduceNum 个数是否大于 1。不大于 1 肯定不执行。</p>
+<p>5）在 Windows 环境编译的 jar 包导入到 Linux 环境中运行，</p>
+<pre><code>hadoop jar wc.jar com.atguigu.mapreduce.wordcount.WordCountDriver/user/atguigu//user/atguigu/output
+</code></pre>
+<p>报如下错误：</p>
+<pre><code>Exception in thread “main” java.lang.UnsupportedClassVersionError: com/atguigu/mapreduce/wordcount/WordCountDriver : Unsupported major.minor version 52.0
+</code></pre>
+<p>原因是 Windows 环境用的 jdk1.7，Linux 环境用的 jdk1.8。</p>
+<p>解决方案：统一 jdk 版本。</p>
+<p>6）缓存 <code>pd.txt</code> 小文件案例中，报找不到 <code>pd.txt</code> 文件</p>
+<p>原因：大部分为路径书写错误。还有就是要检查 <code>pd.txt.txt</code> 的问题。还有个别电脑写相对路径找不到 <code>pd.txt</code>，可以修改为绝对路径。</p>
+<p>7）报类型转换异常。</p>
+<p>通常都是在驱动函数中设置 <code>Map</code> 输出和最终输出时编写错误。</p>
+<p>Map 输出的 key 如果没有排序，也会报类型转换异常。</p>
+<p>8）集群中运行 <code>wc.jar</code> 时出现了无法获得输入文件。</p>
+<p>原因：<code>WordCount</code> 案例的输入文件不能放用 <code>HDFS</code> 集群的根目录。</p>
+<p>9）出现了如下相关异常</p>
+<pre><code>Exception in thread "main" java.lang.UnsatisfiedLinkError: org.apache.hadoop.io.nativeio.NativeIO$Windows.access0 (Ljava/lang/String;I) Z  
+	at org.apache.hadoop.io.nativeio.NativeIO$Windows.access0 (Native Method)  
+	at org.apache.hadoop.io.nativeio.NativeIO$Windows.access (NativeIO.java:609)  
+	at org.apache.hadoop.fs.FileUtil.canRead (FileUtil.java:977)  
+java.io.IOException: Could not locate executable null\bin\winutils.exe in the Hadoop binaries.  
+	at org.apache.hadoop.util.Shell.getQualifiedBinPath (Shell.java:356)  
+	at org.apache.hadoop.util.Shell.getWinUtilsPath (Shell.java:371)  
+	at org.apache.hadoop.util.Shell.&lt;clinit&gt;(Shell.java:364)
+</code></pre>
+<p>解决方案：拷贝 <code>hadoop.dll</code> 文件到 <code>Windows</code> 目录 <code>C:\Windows\System32</code>。个别同学电脑还需要修改 <code>Hadoop</code> 源码。</p>
+<p>方案二：创建包 <code>org.apache.hadoop.io.nativeio</code>，并将 NativeIO.java 拷贝到该包名下</p>
+<p><a href="https://blog.csdn.net/syl_ccc/article/details/105946007">详情参考 org.apache.hadoop.io.nativeio.NativeIO$Windows.access0 (Ljava/lang/String;I) Z 的解决办法</a></p>
+<p>10）自定义 Outputformat 时，注意在 RecordWirter 中的 close 方法必须关闭流资源。否则输出的文件内容中数据为空。</p>
+<pre><code class="language-java">@Override  
+public void close (TaskAttemptContext context) throws IOException, InterruptedException {  
+		if (atguigufos != null) {  
+			atguigufos.close ();  
+		}  
+		if (otherfos != null) {  
+			otherfos.close ();  
+		}  
+}
+</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="HDFS-API操作.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
 
+                            <a rel="next prefetch" href="MapReduce概述.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -168,7 +247,13 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="HDFS-API操作.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
 
+                    <a rel="next prefetch" href="MapReduce概述.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
             </nav>
 
         </div>

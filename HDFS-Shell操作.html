@@ -3,8 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Page not found - Big Data</title>
-        <base href="/">
+        <title>HDFS-Shell操作 - Big Data</title>
 
 
         <!-- Custom HTML head -->
@@ -153,14 +152,118 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="document-not-found-404"><a class="header" href="#document-not-found-404">Document not found (404)</a></h1>
-<p>This URL is invalid, sorry. Please use the navigation bar or search to continue.</p>
+                        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="hdfs的shell操作"><a class="header" href="#hdfs的shell操作">HDFS的Shell操作</a></h1>
+<ul>
+<li><a href="#21-%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95">2.1 基本语法</a></li>
+<li><a href="#22-%E5%91%BD%E4%BB%A4%E5%A4%A7%E5%85%A8">2.2 命令大全</a></li>
+<li><a href="#23-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E5%AE%9E%E6%93%8D">2.3 常用命令实操</a>
+<ul>
+<li><a href="#231-%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C">2.3.1 准备工作</a></li>
+<li><a href="#232-%E4%B8%8A%E4%BC%A0">2.3.2 上传</a></li>
+<li><a href="#233-%E4%B8%8B%E8%BD%BD">2.3.3 下载</a></li>
+<li><a href="#234-hdfs-%E7%9B%B4%E6%8E%A5%E6%93%8D%E4%BD%9C">2.3.4 HDFS 直接操作</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="21-基本语法"><a class="header" href="#21-基本语法">2.1 基本语法</a></h2>
+<p><code>hadoop fs 具体命令</code> 和 <code>hdfs dfs 具体命令</code>两者等价。</p>
+<h2 id="22-命令大全"><a class="header" href="#22-命令大全">2.2 命令大全</a></h2>
+<p>执行<code>bin/hadoop fs</code>或<code>hdfs dfs</code>查看所有相关命令。</p>
+<h2 id="23-常用命令实操"><a class="header" href="#23-常用命令实操">2.3 常用命令实操</a></h2>
+<h3 id="231-准备工作"><a class="header" href="#231-准备工作">2.3.1 准备工作</a></h3>
+<p>1）启动 Hadoop 集群（方便后续的测试）</p>
+<p>其实如果看了之前的Hadoop入门(十三)——集群常用知识(面试题)与技巧总结里面写了一个快速启动集群的脚本，只需要一个命令即可启动集群</p>
+<pre><code>[leokadia@hadoop102 bin]$ myhadoop.sh start
+</code></pre>
+<p>或者也可以像之前一样分别在102，103上使用以下两个命令：</p>
+<pre><code>[leokadia@hadoop102 hadoop-3.1.3]$ sbin/start-dfs.sh
+[leokadia@hadoop103 hadoop-3.1.3]$ sbin/start-yarn.sh
+</code></pre>
+<p>2）-help：输出这个命令参数</p>
+<p>如果对哪一个命令的用法不是特别清楚，用以下指令查看该命令如何使用的：</p>
+<p><code>hadoop fs -help rm</code></p>
+<p>3）创建/Marvel 文件夹</p>
+<p><code>hadoop fs -mkdir /Marvel</code></p>
+<p>打开之后就有了一个漫威的文件夹</p>
+<p>后续的命令就在漫威的文件夹里面开启我们的漫威之旅</p>
+<p>一共分三大类命令：上传、下载、HDFS直接操作</p>
+<h3 id="232-上传"><a class="header" href="#232-上传">2.3.2 上传</a></h3>
+<p>注意以下命令执行目录都是<code>hadoop-3.1.3</code>，（这里其实可以是任何路径）</p>
+<p>1）<code>-moveFromLocal</code>：从本地移动到 HDFS</p>
+<p>在虚拟机中执行<code>vim Avengers.txt</code>创建一个txt文件</p>
+<p>输入：The Avengers</p>
+<p>执行<code>hadoop fs -moveFromLocal ./Avengers.txt /Marvel</code>将其上传到HDFS</p>
+<p>源文件：Avengers.txt</p>
+<p>目的目录：Marvel</p>
+<p>2）<code>-copyFromLocal</code>：从本地文件系统中拷贝文件到 HDFS 路径去</p>
+<p><code>hadoop fs -copyFromLocal X-Men.txt /Marvel</code></p>
+<p>3）<code>-put</code>：等同于 -<code>copyFromLocal</code>，生产环境更习惯用 <code>put</code></p>
+<p><code>hadoop fs -put ./Fantastic_Four.txt /Marvel</code></p>
+<p>4）<code>-appendToFile</code>：追加一个文件到已经存在的文件末尾</p>
+<p>HDFS只能追加，不允许随机修改，而且只能在文件的末尾进行追加</p>
+<p><code>hadoop fs -appendToFile Iron_Man.txt /Marvel/Avengers.txt</code></p>
+<h3 id="233-下载"><a class="header" href="#233-下载">2.3.3 下载</a></h3>
+<p>注意以下命令执行目录都是<code>hadoop-3.1.3</code></p>
+<p>1）<code>-copyToLocal</code>：从 HDFS 拷贝到本地</p>
+<p>将Marvel中的Averagers.txt拷贝到当前文件夹</p>
+<p><code>hadoop fs -copyToLocal /Marvel/Avengers.txt ./</code></p>
+<p>2）<code>-get</code>：等同于 <code>-copyToLocal</code>，生产环境更习惯用 <code>get</code></p>
+<p>将Marvel中的Averagers.txt拷贝到当前文件夹，并将拷贝的文件名更改为The_Avengers.txt</p>
+<p><code>hadoop fs -get /Marvel/Avengers.txt ./The_Avengers.txt</code></p>
+<h3 id="234-hdfs-直接操作"><a class="header" href="#234-hdfs-直接操作">2.3.4 HDFS 直接操作</a></h3>
+<p>注意以下命令执行目录都是<code>hadoop-3.1.3</code>（任何路径都可以）</p>
+<p>1）-ls: 显示目录信息</p>
+<p>查询根目录</p>
+<p><code>hadoop fs -ls /</code></p>
+<p>查询Marvel目录</p>
+<p><code>hadoop fs -ls /Marvel</code></p>
+<p>2）-cat：显示文件内容</p>
+<p><code>hadoop fs -cat /Marvel/Avengers.txt</code></p>
+<p>3）-chgrp、-chmod、-chown：Linux 文件系统中的用法一样，修改文件所属权限</p>
+<p><code>hadoop fs -chmod 666 /Marvel/Avengers.txt</code></p>
+<p><code>hadoop fs -chown leokadia:leokadia /Marvel/Avengers.txt</code></p>
+<p>4）-mkdir：创建路径</p>
+<p><code>hadoop fs -mkdir /DC</code></p>
+<p>再建一个Disney文件夹（因为后来漫威被迪士尼收购了）</p>
+<p><code>hadoop fs -mkdir /Disney</code></p>
+<p>5）-cp：从 HDFS 的一个路径拷贝到 HDFS 的另一个路径</p>
+<p><code>hadoop fs -cp /Marvel/Avengers.txt /Disney</code></p>
+<p>这个命令是拷贝，也就是说复仇者联盟在漫威中还有一份</p>
+<p>6）-mv：在 HDFS 目录中移动文件</p>
+<p><code>hadoop fs -mv /Marvel/Fantastic_Four.txt /Disney</code></p>
+<p><code>hadoop fs -mv /Marvel/X-Men.txt /Disney</code></p>
+<p>成功移动，注意，这个是移动，所以原来的文件夹里这两个文件没有了。</p>
+<p>7）-tail：显示一个文件的末尾 1kb 的数据</p>
+<p><code>hadoop fs -tail /Marvel/Avengers.txt</code></p>
+<p>8）-rm：删除文件或文件夹</p>
+<p><code>hadoop fs -rm /Marvel/Avengers.txt</code></p>
+<p>9）-rm -r：递归删除目录及目录里面内容</p>
+<p>删除文件夹及里面的内容</p>
+<p><code>hadoop fs -rm -r /Marvel</code></p>
+<p>没有Marvel文件夹了，呜呜呜。。。</p>
+<p>注意：用 rm-r 之类的删除命令一定要慎重，慎重，再慎重！！！</p>
+<p>10）-du 统计文件夹的大小信息</p>
+<p><code>hadoop fs -du -s -h /Disney</code></p>
+<p>说明：43 表示文件大小；129 表示 43*3 个副本；/Disney 表示查看的目录</p>
+<p><code>hadoop fs -du -h /Disney</code></p>
+<p>22+15+6=43 所以Disney文件总大小为43</p>
+<p>11）-setrep：设置 HDFS 中文件的副本数量</p>
+<p>给Avengers.txt设置10个副本：</p>
+<p><code>hadoop fs -setrep 10 /Disney/Avengers.txt</code></p>
+<p>这里设置的副本数只是记录在 NameNode 的元数据中， 是否真的会有这么多副本， 还得看DataNode 的数量。因为目前只有 3 台设备，最多也就 3 个副本，只有节点数的增加到 10台时，副本数才能达到 10。</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="HDFS读写流程.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
 
+                            <a rel="next prefetch" href="HDFS-API操作.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -168,7 +271,13 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="HDFS读写流程.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
 
+                    <a rel="next prefetch" href="HDFS-API操作.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
             </nav>
 
         </div>

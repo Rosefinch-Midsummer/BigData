@@ -1,0 +1,385 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>HDFS概述 - Big Data</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Big Data</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="hdfs-概述"><a class="header" href="#hdfs-概述">HDFS 概述</a></h1>
+<ul>
+<li><a href="#hdfs-%E4%BA%A7%E5%87%BA%E8%83%8C%E6%99%AF%E5%8F%8A%E5%AE%9A%E4%B9%89">HDFS 产出背景及定义</a>
+<ul>
+<li><a href="#1-hdfs-%E4%BA%A7%E7%94%9F%E8%83%8C%E6%99%AF">1 ）HDFS 产生背景</a></li>
+<li><a href="#2-hdfs-%E5%AE%9A%E4%B9%89">2 ）HDFS 定义</a></li>
+</ul>
+</li>
+<li><a href="#hdfs-%E4%BC%98%E7%BC%BA%E7%82%B9">HDFS 优缺点</a></li>
+<li><a href="#hdfs-%E7%BB%84%E6%88%90%E6%9E%B6%E6%9E%84">HDFS 组成架构</a></li>
+<li><a href="#hdfs-%E6%96%87%E4%BB%B6%E5%9D%97%E5%A4%A7%E5%B0%8F-%E9%9D%A2%E8%AF%95%E9%87%8D%E7%82%B9">HDFS 文件块大小 （面试重点）</a></li>
+<li><a href="#namenode-%E5%92%8C-secondarynamenode">NameNode 和 SecondaryNameNode</a>
+<ul>
+<li><a href="#nn-%E5%92%8C-2nn-%E5%B7%A5%E4%BD%9C%E6%9C%BA%E5%88%B6">NN 和 2NN 工作机制</a></li>
+<li><a href="#namenode%E5%B7%A5%E4%BD%9C%E6%9C%BA%E5%88%B6">NameNode工作机制</a></li>
+<li><a href="#fsimage-%E5%92%8C-edits-%E8%A7%A3%E6%9E%90">Fsimage 和 Edits 解析</a></li>
+<li><a href="#checkpoint-%E6%97%B6%E9%97%B4%E8%AE%BE%E7%BD%AE">CheckPoint 时间设置</a></li>
+</ul>
+</li>
+<li><a href="#datanode">DataNode</a>
+<ul>
+<li><a href="#datanode-%E5%B7%A5%E4%BD%9C%E6%9C%BA%E5%88%B6">DataNode 工作机制</a></li>
+<li><a href="#%E6%95%B0%E6%8D%AE%E5%AE%8C%E6%95%B4%E6%80%A7">数据完整性</a></li>
+<li><a href="#datanode%E6%8E%89%E7%BA%BF%E6%97%B6%E9%99%90%E5%8F%82%E6%95%B0%E8%AE%BE%E7%BD%AE">DataNode掉线时限参数设置</a></li>
+</ul>
+</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img/20241027142704.png" alt="" /></p>
+<h2 id="hdfs-产出背景及定义"><a class="header" href="#hdfs-产出背景及定义">HDFS 产出背景及定义</a></h2>
+<h3 id="1-hdfs-产生背景"><a class="header" href="#1-hdfs-产生背景">1 ）HDFS 产生背景</a></h3>
+<p>随着数据量越来越大， 在一个操作系统存不下所有的数据， 那么就分配到更多的操作系统管理的磁盘中，但是不方便管理和维护，迫切需要一种系统来管理多台机器上的文件，这就是分布式文件管理系统。HDFS 只是分布式文件管理系统中的一种。</p>
+<h3 id="2-hdfs-定义"><a class="header" href="#2-hdfs-定义">2 ）HDFS 定义</a></h3>
+<p>HDFS（Hadoop Distributed File System），它是一个文件系统，用于存储文件，通过目录树来定位文件；其次，它是分布式的，由很多服务器联合起来实现其功能，集群中的服务器有各自的角色。</p>
+<p>HDFS 的使用场景：<strong>适合一次写入，多次读出的场景。 一个文件经过创建、写入和关闭之后就不需要改变</strong>。</p>
+<h2 id="hdfs-优缺点"><a class="header" href="#hdfs-优缺点">HDFS 优缺点</a></h2>
+<p>HDFS优点</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img/20241027144347.png" alt="" /></p>
+<p>HDFS缺点</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img/20241027144402.png" alt="" /></p>
+<h2 id="hdfs-组成架构"><a class="header" href="#hdfs-组成架构">HDFS 组成架构</a></h2>
+<p>HDFS组成架构示意图</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img/20241027145753.png" alt="" /></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img/20241027145821.png" alt="" /></p>
+<p>简单形容：NameNode是老板，DataNode是打工仔，Client是客户，Secondary NameNode是秘书</p>
+<h2 id="hdfs-文件块大小-面试重点"><a class="header" href="#hdfs-文件块大小-面试重点">HDFS 文件块大小 （面试重点）</a></h2>
+<p>HDFS 文件块大小</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img/20241027145939.png" alt="" /></p>
+<p>思考：为什么块的大小不能设置太小，也不能设置太大？</p>
+<p>（1）HDFS的块设置太小，会增加寻址时间，程序一直在找块的开始位置；
+（2）如果块设置的太大，从磁盘传输数据的时间会明显大于定位这个块开始位置所需的时间。导致程序在处理这块数据时，会非常慢。</p>
+<p>总结：<strong>HDFS块的大小设置主要取决于磁盘传输速率</strong>。</p>
+<p>e.g.</p>
+<p>普通的机械硬盘，传输速率100M/s →HDFS块设置为128M</p>
+<p>固态硬盘，传输速率200-300M/s →HDFS块设置为256M</p>
+<h2 id="namenode-和-secondarynamenode"><a class="header" href="#namenode-和-secondarynamenode">NameNode 和 SecondaryNameNode</a></h2>
+<h3 id="nn-和-2nn-工作机制"><a class="header" href="#nn-和-2nn-工作机制">NN 和 2NN 工作机制</a></h3>
+<p>思考：NameNode 中的元数据是存储在哪里的？</p>
+<p>首先，我们做个假设，如果存储在 NameNode 节点的磁盘中，因为经常需要进行随机访问，还有响应客户请求，必然是效率过低。因此，元数据需要存放在内存中。但如果只存在内存中，一旦断电，元数据丢失，整个集群就无法工作了。因此产生在磁盘中备份元数据的FsImage。</p>
+<p>这样又会带来新的问题，当在内存中的元数据更新时，如果同时更新 FsImage，就会导致效率过低，但如果不更新，就会发生一致性问题，一旦 NameNode 节点断电，就会产生数据丢失。因此，引入 Edits 文件（只进行追加操作，效率很高）。每当元数据有更新或者添加元数据时，修改内存中的元数据并追加到 Edits 中。这样，一旦 NameNode 节点断电，可以通过 FsImage 和 Edits 的合并，合成元数据。 但是，如果长时间添加数据到 Edits 中，会导致该文件数据过大，效率降低，而且一旦断电，恢复元数据需要的时间过长。因此，需要定期进行 FsImage 和 Edits 的合并，如果这个操作由NameNode节点完成， 又会效率过低。 因此， <strong>引入一个新的节点SecondaryNamenode，专门用于 FsImage 和 Edits 的合并。</strong></p>
+<p><img src="https://i-blog.csdnimg.cn/blog_migrate/d99676a51208185f6f4c380d6f1e9354.png" alt="a" /></p>
+<h3 id="namenode工作机制"><a class="header" href="#namenode工作机制">NameNode工作机制</a></h3>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img/20241102132550.png" alt="" /></p>
+<p>1 ） 第一阶段：NameNode 启动</p>
+<p>（1）第一次启动 NameNode 格式化后，创建 Fsimage 和 Edits 文件。如果不是第一次启动，直接加载编辑日志和镜像文件到内存。</p>
+<p>（2）客户端对元数据进行增删改的请求。</p>
+<p>（3）NameNode 记录操作日志，更新滚动日志。</p>
+<p>（4）NameNode 在内存中对元数据进行增删改。</p>
+<p>2 ） 第二阶段：Secondary NameNode 工作</p>
+<p>（1）Secondary NameNode 询问 NameNode 是否需要 CheckPoint。直接带回 NameNode是否检查结果。</p>
+<p>（2）Secondary NameNode 请求执行 CheckPoint。</p>
+<p>（3）NameNode 滚动正在写的 Edits 日志。</p>
+<p>（4）将滚动前的编辑日志和镜像文件拷贝到 Secondary NameNode。</p>
+<p>（5）Secondary NameNode 加载编辑日志和镜像文件到内存，并合并。</p>
+<p>（6）生成新的镜像文件 fsimage.chkpoint。</p>
+<p>（7）拷贝 fsimage.chkpoint 到 NameNode。</p>
+<p>（8）NameNode 将 fsimage.chkpoint 重新命名成 fsimage。</p>
+<h3 id="fsimage-和-edits-解析"><a class="header" href="#fsimage-和-edits-解析">Fsimage 和 Edits 解析</a></h3>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img/20241102132707.png" alt="" /></p>
+<p>查看 oiv 和 oev 命令说明</p>
+<pre><code>oiv            apply the offline fsimage viewer to an fsimage 
+oev            apply the offline edits viewer to an edits file 
+</code></pre>
+<p>1 ）oiv 查看 Fsimage 文件</p>
+<p>（1）基本语法</p>
+<pre><code>hdfs oiv -p 文件类型 -i 镜像文件 -o 转换后文件输出路径
+</code></pre>
+<p>（2）案例实操</p>
+<pre><code>hdfs oiv -p XML -i fsimage_0000000000000000261 -o /opt/module/hadoop-3.1.3/fsimage.xml
+</code></pre>
+<p>思考：Fsimage 中没有记录块所对应 DataNode，为什么？</p>
+<p>在集群启动后，要求 DataNode 上报数据块信息，并间隔一段时间后再次上报。</p>
+<p>2 ）oev 查看 Edits 文件</p>
+<p>（1）基本语法</p>
+<pre><code>hdfs oev -p 文件类型 -i 编辑日志 -o 转换后文件输出路径
+</code></pre>
+<p>（2）案例实操</p>
+<pre><code>hdfs oev -p XML -i edits_inprogress_0000000000000000262 -o/opt/module/hadoop-3.1.3/edits.xml
+</code></pre>
+<p>思考：NameNode 如何确定下次开机启动的时候合并哪些 Edits？</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img/20241102133225.png" alt="" /></p>
+<p>注意时间，看到每间隔1h进行一次合并</p>
+<p>集群一停止、开关机也要合并一次</p>
+<h3 id="checkpoint-时间设置"><a class="header" href="#checkpoint-时间设置">CheckPoint 时间设置</a></h3>
+<p>1 ） 通常情况下，SecondaryNameNode 每隔一小时执行一次</p>
+<p>参照：hdfs-default.xml</p>
+<pre><code class="language-xml">&lt;property&gt; 
+  &lt;name&gt;dfs.namenode.checkpoint.period&lt;/name&gt; 
+  &lt;value&gt;3600s&lt;/value&gt; 
+&lt;/property&gt; 
+</code></pre>
+<p>2 ） 一分钟检查一次操作次数，当操作次数达到 1 百万时，SecondaryNameNode执行一次</p>
+<pre><code class="language-xml">&lt;property&gt; 
+  &lt;name&gt;dfs.namenode.checkpoint.txns&lt;/name&gt; 
+  &lt;value&gt;1000000&lt;/value&gt; 
+&lt;description&gt;操作动作次数&lt;/description&gt; 
+&lt;/property&gt; 
+ 
+&lt;property&gt; 
+  &lt;name&gt;dfs.namenode.checkpoint.check.period&lt;/name&gt; 
+  &lt;value&gt;60s&lt;/value&gt; 
+&lt;description&gt; 1 分钟检查一次操作次数&lt;/description&gt; 
+&lt;/property&gt; 
+</code></pre>
+<h2 id="datanode"><a class="header" href="#datanode">DataNode</a></h2>
+<h3 id="datanode-工作机制"><a class="header" href="#datanode-工作机制">DataNode 工作机制</a></h3>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img/20241102130953.png" alt="" /></p>
+<p>（1）一个数据块在 DataNode 上以文件形式存储在磁盘上，包括两个文件：一个是数据本身，一个是元数据包括数据块的长度、块数据的校验和以及时间戳。</p>
+<p>（2）DataNode 启动后向 NameNode 注册，通过后，周期性（6 小时）的向 NameNode 上报所有的块信息。</p>
+<p>DN 向 NN 汇报当前解读信息的时间间隔，默认 6 小时。</p>
+<p>相关配置参数如下：</p>
+<pre><code class="language-xml">&lt;property&gt; 
+  &lt;name&gt;dfs.blockreport.intervalMsec&lt;/name&gt; 
+  &lt;value&gt;21600000&lt;/value&gt; 
+  &lt;description&gt;Determines block reporting interval in 
+milliseconds.&lt;/description&gt; 
+&lt;/property&gt; 
+</code></pre>
+<p>注意：这里value值单位是毫秒</p>
+<p>DN 扫描自己节点块信息列表的时间，默认 6 小时</p>
+<p>相关配置参数如下：</p>
+<pre><code class="language-xml">&lt;property&gt; 
+  &lt;name&gt;dfs.datanode.directoryscan.interval&lt;/name&gt; 
+  &lt;value&gt;21600s&lt;/value&gt; 
+  &lt;description&gt;Interval in seconds for Datanode to scan data 
+  directories and reconcile the difference between blocks in memory and on 
+the disk. 
+  Support multiple time unit suffix(case insensitive), as described 
+  in dfs.heartbeat.interval. 
+  &lt;/description&gt; 
+&lt;/property&gt; 
+</code></pre>
+<p>注意：这里value值单位是秒</p>
+<p>（3）心跳是每 3 秒一次，心跳返回结果带有 NameNode 给该 DataNode 的命令如复制块数据到另一台机器 或删除某个数据块。 如果超过 10 分钟+30 秒没有收到某个 DataNode 的心跳，则认为该节点不可用（挂了），不会再向其传输信息。</p>
+<p>（4）集群运行中可以安全加入和删除一些机器。</p>
+<h3 id="数据完整性"><a class="header" href="#数据完整性">数据完整性</a></h3>
+<p>思考：DataNode 节点上的数据损坏了，却没有发现，是否也很危险，那么如何解决呢？</p>
+<p>如下是 DataNode 节点保证数据完整性的方法。</p>
+<p>（1）当 DataNode 读取 Block 的时候，它会计算 CheckSum。</p>
+<p>（2）如果计算后的 CheckSum，与 Block 创建时值不一样，说明 Block 已经损坏。</p>
+<p>（3）Client 读取其他 DataNode 上的 Block。</p>
+<p>（4）常见的校验算法 crc（32），md5（128），sha1（160）</p>
+<p>（5）DataNode 在其文件创建后周期验证 CheckSum。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img/20241102131756.png" alt="" /></p>
+<h3 id="datanode掉线时限参数设置"><a class="header" href="#datanode掉线时限参数设置">DataNode掉线时限参数设置</a></h3>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img/20241102131954.png" alt="" /></p>
+<p>相关配置参数如下：</p>
+<pre><code class="language-xml">&lt;property&gt; 
+    &lt;name&gt;dfs.namenode.heartbeat.recheck-interval&lt;/name&gt; 
+    &lt;value&gt;300000&lt;/value&gt; 
+&lt;/property&gt; 
+ 
+&lt;property&gt; 
+    &lt;name&gt;dfs.heartbeat.interval&lt;/name&gt; 
+    &lt;value&gt;3&lt;/value&gt; 
+&lt;/property&gt; 
+</code></pre>
+<p>需要注意的是 hdfs-site.xml 配置文件中的 heartbeat.recheck.interval 的单位为毫秒，dfs.heartbeat.interval 的单位为秒。</p>
+<p>DataNode 被中止之后，可以执行<code>hdfs --daemon start datanode</code>重启</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="HDFS.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="HDFS读写流程.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="HDFS.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="HDFS读写流程.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
