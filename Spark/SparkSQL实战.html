@@ -1,0 +1,295 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>SparkSQL实战 - Big Data</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Big Data</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="sparksql-实战各区域热门商品-top3"><a class="header" href="#sparksql-实战各区域热门商品-top3">SparkSQL 实战：各区域热门商品 Top3</a></h1>
+<ul>
+<li><a href="#%E9%9C%80%E6%B1%82%E5%88%86%E6%9E%90">需求分析</a></li>
+<li><a href="#%E7%94%A8%E6%88%B7%E8%A1%8C%E4%B8%BA%E6%95%B0%E6%8D%AE">用户行为数据</a></li>
+<li><a href="#%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%A1%88sql--udaf">实现方案：SQL + UDAF</a></li>
+<li><a href="#%E8%AF%A6%E7%BB%86%E6%AD%A5%E9%AA%A4">详细步骤</a></li>
+<li><a href="#sql-groupby-%E8%AF%AD%E6%B3%95">SQL GroupBy 语法</a></li>
+<li><a href="#%E8%A1%8C%E8%BD%AC%E5%88%97">行转列</a></li>
+<li><a href="#%E6%80%BB%E7%BB%93">总结</a></li>
+</ul>
+<h2 id="需求分析"><a class="header" href="#需求分析"><strong>需求分析</strong></a></h2>
+<p>该需求旨在统计各个区域内最受欢迎的商品，并列出每个区域点击量 Top 3 的商品。解决此问题需要用到以下 SparkSQL 技术：</p>
+<ol>
+<li><strong>分组聚合 (GroupBy)</strong>：当需求中出现 "各个 XXXX" 的描述时，通常意味着需要按照某个维度对数据进行分组。<code>GroupBy</code> 操作能够将具有相同属性的数据划分到同一个组中，为后续的聚合计算奠定基础。</li>
+<li><strong>热门商品统计</strong>：从用户行为数据中，提取点击行为，并统计每个商品的点击量。统计结果可以表示为（商品 ID，点击数量）的键值对。</li>
+<li><strong>Top N 算法</strong>：在每个分组内，按照点击量对商品进行排序，并选取前 N 名作为热门商品。这里 N=3，即 Top3。组内排序通常需要使用开窗函数，它可以在不改变现有行的基础上，为每行增加排序信息（例如 <code>RANK()</code>、<code>ROW_NUMBER()</code> 等）。</li>
+<li><strong>数据补全</strong>：原始数据可能不包含所有需要的字段信息，或者某些字段存在缺失值。需要通过 Join 操作连接相关表，或者使用 Union 操作合并多个数据集，以补全数据。例如，可以将商品 ID 与商品名称进行关联，确保结果包含完整的商品信息。</li>
+<li><strong>结果展示</strong>：最终结果需要以清晰、易读的方式呈现。如果需要将多行数据合并为单行，或者对结果进行格式化，可以使用自定义 UDF (User Defined Function) 函数来实现。</li>
+</ol>
+<h2 id="用户行为数据"><a class="header" href="#用户行为数据"><strong>用户行为数据</strong></a></h2>
+<p>在电商场景中，典型的用户行为包括：</p>
+<ul>
+<li><strong>点击 (Click)</strong>：用户浏览商品的行为。</li>
+<li><strong>加购 (Add to Cart)</strong>：用户将商品添加到购物车的行为。</li>
+<li><strong>下单 (Order)</strong>：用户提交订单购买商品的行为。</li>
+<li><strong>支付 (Payment)</strong>：用户完成支付的行为。</li>
+</ul>
+<p>在本案例中，我们主要关注点击行为，通过统计点击量来衡量商品的热度。</p>
+<h2 id="实现方案sql--udaf"><a class="header" href="#实现方案sql--udaf"><strong>实现方案：SQL + UDAF</strong></a></h2>
+<p>考虑到 SparkSQL 的表达能力和执行效率，我们采用 SQL 作为主要的实现方式。对于 SQL 不擅长或者难以实现的功能，可以考虑使用自定义 UDF (User Defined Function) 或 UDAF (User Defined Aggregate Function) 函数来辅助。</p>
+<h2 id="详细步骤"><a class="header" href="#详细步骤"><strong>详细步骤</strong></a></h2>
+<ol>
+<li><strong>数据读取</strong>：使用 SparkSQL 读取包含用户行为数据的 JSON 文件。注意，如果 JSON 文件中的数据为整型，SparkSQL 通常会将其封装为 <code>BigInt</code> 类型（即 Long 类型）。
+<pre><code class="language-scala">val df = spark.read.json("path/to/user_behavior.json")
+df.printSchema()
+</code></pre>
+</li>
+<li><strong>数据转换</strong>：将原始数据转换为方便后续处理的格式。例如，可以提取用户 ID、商品 ID、行为类型、时间戳等字段。
+<pre><code class="language-scala">val behaviorDF = df.select("user_id", "item_id", "behavior_type", "timestamp")
+</code></pre>
+</li>
+<li><strong>点击行为过滤</strong>：筛选出点击行为的数据。
+<pre><code class="language-scala">val clickDF = behaviorDF.filter($"behavior_type" === "click")
+</code></pre>
+</li>
+<li><strong>分组聚合</strong>：按照区域和商品 ID 进行分组，统计每个区域内每个商品的点击量。
+<pre><code class="language-scala">val itemClickCounts = clickDF.groupBy("region", "item_id")
+  .agg(count("*").alias("click_count"))
+</code></pre>
+</li>
+<li><strong>开窗函数</strong>：使用开窗函数在每个区域内按照点击量进行排序。
+<pre><code class="language-scala">val rankedItems = itemClickCounts.withColumn(
+  "rank",
+  dense_rank().over(Window.partitionBy("region").orderBy(desc("click_count")))
+)
+</code></pre>
+</li>
+<li><strong>Top3 筛选</strong>：筛选出每个区域内点击量排名前 3 的商品。
+<pre><code class="language-scala">val top3Items = rankedItems.filter($"rank" &lt;= 3)
+</code></pre>
+</li>
+<li><strong>结果展示</strong>：将结果以表格或其他形式展示出来。如果需要对结果进行格式化，可以使用 UDF 函数。
+<pre><code class="language-scala">top3Items.show()
+</code></pre>
+</li>
+</ol>
+<h2 id="sql-groupby-语法"><a class="header" href="#sql-groupby-语法"><strong>SQL GroupBy 语法</strong></a></h2>
+<p>在使用 <code>GroupBy</code> 子句时，需要注意以下几点：</p>
+<ol>
+<li><strong>Select 子句限制</strong>：如果 <code>Select</code> 子句中包含聚合函数（例如 <code>COUNT()</code>、<code>SUM()</code>、<code>AVG()</code> 等），那么查询字段必须满足以下条件之一：
+<ul>
+<li>常量</li>
+<li>在聚合函数中使用</li>
+<li>参与分组 ( <code>GroupBy</code> 子句中指定的字段)</li>
+</ul>
+</li>
+<li><strong>分组字段关系</strong>：
+<ul>
+<li>如果分组字段存在上下级或从属关系，那么统计结果与下级字段有关，与上级字段无关。例如，如果按照省份和城市进行分组，统计结果会受到城市的影响。增加上级字段（例如省份）的目的是为了补全数据，确保每个省份都有对应的 Top3 商品。</li>
+<li>如果分组字段存在关联关系（例如商品 ID 和商品名称），那么统计结果与具备唯一性的字段有关（例如商品 ID）。其他字段（例如商品名称）的作用是补全数据，方便结果展示。</li>
+<li>如果分组字段没有任何关系，那么统计结果与所有字段有关。</li>
+</ul>
+</li>
+</ol>
+<h2 id="行转列"><a class="header" href="#行转列"><strong>行转列</strong></a></h2>
+<p>如果需要将多行数据合并为单行，可以使用 <code>pivot</code> 函数或者自定义 UDAF 函数来实现。</p>
+<h2 id="总结"><a class="header" href="#总结"><strong>总结</strong></a></h2>
+<p>本案例演示了如何使用 SparkSQL 解决实际业务问题。通过分组聚合、开窗函数、数据补全等技术，我们可以高效地统计出各个区域的热门商品 Top3。同时，我们也需要注意 SQL 语法和分组字段之间的关系，确保结果的准确性和完整性。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../Spark/SparkSQL.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../Spark/Spark数据源.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../Spark/SparkSQL.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../Spark/Spark数据源.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

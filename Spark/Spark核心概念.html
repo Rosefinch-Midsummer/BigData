@@ -1,0 +1,1255 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Spark核心概念 - Big Data</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Big Data</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="spark核心概念"><a class="header" href="#spark核心概念">Spark核心概念</a></h1>
+<ul>
+<li><a href="#%E5%BA%8F%E5%88%97%E5%8C%96">序列化</a></li>
+<li><a href="#kryo%E5%BA%8F%E5%88%97%E5%8C%96%E6%A1%86%E6%9E%B6">Kryo序列化框架</a>
+<ul>
+<li><a href="#%E4%BD%BF%E7%94%A8kyro">使用Kyro</a></li>
+</ul>
+</li>
+<li><a href="#%E4%BE%9D%E8%B5%96">依赖</a>
+<ul>
+<li><a href="#%E5%AE%BD%E4%BE%9D%E8%B5%96%E5%92%8C%E7%AA%84%E4%BE%9D%E8%B5%96">宽依赖和窄依赖</a></li>
+<li><a href="#%E4%BD%9C%E4%B8%9A%E9%98%B6%E6%AE%B5%E5%92%8C%E4%BB%BB%E5%8A%A1%E7%9A%84%E5%85%B3%E7%B3%BB">作业、阶段和任务的关系</a></li>
+<li><a href="#%E4%BB%BB%E5%8A%A1%E6%95%B0%E9%87%8F%E5%88%86%E5%8C%BA%E6%95%B0%E9%87%8F">任务数量（分区数量）</a></li>
+<li><a href="#%E6%8C%81%E4%B9%85%E5%8C%96%E5%92%8C%E5%BA%8F%E5%88%97%E5%8C%96">持久化和序列化</a>
+<ul>
+<li><a href="#cache%E9%87%8D%E5%A4%8D%E4%BD%BF%E7%94%A8rdd%E6%97%B6%E4%BD%BF%E7%94%A8">Cache（重复使用RDD时使用）</a></li>
+<li><a href="#persistfile%E8%90%BD%E7%9B%98">Persist（File，落盘）</a></li>
+<li><a href="#checkpoint%E5%A4%9A%E4%B8%AA%E8%BF%9B%E7%A8%8B%E5%85%B1%E4%BA%AB%E6%95%B0%E6%8D%AE">checkpoint（多个进程共享数据）</a></li>
+<li><a href="#shuffle%E7%AE%97%E5%AD%90%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96">shuffle算子的持久化</a></li>
+</ul>
+</li>
+<li><a href="#%E5%88%86%E5%8C%BA%E5%99%A8">分区器</a>
+<ul>
+<li><a href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%88%86%E5%8C%BA%E5%99%A8">自定义分区器</a></li>
+</ul>
+</li>
+<li><a href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9">注意事项</a></li>
+<li><a href="#rdd%E7%9A%84%E5%B1%80%E9%99%90%E6%80%A7%E4%B8%A4%E4%B8%AA%E4%BE%8B%E5%AD%90%E5%92%8C%E5%B9%BF%E6%92%AD%E5%8F%98%E9%87%8F">RDD的局限性（两个例子）和广播变量</a>
+<ul>
+<li><a href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%90%8C%E6%97%B6%E4%BD%BF%E7%94%A8collect%E5%92%8Cforeach">为什么同时使用collect()和forEach()？</a></li>
+<li><a href="#%E5%B9%BF%E6%92%AD%E5%8F%98%E9%87%8F">广播变量</a></li>
+<li><a href="#%E5%A4%84%E7%90%86json%E6%95%B0%E6%8D%AE">处理JSON数据</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="序列化"><a class="header" href="#序列化">序列化</a></h1>
+<ul>
+<li>Kryo——速度快，序列化后体积小；缺点是跨语言支持较复杂</li>
+<li>Protostuff——速度快，基于protobuf；缺点是需静态编译</li>
+<li>Protostuff-Runtime,无需静态编译，但序列化前需预先传入schema;缺点是不支持无默认构造函数的类，反序列化时需用户自己初始化序列化后的对象，其只负责将该对象进行赋值</li>
+<li>Java——使用方便，可序列化所有类；缺点是速度慢，占空间</li>
+</ul>
+<p>具体的对比可以参考这个基线图：</p>
+<p>Results - JVM Serializer Benchmarks</p>
+<p>效率对比直观图：</p>
+<p>An Introduction and Comparison of Several Common Java Serialization Frameworks - Alibaba Cloud Community</p>
+<p>首选序列化：Kryo、Protostuff</p>
+<h1 id="kryo序列化框架"><a class="header" href="#kryo序列化框架">Kryo序列化框架</a></h1>
+<pre><code class="language-java">package com.zzw;
+
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+import com.esotericsoftware.kryo.serializers.BeanSerializer;
+
+import java.io.*;
+
+public class KryoTest {
+    public static void main(String[] args) {
+        User user = new User("Tom", 20);
+        //javaSerial(user, "D:\\Documents\\items\\BigData\\BigDataCode\\spark\\src\\main\\resources\\data\\user.dat");
+        //kryoSerial(user, "D:\\Documents\\items\\BigData\\BigDataCode\\spark\\src\\main\\resources\\data\\user1.kryo");
+        User user1 = kryoDeSerial(User.class, "D:\\Documents\\items\\BigData\\BigDataCode\\spark\\src\\main\\resources\\data\\user1.kryo");
+        System.out.println(user1.getName() + " " + user1.getAge());
+
+    }
+    public static void javaSerial(Serializable s, String path) {
+        try {
+            ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(path)));
+            oos.writeObject(s);
+            oos.flush();
+            oos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public static &lt;T&gt; T kryoDeSerial(Class&lt;T&gt; c, String path) {
+        try {
+            Kryo kryo = new Kryo();
+            kryo.register(c, new BeanSerializer(kryo, c));
+            Input input = new Input(new BufferedInputStream(new FileInputStream(path)));
+            T obj = kryo.readObject(input, c);
+            input.close();
+            return obj;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public static void kryoSerial(Serializable s, String path) {
+        try {
+            Kryo kryo = new Kryo();
+            kryo.register(s.getClass(), new BeanSerializer(kryo, s.getClass()));
+            Output output = new Output(new BufferedOutputStream(new FileOutputStream(path)));
+            kryo.writeObject(output, s);
+            output.flush();
+            output.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+class User implements Serializable {
+    private String name;
+    private int age;
+
+    public User(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+    public User() {
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+}
+</code></pre>
+<h2 id="使用kyro"><a class="header" href="#使用kyro">使用Kyro</a></h2>
+<pre><code class="language-java">package com.atguigu.serializable;
+
+import com.atguigu.bean.User;
+import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.api.java.function.Function;
+
+import java.util.Arrays;
+
+public class Test02_Kryo {
+    public static void main(String[] args) throws ClassNotFoundException {
+
+        // 1.创建配置对象
+        SparkConf conf = new SparkConf().setMaster("local[*]").setAppName("sparkCore")
+                // 替换默认的序列化机制
+                .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
+                // 注册需要使用kryo序列化的自定义类
+                .registerKryoClasses(new Class[]{Class.forName("com.atguigu.bean.User")});
+
+        // 2. 创建sparkContext
+        JavaSparkContext sc = new JavaSparkContext(conf);
+
+        // 3. 编写代码
+        User zhangsan = new User("zhangsan", 13);
+        User lisi = new User("lisi", 13);
+
+        JavaRDD&lt;User&gt; userJavaRDD = sc.parallelize(Arrays.asList(zhangsan, lisi), 2);
+
+        JavaRDD&lt;User&gt; mapRDD = userJavaRDD.map(new Function&lt;User, User&gt;() {
+            @Override
+            public User call(User v1) throws Exception {
+                return new User(v1.getName(), v1.getAge() + 1);
+            }
+        });
+
+        mapRDD. collect().forEach(System.out::println);
+
+        // 4. 关闭sc
+        sc.stop();
+    }
+}
+
+</code></pre>
+<h1 id="依赖"><a class="header" href="#依赖">依赖</a></h1>
+<p>RDD依赖：Spark中相邻的两个RDD之间存在的依赖关系</p>
+<p>连续的依赖关系被称为血缘关系</p>
+<p>Spark中的每一个RDD都保存了依赖关系和血缘关系，方便出问题时可以溯源或重试</p>
+<pre><code class="language-java">package com.zzw.bigdata.spark.rdd.dep;
+
+import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaPairRDD;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
+
+import java.util.Arrays;
+
+public class Spark01_WordCount {
+    public static void main(String[] args) throws InterruptedException {
+        // 1.创建配置对象
+        SparkConf conf = new SparkConf();
+        conf.setMaster("local[2]");
+        conf.setAppName("sparkCore");
+
+        // 2. 创建sparkContext
+        JavaSparkContext sc = new JavaSparkContext(conf);
+
+        // 3. 编写代码
+
+        JavaRDD&lt;String&gt; lineRDD = sc.textFile("D:\\Documents\\items\\BigData\\BigDataCode\\spark\\src\\main\\resources\\data\\word.txt");
+        System.out.println(lineRDD.toDebugString());
+        System.out.println("*************");
+        JavaRDD&lt;String&gt; wordRDD = lineRDD.flatMap(line -&gt; Arrays.asList(line.split(" ")).iterator());
+        System.out.println(wordRDD.toDebugString());
+        System.out.println("*************");
+        JavaPairRDD&lt;String, Iterable&lt;String&gt;&gt; wordGroupRDD = wordRDD.groupBy(word -&gt; word);
+        System.out.println(wordGroupRDD.toDebugString());
+        System.out.println("*************");
+        JavaPairRDD&lt;String, Integer&gt; wordCountRDD = wordGroupRDD.mapValues(iter -&gt; {
+            int count = 0;
+            for (String s : iter) {
+                count++;
+            }
+            return count;
+        });
+        System.out.println(wordCountRDD.toDebugString());
+        System.out.println("*************");
+        wordCountRDD.collect().forEach(System.out::println);
+
+        // 4. 关闭sc
+        sc.stop();
+
+    }
+}
+</code></pre>
+<p>输出结果如下所示：</p>
+<pre><code>(2) D:\Documents\items\BigData\BigDataCode\spark\src\main\resources\data\word.txt MapPartitionsRDD[1] at textFile at Spark01_WordCount.java:22 []
+ |  D:\Documents\items\BigData\BigDataCode\spark\src\main\resources\data\word.txt HadoopRDD[0] at textFile at Spark01_WordCount.java:22 []
+*************
+(2) MapPartitionsRDD[2] at flatMap at Spark01_WordCount.java:25 []
+ |  D:\Documents\items\BigData\BigDataCode\spark\src\main\resources\data\word.txt MapPartitionsRDD[1] at textFile at Spark01_WordCount.java:22 []
+ |  D:\Documents\items\BigData\BigDataCode\spark\src\main\resources\data\word.txt HadoopRDD[0] at textFile at Spark01_WordCount.java:22 []
+*************
+(2) MapPartitionsRDD[5] at groupBy at Spark01_WordCount.java:28 []
+ |  ShuffledRDD[4] at groupBy at Spark01_WordCount.java:28 []
+ +-(2) MapPartitionsRDD[3] at groupBy at Spark01_WordCount.java:28 []
+    |  MapPartitionsRDD[2] at flatMap at Spark01_WordCount.java:25 []
+    |  D:\Documents\items\BigData\BigDataCode\spark\src\main\resources\data\word.txt MapPartitionsRDD[1] at textFile at Spark01_WordCount.java:22 []
+    |  D:\Documents\items\BigData\BigDataCode\spark\src\main\resources\data\word.txt HadoopRDD[0] at textFile at Spark01_WordCount.java:22 []
+*************
+(2) MapPartitionsRDD[6] at mapValues at Spark01_WordCount.java:31 []
+ |  MapPartitionsRDD[5] at groupBy at Spark01_WordCount.java:28 []
+ |  ShuffledRDD[4] at groupBy at Spark01_WordCount.java:28 []
+ +-(2) MapPartitionsRDD[3] at groupBy at Spark01_WordCount.java:28 []
+    |  MapPartitionsRDD[2] at flatMap at Spark01_WordCount.java:25 []
+    |  D:\Documents\items\BigData\BigDataCode\spark\src\main\resources\data\word.txt MapPartitionsRDD[1] at textFile at Spark01_WordCount.java:22 []
+    |  D:\Documents\items\BigData\BigDataCode\spark\src\main\resources\data\word.txt HadoopRDD[0] at textFile at Spark01_WordCount.java:22 []
+*************
+(Flink,1)
+(Zookeeper,1)
+(Kafka,3)
+(Cassandra,1)
+(Spark,2)
+(Flume,2)
+(Redis,1)
+(HBase,1)
+(Hadoop,2)
+</code></pre>
+<pre><code class="language-java">List&lt;Tuple2&lt;String, Integer&gt;&gt; list = Arrays.asList(t1, t2, t3, t4);  
+JavaRDD&lt;Tuple2&lt;String, Integer&gt;&gt; rdd = sc.parallelize(list);  
+  
+System.out.println(rdd.rdd().dependencies());
+</code></pre>
+<h2 id="宽依赖和窄依赖"><a class="header" href="#宽依赖和窄依赖">宽依赖和窄依赖</a></h2>
+<p>在Driver端准备计算逻辑（RDD的关系）-&gt;由Spark对关系进行判断决定人物的数量和关系-&gt;计算逻辑是在Executor端执行</p>
+<p>RDD中的依赖关系本质上并不是RDD对象的关系，而是RDD对象中分区数据的关系</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250105145756.png" alt="" /></p>
+<p>OneToOneDependency 一对一（窄依赖）：计算中上游RDD的一个分区数据被下游RDD的一个分区所独享</p>
+<p>不是窄依赖的就是宽依赖</p>
+<p>ShuffleDependency （宽依赖）：计算中上游RDD的一个分区数据被下游RDD的多个分区所共享</p>
+<p>宽依赖会将分区数据打乱重新组合，所以底层实现存在Shuffle操作</p>
+<h2 id="作业阶段和任务的关系"><a class="header" href="#作业阶段和任务的关系">作业、阶段和任务的关系</a></h2>
+<p>作业（Job）：行动算子执行时，会触发作业的执行（Active Job）</p>
+<p>阶段（Stage）：一个Job中RDD的计算流程，默认就一个完整的阶段，但是如果计算流程中存在shuffle，那么流程就会分为二</p>
+<p>分开的每一段就称之为Stage（阶段），前一个阶段不执行完，后一个阶段不允许执行</p>
+<p>阶段的数量=1+shuffle依赖的数量</p>
+<p>任务（Task）：每个Executor执行的计算单元</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250105154242.png" alt="" /></p>
+<p><code>0 until numPartitions</code> 左闭右开，每个分区对应一个<code>new Task</code></p>
+<p>任务的数量其实就是每个阶段最后一个RDD分区的数量之和</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250105155313.png" alt="" /></p>
+<h2 id="任务数量分区数量"><a class="header" href="#任务数量分区数量">任务数量（分区数量）</a></h2>
+<p>怎么设置任务数量？简单来说，任务数量最好等于资源核数</p>
+<p>但这样容易出问题——计算资源空置</p>
+<p>移动数据不如移动计算</p>
+<p>一般推荐分区数量为资源核数的2~3倍</p>
+<h2 id="持久化和序列化"><a class="header" href="#持久化和序列化">持久化和序列化</a></h2>
+<p>持久化：长时间保存对象</p>
+<p>序列化：内存中对象=&gt;byte序列（byte数组）</p>
+<h3 id="cache重复使用rdd时使用"><a class="header" href="#cache重复使用rdd时使用">Cache（重复使用RDD时使用）</a></h3>
+<p>代码流程设计存在问题：数据重复、计算重复</p>
+<p>改变流向没用，因为数据不能倒流转</p>
+<p>RDD不保存数据，如果重复使用同一个RDD，那么数据就会从头执行，导致数据重复、计算重复</p>
+<p>解决措施：cache</p>
+<p>对应代码为<code>mapRDD.cache();</code></p>
+<p>未使用cache时</p>
+<pre><code class="language-java">package com.zzw.bigdata.spark.rdd.dep;  
+  
+import org.apache.spark.SparkConf;  
+import org.apache.spark.api.java.JavaPairRDD;  
+import org.apache.spark.api.java.JavaRDD;  
+import org.apache.spark.api.java.JavaSparkContext;  
+import scala.Tuple2;  
+  
+import java.util.ArrayList;  
+import java.util.Arrays;  
+import java.util.List;  
+  
+public class Spark02_Dep {  
+    public static void main(String[] args) throws InterruptedException {  
+        // 1.创建配置对象  
+        SparkConf conf = new SparkConf();  
+        conf.setMaster("local[2]");  
+        conf.setAppName("sparkCore");  
+  
+        // 2. 创建sparkContext  
+        JavaSparkContext sc = new JavaSparkContext(conf);  
+  
+        // 3. 编写代码  
+        List&lt;Tuple2&lt;String, Integer&gt;&gt; nums = new ArrayList&lt;&gt;();  
+        nums.add(new Tuple2&lt;&gt;("a", 1));  
+        nums.add(new Tuple2&lt;&gt;("a", 2));  
+        nums.add(new Tuple2&lt;&gt;("a", 3));  
+        nums.add(new Tuple2&lt;&gt;("a", 4));  
+        JavaRDD&lt;Tuple2&lt;String, Integer&gt;&gt; rdd = sc.parallelize(nums, 2);  
+  
+        JavaPairRDD&lt;String, Integer&gt; mapRDD = rdd.mapToPair(kv -&gt; {  
+            System.out.println("*************");  
+            return kv;  
+        });  
+  
+        //mapRDD.cache();  
+  
+        JavaPairRDD&lt;String, Integer&gt; wordCountRDD = mapRDD.reduceByKey(Integer::sum);  
+  
+        wordCountRDD.collect();  
+        System.out.println("计算1结束");  
+        System.out.println("############################");  
+  
+        JavaPairRDD&lt;String, Iterable&lt;Integer&gt;&gt; groupRDD = mapRDD.groupByKey();  
+        groupRDD.collect();  
+        System.out.println("计算2结束");  
+  
+        // 4. 关闭sc  
+        sc.stop();  
+  
+    }  
+}
+</code></pre>
+<pre><code>*************
+*************
+*************
+*************
+计算1结束
+############################
+*************
+*************
+*************
+*************
+计算2结束
+</code></pre>
+<p>使用cache后</p>
+<pre><code class="language-java">package com.zzw.bigdata.spark.rdd.dep;
+
+import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaPairRDD;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
+import scala.Tuple2;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class Spark02_Dep {
+    public static void main(String[] args) throws InterruptedException {
+        // 1.创建配置对象
+        SparkConf conf = new SparkConf();
+        conf.setMaster("local[2]");
+        conf.setAppName("sparkCore");
+
+        // 2. 创建sparkContext
+        JavaSparkContext sc = new JavaSparkContext(conf);
+
+        // 3. 编写代码
+        List&lt;Tuple2&lt;String, Integer&gt;&gt; nums = new ArrayList&lt;&gt;();
+        nums.add(new Tuple2&lt;&gt;("a", 1));
+        nums.add(new Tuple2&lt;&gt;("a", 2));
+        nums.add(new Tuple2&lt;&gt;("a", 3));
+        nums.add(new Tuple2&lt;&gt;("a", 4));
+        JavaRDD&lt;Tuple2&lt;String, Integer&gt;&gt; rdd = sc.parallelize(nums, 2);
+
+        JavaPairRDD&lt;String, Integer&gt; mapRDD = rdd.mapToPair(kv -&gt; {
+            System.out.println("*************");
+            return kv;
+        });
+
+        mapRDD.cache();
+
+        JavaPairRDD&lt;String, Integer&gt; wordCountRDD = mapRDD.reduceByKey(Integer::sum);
+
+        wordCountRDD.collect();
+        System.out.println("计算1结束");
+        System.out.println("############################");
+
+        JavaPairRDD&lt;String, Iterable&lt;Integer&gt;&gt; groupRDD = mapRDD.groupByKey();
+        groupRDD.collect();
+        System.out.println("计算2结束");
+
+        // 4. 关闭sc
+        sc.stop();
+
+    }
+}
+</code></pre>
+<pre><code>*************
+*************
+*************
+*************
+计算1结束
+############################
+计算2结束
+</code></pre>
+<p>cache其实是把数据保存到内存中，所以会受到内存大小的影响</p>
+<h3 id="persistfile落盘"><a class="header" href="#persistfile落盘">Persist（File，落盘）</a></h3>
+<p>使用<code>mapRDD.persist()</code>，传参<code>StorageLevel</code></p>
+<p>例如<code>mapRDD.persist(StorageLevel.MEMORY_ONLY());</code>和<code>mapRDD.cache();</code>等同</p>
+<p>使用<code>mapRDD.unpersist();</code>释放缓存</p>
+<pre><code class="language-java">@DeveloperApi  
+public static StorageLevel fromString(final String s) {  
+    return StorageLevel$.MODULE$.fromString(s);  
+}  
+  
+public static StorageLevel OFF_HEAP() {  
+    return StorageLevel$.MODULE$.OFF_HEAP();  
+}  
+  
+public static StorageLevel MEMORY_AND_DISK_SER_2() {  
+    return StorageLevel$.MODULE$.MEMORY_AND_DISK_SER_2();  
+}  
+  
+public static StorageLevel MEMORY_AND_DISK_SER() {  
+    return StorageLevel$.MODULE$.MEMORY_AND_DISK_SER();  
+}  
+  
+public static StorageLevel MEMORY_AND_DISK_2() {  
+    return StorageLevel$.MODULE$.MEMORY_AND_DISK_2();  
+}  
+  
+public static StorageLevel MEMORY_AND_DISK() {  
+    return StorageLevel$.MODULE$.MEMORY_AND_DISK();  
+}  
+  
+public static StorageLevel MEMORY_ONLY_SER_2() {  
+    return StorageLevel$.MODULE$.MEMORY_ONLY_SER_2();  
+}  
+  
+public static StorageLevel MEMORY_ONLY_SER() {  
+    return StorageLevel$.MODULE$.MEMORY_ONLY_SER();  
+}  
+  
+public static StorageLevel MEMORY_ONLY_2() {  
+    return StorageLevel$.MODULE$.MEMORY_ONLY_2();  
+}  
+  
+public static StorageLevel MEMORY_ONLY() {  
+    return StorageLevel$.MODULE$.MEMORY_ONLY();  
+}  
+  
+public static StorageLevel DISK_ONLY_3() {  
+    return StorageLevel$.MODULE$.DISK_ONLY_3();  
+}  
+  
+public static StorageLevel DISK_ONLY_2() {  
+    return StorageLevel$.MODULE$.DISK_ONLY_2();  
+}  
+  
+public static StorageLevel DISK_ONLY() {  
+    return StorageLevel$.MODULE$.DISK_ONLY();  
+}  
+  
+public static StorageLevel NONE() {  
+    return StorageLevel$.MODULE$.NONE();  
+}
+</code></pre>
+<p>SER表示将数据序列化之后再保存，2表示备份份数</p>
+<h3 id="checkpoint多个进程共享数据"><a class="header" href="#checkpoint多个进程共享数据">checkpoint（多个进程共享数据）</a></h3>
+<p>Spark的持久化操作只对当前应用程序有效，其他应用程序无法访问</p>
+<p>使用HDFS生成中间件（检查点）</p>
+<p>执行<code>mapRDD.checkpoint();</code></p>
+<p>需要设定检查点目录，推荐使用HDFS共享文件系统，也可以使用本地文件路径</p>
+<p>执行<code>sc.setCheckpointDir();</code></p>
+<pre><code class="language-java">package com.zzw.bigdata.spark.rdd.dep;  
+  
+import org.apache.spark.SparkConf;  
+import org.apache.spark.api.java.JavaPairRDD;  
+import org.apache.spark.api.java.JavaRDD;  
+import org.apache.spark.api.java.JavaSparkContext;  
+import org.apache.spark.storage.StorageLevel;  
+import scala.Tuple2;  
+  
+import java.util.ArrayList;  
+import java.util.List;  
+  
+public class Spark03_Dep {  
+    public static void main(String[] args) throws InterruptedException {  
+        // 1.创建配置对象  
+        SparkConf conf = new SparkConf();  
+        conf.setMaster("local[2]");  
+        conf.setAppName("sparkCore");  
+  
+        // 2. 创建sparkContext  
+        JavaSparkContext sc = new JavaSparkContext(conf);  
+        sc.setCheckpointDir("D:\\Documents\\items\\BigData\\BigDataCode\\spark\\src\\main\\resources\\checkpoint");  
+  
+        // 3. 编写代码  
+        List&lt;Tuple2&lt;String, Integer&gt;&gt; nums = new ArrayList&lt;&gt;();  
+        nums.add(new Tuple2&lt;&gt;("a", 1));  
+        nums.add(new Tuple2&lt;&gt;("a", 2));  
+        nums.add(new Tuple2&lt;&gt;("a", 3));  
+        nums.add(new Tuple2&lt;&gt;("a", 4));  
+        JavaRDD&lt;Tuple2&lt;String, Integer&gt;&gt; rdd = sc.parallelize(nums, 2);  
+  
+        JavaPairRDD&lt;String, Integer&gt; mapRDD = rdd.mapToPair(kv -&gt; {  
+            System.out.println("*************");  
+            return kv;  
+        });  
+  
+        //mapRDD.cache();  
+        //mapRDD.persist(StorageLevel.MEMORY_ONLY());        mapRDD.checkpoint();  
+  
+        JavaPairRDD&lt;String, Integer&gt; wordCountRDD = mapRDD.reduceByKey(Integer::sum);  
+  
+        wordCountRDD.collect();  
+        System.out.println("计算1结束");  
+        System.out.println("############################");  
+  
+        JavaPairRDD&lt;String, Iterable&lt;Integer&gt;&gt; groupRDD = mapRDD.groupByKey();  
+        groupRDD.collect();  
+        System.out.println("计算2结束");  
+  
+        // 4. 关闭sc  
+        sc.stop();  
+  
+    }  
+}
+</code></pre>
+<pre><code>*************
+*************
+*************
+*************
+*************
+*************
+*************
+*************
+计算1结束
+############################
+计算2结束
+</code></pre>
+<p>检查点操作目的是希望RDD结果长时间的保存，所以需要保证数据的安全，会从头再跑一遍，性能比较低。</p>
+<p>上面共有八行星号</p>
+<p>为了提高效率，Spark推荐再检查点之前，执行cache方法，将数据缓存。</p>
+<pre><code class="language-java">mapRDD.cache();  
+mapRDD.checkpoint();
+</code></pre>
+<pre><code>*************
+*************
+*************
+*************
+计算1结束
+############################
+计算2结束
+</code></pre>
+<h3 id="shuffle算子的持久化"><a class="header" href="#shuffle算子的持久化">shuffle算子的持久化</a></h3>
+<p>cache方法会在血缘关系中增加依赖关系</p>
+<p>checkpoint方法切断（改变）血缘关系</p>
+<pre><code class="language-java">package com.zzw.bigdata.spark.rdd.dep;  
+  
+import org.apache.spark.SparkConf;  
+import org.apache.spark.api.java.JavaPairRDD;  
+import org.apache.spark.api.java.JavaRDD;  
+import org.apache.spark.api.java.JavaSparkContext;  
+import org.apache.spark.storage.StorageLevel;  
+import scala.Tuple2;  
+  
+import java.util.ArrayList;  
+import java.util.List;  
+  
+public class Spark03_Dep {  
+    public static void main(String[] args) throws InterruptedException {  
+        // 1.创建配置对象  
+        SparkConf conf = new SparkConf();  
+        conf.setMaster("local[2]");  
+        conf.setAppName("sparkCore");  
+  
+        // 2. 创建sparkContext  
+        JavaSparkContext sc = new JavaSparkContext(conf);  
+        sc.setCheckpointDir("D:\\Documents\\items\\BigData\\BigDataCode\\spark\\src\\main\\resources\\checkpoint");  
+  
+        // 3. 编写代码  
+        List&lt;Tuple2&lt;String, Integer&gt;&gt; nums = new ArrayList&lt;&gt;();  
+        nums.add(new Tuple2&lt;&gt;("a", 1));  
+        nums.add(new Tuple2&lt;&gt;("a", 2));  
+        nums.add(new Tuple2&lt;&gt;("a", 3));  
+        nums.add(new Tuple2&lt;&gt;("a", 4));  
+        JavaRDD&lt;Tuple2&lt;String, Integer&gt;&gt; rdd = sc.parallelize(nums, 2);  
+  
+        JavaPairRDD&lt;String, Integer&gt; mapRDD = rdd.mapToPair(kv -&gt; {  
+            return kv;  
+        });  
+  
+        mapRDD.cache();  
+        //mapRDD.persist(StorageLevel.MEMORY_ONLY());  
+        //mapRDD.checkpoint();  
+        JavaPairRDD&lt;String, Integer&gt; wordCountRDD = mapRDD.reduceByKey(Integer::sum);  
+        System.out.println(wordCountRDD.toDebugString());  
+        System.out.println("############################");  
+  
+        wordCountRDD.collect();  
+        System.out.println(wordCountRDD.toDebugString());  
+  
+        // 4. 关闭sc  
+        sc.stop();  
+  
+    }  
+}
+</code></pre>
+<pre><code>(2) ShuffledRDD[2] at reduceByKey at Spark03_Dep.java:40 []
+ +-(2) MapPartitionsRDD[1] at mapToPair at Spark03_Dep.java:32 []
+    |  ParallelCollectionRDD[0] at parallelize at Spark03_Dep.java:30 []
+############################
+(2) ShuffledRDD[2] at reduceByKey at Spark03_Dep.java:40 []
+ +-(2) MapPartitionsRDD[1] at mapToPair at Spark03_Dep.java:32 []
+    |      CachedPartitions: 2; MemorySize: 304.0 B; DiskSize: 0.0 B
+    |  ParallelCollectionRDD[0] at parallelize at Spark03_Dep.java:30 []
+
+</code></pre>
+<pre><code>(2) ShuffledRDD[2] at reduceByKey at Spark03_Dep.java:40 []
+ +-(2) MapPartitionsRDD[1] at mapToPair at Spark03_Dep.java:32 []
+    |  ParallelCollectionRDD[0] at parallelize at Spark03_Dep.java:30 []
+############################
+(2) ShuffledRDD[2] at reduceByKey at Spark03_Dep.java:40 []
+ +-(2) MapPartitionsRDD[1] at mapToPair at Spark03_Dep.java:32 []
+    |  ReliableCheckpointRDD[3] at collect at Spark03_Dep.java:44 []
+</code></pre>
+<p>cache可能丢失，而checkpoint共享</p>
+<p>所有的shuffle操作性能是非常低，所以Spark为了提升shuffle算子的性能，每个shuffle算子都是自动含有缓存如果重复调用相同规则的shuffle算子，那么第二次shuffle算子不会有shuffle操作.</p>
+<h2 id="分区器"><a class="header" href="#分区器">分区器</a></h2>
+<p>reduceBySum 先分区内求和，然后分区间求和</p>
+<p>数据分区的规则</p>
+<p>计算后数据所在的分区是通过Spark的内部计算（分区）完成，尽可能让数据均衡（散列）一些，但是不是平均分。</p>
+<p>reduceByKey方法需要传递两个参数</p>
+<p>1.第一个参数表示数据分区的规则，参数可以不用传递，使用时，会使用默认值（默认分区规则Hashpartitioner）</p>
+<p>2.第二个参数表示数据聚合的逻辑</p>
+<p>HashPartitioner中有个方法getPartition</p>
+<p>getPartition需要传递一个参数Key，然后方法需要返回一个值，表示分区编号，分区编号从0开始。</p>
+<pre><code class="language-scala">val rawMod = x % mod;
+</code></pre>
+<p>逻辑：<code>分区编号&lt;=Key.hashCode%partNum（哈希取余）</code></p>
+<h3 id="自定义分区器"><a class="header" href="#自定义分区器">自定义分区器</a></h3>
+<p>自定义分区器流程：</p>
+<ol>
+<li>创建自定义类</li>
+<li>继承抽象类Partitioner</li>
+<li>重写方法（2+2)Partitioner(2)+0bject(2)</li>
+<li>构建对象，在算子中使用</li>
+</ol>
+<pre><code class="language-java">import org.apache.spark.Partitioner;  
+import org.apache.spark.SparkConf;  
+import org.apache.spark.api.java.JavaPairRDD;  
+import org.apache.spark.api.java.JavaRDD;  
+import org.apache.spark.api.java.JavaSparkContext;  
+import scala.Tuple2;  
+  
+import java.util.ArrayList;  
+import java.util.List;  
+  
+public class Spark04_Partitioner {  
+    public static void main(String[] args) throws InterruptedException {  
+        // 1.创建配置对象  
+        SparkConf conf = new SparkConf();  
+        conf.setMaster("local[2]");  
+        conf.setAppName("sparkCore");  
+  
+        // 2. 创建sparkContext  
+        JavaSparkContext sc = new JavaSparkContext(conf);  
+  
+        // 3. 编写代码  
+        List&lt;Tuple2&lt;String, Integer&gt;&gt; nums = new ArrayList&lt;&gt;();  
+        nums.add(new Tuple2&lt;&gt;("nba", 1));  
+        nums.add(new Tuple2&lt;&gt;("wnba", 2));  
+        nums.add(new Tuple2&lt;&gt;("nba", 3));  
+        nums.add(new Tuple2&lt;&gt;("cba", 4));  
+        JavaRDD&lt;Tuple2&lt;String, Integer&gt;&gt; rdd = sc.parallelize(nums, 2);  
+  
+        JavaPairRDD&lt;String, Integer&gt; mapRDD = rdd.mapToPair(kv -&gt; {  
+            return kv;  
+        });  
+  
+        JavaPairRDD&lt;String, Integer&gt; wordCountRDD = mapRDD.reduceByKey(new MyPartitioner(), Integer::sum);  
+  
+        wordCountRDD.saveAsTextFile("output");  
+  
+        // 4. 关闭sc  
+        sc.stop();  
+  
+    }  
+}  
+  
+class MyPartitioner extends Partitioner {  
+    @Override  
+    public int numPartitions() {  
+        return 3;  
+    }  
+  
+    @Override  
+    public int getPartition(Object key) {  
+        if(key.equals("nba")){  
+            return 0;  
+        }else if(key.equals("wnba")){  
+            return 1;  
+        }else{  
+            return 2;  
+        }  
+    }  
+}
+</code></pre>
+<h2 id="注意事项"><a class="header" href="#注意事项">注意事项</a></h2>
+<p>没有重写分区器方法时，两次连续reduceByKey()中的shuffle不起作用</p>
+<p>则Stage数量=1+1=2</p>
+<p>Task数量= 2 + 2 = 4</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250107152628.png" alt="" /></p>
+<pre><code class="language-java">import org.apache.spark.Partitioner;
+import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaPairRDD;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
+import scala.Tuple2;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Spark04_Partitioner {
+    public static void main(String[] args) throws InterruptedException {
+        // 1.创建配置对象
+        SparkConf conf = new SparkConf();
+        conf.setMaster("local[2]");
+        conf.setAppName("sparkCore");
+
+        // 2. 创建sparkContext
+        JavaSparkContext sc = new JavaSparkContext(conf);
+
+        // 3. 编写代码
+        List&lt;Tuple2&lt;String, Integer&gt;&gt; nums = new ArrayList&lt;&gt;();
+        nums.add(new Tuple2&lt;&gt;("nba", 1));
+        nums.add(new Tuple2&lt;&gt;("wnba", 2));
+        nums.add(new Tuple2&lt;&gt;("nba", 3));
+        nums.add(new Tuple2&lt;&gt;("cba", 4));
+        JavaRDD&lt;Tuple2&lt;String, Integer&gt;&gt; rdd = sc.parallelize(nums, 2);
+
+        JavaPairRDD&lt;String, Integer&gt; mapRDD = rdd.mapToPair(kv -&gt; {
+            return kv;
+        });
+
+        JavaPairRDD&lt;String, Integer&gt; reduceRDD = mapRDD.reduceByKey(Integer::sum);
+        JavaPairRDD&lt;String, Integer&gt; reduceRDD1 = reduceRDD.reduceByKey(Integer::sum);
+
+        reduceRDD1.collect();
+
+        System.out.println("执行结束");
+
+        Thread.sleep(1000000L);
+
+        // 4. 关闭sc
+        sc.stop();
+
+    }
+}
+
+class MyPartitioner extends Partitioner {
+    private Integer numOfPartitioner;
+
+    public MyPartitioner() {}
+    public MyPartitioner(Integer numOfPartitioner) {
+        this.numOfPartitioner = numOfPartitioner;
+    }
+    @Override
+    public int numPartitions() {
+        return this.numOfPartitioner;
+    }
+
+    @Override
+    public int getPartition(Object key) {
+        if(key.equals("nba")){
+            return 0;
+        }else if(key.equals("wnba")){
+            return 1;
+        }else{
+            return 2;
+        }
+    }
+}
+</code></pre>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250107152357.png" alt="" /></p>
+<p>重写之后Stage数量=2+1=3</p>
+<p>Task数量=2 + 3  + 3=8</p>
+<pre><code class="language-java">package com.zzw.bigdata.spark.rdd.dep;
+
+import org.apache.spark.Partitioner;
+import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaPairRDD;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
+import scala.Tuple2;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Spark04_Partitioner {
+    public static void main(String[] args) throws InterruptedException {
+        // 1.创建配置对象
+        SparkConf conf = new SparkConf();
+        conf.setMaster("local[2]");
+        conf.setAppName("sparkCore");
+
+        // 2. 创建sparkContext
+        JavaSparkContext sc = new JavaSparkContext(conf);
+
+        // 3. 编写代码
+        List&lt;Tuple2&lt;String, Integer&gt;&gt; nums = new ArrayList&lt;&gt;();
+        nums.add(new Tuple2&lt;&gt;("nba", 1));
+        nums.add(new Tuple2&lt;&gt;("wnba", 2));
+        nums.add(new Tuple2&lt;&gt;("nba", 3));
+        nums.add(new Tuple2&lt;&gt;("cba", 4));
+        JavaRDD&lt;Tuple2&lt;String, Integer&gt;&gt; rdd = sc.parallelize(nums, 2);
+
+        JavaPairRDD&lt;String, Integer&gt; mapRDD = rdd.mapToPair(kv -&gt; {
+            return kv;
+        });
+
+        JavaPairRDD&lt;String, Integer&gt; reduceRDD = mapRDD.reduceByKey(new MyPartitioner(3), Integer::sum);
+        JavaPairRDD&lt;String, Integer&gt; reduceRDD1 = reduceRDD.reduceByKey(new MyPartitioner(3), Integer::sum);
+
+        reduceRDD1.collect();
+
+        System.out.println("执行结束");
+
+        Thread.sleep(1000000L);
+
+        // 4. 关闭sc
+        sc.stop();
+
+    }
+}
+
+class MyPartitioner extends Partitioner {
+    private Integer numOfPartitioner;
+
+    public MyPartitioner() {}
+    public MyPartitioner(Integer numOfPartitioner) {
+        this.numOfPartitioner = numOfPartitioner;
+    }
+    @Override
+    public int numPartitions() {
+        return this.numOfPartitioner;
+    }
+
+    @Override
+    public int getPartition(Object key) {
+        if(key.equals("nba")){
+            return 0;
+        }else if(key.equals("wnba")){
+            return 1;
+        }else{
+            return 2;
+        }
+    }
+}
+</code></pre>
+<p>解释：</p>
+<p><code>PairRDDFunctions.scala</code></p>
+<pre><code class="language-scala">if(self.partitioner == Some(partitioner)){
+	self.mapPartitions( iter =&gt; {
+	val context = TaskContext.get()
+	new InterruptibleIterator(context，aggregator.combineValuesByKey(iter，context))}，preservesPartitioning = true)
+}else{
+	new ShuffledRDD[K，V，C](self，partitioner)
+	.setSerializer(serializer)
+	.setAggregator(aggregator)
+	.setMapSideCombine(mapSideCombine)
+	}
+}
+</code></pre>
+<p>判断分区器是否相同<code>self.partitioner == Some(partitioner)</code></p>
+<p>要使两次连续reduceByKey()不影响任务数量则需要重写hashcode()和equals()方法</p>
+<pre><code class="language-java">import org.apache.spark.Partitioner;  
+import org.apache.spark.SparkConf;  
+import org.apache.spark.api.java.JavaPairRDD;  
+import org.apache.spark.api.java.JavaRDD;  
+import org.apache.spark.api.java.JavaSparkContext;  
+import scala.Tuple2;  
+  
+import java.util.ArrayList;  
+import java.util.List;  
+  
+public class Spark04_Partitioner {  
+    public static void main(String[] args) throws InterruptedException {  
+        // 1.创建配置对象  
+        SparkConf conf = new SparkConf();  
+        conf.setMaster("local[2]");  
+        conf.setAppName("sparkCore");  
+  
+        // 2. 创建sparkContext  
+        JavaSparkContext sc = new JavaSparkContext(conf);  
+  
+        // 3. 编写代码  
+        List&lt;Tuple2&lt;String, Integer&gt;&gt; nums = new ArrayList&lt;&gt;();  
+        nums.add(new Tuple2&lt;&gt;("nba", 1));  
+        nums.add(new Tuple2&lt;&gt;("wnba", 2));  
+        nums.add(new Tuple2&lt;&gt;("nba", 3));  
+        nums.add(new Tuple2&lt;&gt;("cba", 4));  
+        JavaRDD&lt;Tuple2&lt;String, Integer&gt;&gt; rdd = sc.parallelize(nums, 2);  
+  
+        JavaPairRDD&lt;String, Integer&gt; mapRDD = rdd.mapToPair(kv -&gt; {  
+            return kv;  
+        });  
+  
+        JavaPairRDD&lt;String, Integer&gt; reduceRDD = mapRDD.reduceByKey(new MyPartitioner(3), Integer::sum);  
+        JavaPairRDD&lt;String, Integer&gt; reduceRDD1 = reduceRDD.reduceByKey(new MyPartitioner(3), Integer::sum);  
+  
+        reduceRDD1.collect();  
+  
+        System.out.println("执行结束");  
+  
+        Thread.sleep(1000000L);  
+  
+        // 4. 关闭sc  
+        sc.stop();  
+  
+    }  
+}  
+  
+class MyPartitioner extends Partitioner {  
+    private Integer numOfPartitioner;  
+  
+    public MyPartitioner() {}  
+    public MyPartitioner(Integer numOfPartitioner) {  
+        this.numOfPartitioner = numOfPartitioner;  
+    }  
+    @Override  
+    public int numPartitions() {  
+        return this.numOfPartitioner;  
+    }  
+  
+    @Override  
+    public int getPartition(Object key) {  
+        if(key.equals("nba")){  
+            return 0;  
+        }else if(key.equals("wnba")){  
+            return 1;  
+        }else{  
+            return 2;  
+        }  
+    }  
+  
+    @Override  
+    public int hashCode() {  
+        return this.numOfPartitioner.hashCode();  
+    }  
+  
+    @Override  
+    public boolean equals(Object obj) {  
+        if(obj instanceof MyPartitioner){  
+            return ((MyPartitioner)obj).numOfPartitioner.equals(this.numOfPartitioner);  
+        }else{  
+            return false;  
+        }  
+    }  
+}
+</code></pre>
+<h2 id="rdd的局限性两个例子和广播变量"><a class="header" href="#rdd的局限性两个例子和广播变量">RDD的局限性（两个例子）和广播变量</a></h2>
+<h3 id="为什么同时使用collect和foreach"><a class="header" href="#为什么同时使用collect和foreach">为什么同时使用collect()和forEach()？</a></h3>
+<p>RDD在foreach循环时，逻辑代码和操作全部都是在Executor端完成的，那么结果不会拉取回到Driver端</p>
+<p>RDD无法实现数据拉取操作</p>
+<p>collect</p>
+<p>如果Executor端使用了Driver端数据，那么需要从Driver端将数据拉取到Executor端数据拉取的单位是Task（任务）</p>
+<p>如果数据不是以Task为传输单位，而是以Executor为单位进行传输，那么性能会提高</p>
+<p>RDD不能以Executor为单位进行数据传输</p>
+<h3 id="广播变量"><a class="header" href="#广播变量">广播变量</a></h3>
+<p>Spark需要采用特殊的数据模型实现数据传输：广播变量</p>
+<p>默认数据传输以Task为单位进行传输，如果想要以Executor为单位传输，那么需要进行包装（封装）</p>
+<p><code>final Broadcast&lt;List&lt;String&gt;&gt; broadcast = jsc.broadcast(okList);</code></p>
+<pre><code class="language-java">import org.apache.spark.SparkConf;  
+import org.apache.spark.api.java.JavaPairRDD;  
+import org.apache.spark.api.java.JavaRDD;  
+import org.apache.spark.api.java.JavaSparkContext;  
+import org.apache.spark.broadcast.Broadcast;  
+  
+import java.util.Arrays;  
+import java.util.List;  
+  
+public class Spark_Broadcast {  
+    public static void main(String[] args) throws InterruptedException {  
+        // 1.创建配置对象  
+        SparkConf conf = new SparkConf();  
+        conf.setMaster("local[2]");  
+        conf.setAppName("sparkCore");  
+  
+        // 2. 创建sparkContext  
+        JavaSparkContext sc = new JavaSparkContext(conf);  
+  
+        // 3. 编写代码  
+        JavaRDD&lt;String&gt; rdd = sc.parallelize(Arrays.asList("hadoop", "spark", "flink", "hive", "hbase"));  
+  
+        List&lt;String&gt; list = Arrays.asList("hadoop", "spark", "flink");  
+  
+        Broadcast&lt;List&lt;String&gt;&gt; broadcast = sc.broadcast(list);  
+  
+        rdd.filter(x -&gt; broadcast.value().contains(x)).collect().forEach(System.out::println);  
+  
+        // 注意：如果broadcast的value是一个不可序列化的对象，则会报错：  
+        // java.io.NotSerializableException: org.apache.spark.sql.catalyst.expressions.UnsafeRow  
+  
+        // 4. 关闭sc  
+        sc.stop();  
+  
+    }  
+}
+</code></pre>
+<p>输出结果如下所示：</p>
+<pre><code>hadoop
+spark
+flink
+</code></pre>
+<h3 id="处理json数据"><a class="header" href="#处理json数据">处理JSON数据</a></h3>
+<p>数据格式：JSON</p>
+<ol>
+<li>每一行就是一个JSON格式的数据，而且表示一个对象，对象内容必须包含在中</li>
+<li>对象中的多个属性必须采用逗号隔开</li>
+<li>每一个属性，属性名和属性值之间采用冒号隔开</li>
+<li>属性名必须采用双引号声明，属性值如果为字符串类型，也需要采用双引号包含</li>
+</ol>
+<p>重点关注RDD的功能和方法，数据格式不是我们的学习重点。</p>
+<p>在特殊场景中，Spark对数据处理的逻辑进行了封装来简化开发。</p>
+<p>SparkSQL就是对RDD的封装</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../Spark/Spark概述.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../Spark/SparkRDD.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../Spark/Spark概述.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../Spark/SparkRDD.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

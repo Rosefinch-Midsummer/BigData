@@ -1,0 +1,1065 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Spark数据源 - Big Data</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Big Data</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="spark数据源"><a class="header" href="#spark数据源">Spark数据源</a></h1>
+<ul>
+<li><a href="#spark-%E6%95%B0%E6%8D%AE%E6%BA%90%E6%A6%82%E8%A7%88">Spark 数据源概览</a>
+<ul>
+<li><a href="#1-%E5%86%85%E5%AD%98%E6%95%B0%E6%8D%AE">1. 内存数据</a></li>
+<li><a href="#2-%E6%96%87%E4%BB%B6%E6%95%B0%E6%8D%AE">2. 文件数据</a></li>
+<li><a href="#3-json-%E6%95%B0%E6%8D%AE">3. JSON 数据</a></li>
+<li><a href="#4-parquet-%E6%96%87%E4%BB%B6">4. Parquet 文件</a></li>
+<li><a href="#5-hive-%E8%A1%A8">5. Hive 表</a></li>
+<li><a href="#6-jdbc-%E6%95%B0%E6%8D%AE%E5%BA%93">6. JDBC 数据库</a></li>
+<li><a href="#7-kafka">7. Kafka</a></li>
+<li><a href="#8-%E5%85%B6%E4%BB%96%E6%95%B0%E6%8D%AE%E6%BA%90">8. 其他数据源</a></li>
+<li><a href="#%E8%AF%BB%E5%8F%96%E6%95%B0%E6%8D%AE%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81%E6%80%BB%E7%BB%93">读取数据示例代码总结</a></li>
+<li><a href="#%E6%80%BB%E7%BB%93">总结</a></li>
+</ul>
+</li>
+<li><a href="#%E9%99%84%E5%BD%95">附录</a>
+<ul>
+<li><a href="#csv%E6%96%87%E4%BB%B6">CSV文件</a>
+<ul>
+<li><a href="#read">read</a></li>
+<li><a href="#write">write</a></li>
+</ul>
+</li>
+<li><a href="#json%E6%96%87%E4%BB%B6">JSON文件</a>
+<ul>
+<li><a href="#read-1">read</a></li>
+<li><a href="#json%E5%92%8Ccsv%E7%9B%B8%E4%BA%92%E8%BD%AC%E6%8D%A2">JSON和CSV相互转换</a></li>
+<li><a href="#%E8%A1%8C%E5%BC%8F%E5%AD%98%E5%82%A8%E7%9A%84%E6%96%87%E4%BB%B6primary-key">行式存储的文件（Primary Key）</a></li>
+<li><a href="#%E5%88%97%E5%BC%8F%E5%AD%98%E5%82%A8%E7%9A%84%E6%96%87%E4%BB%B6">列式存储的文件</a></li>
+</ul>
+</li>
+<li><a href="#parquet%E6%96%87%E4%BB%B6">Parquet文件</a></li>
+<li><a href="#mysqljdbc">MySQL&amp;JDBC</a></li>
+<li><a href="#hive">HIVE</a></li>
+</ul>
+</li>
+</ul>
+<h1 id="spark-数据源概览"><a class="header" href="#spark-数据源概览">Spark 数据源概览</a></h1>
+<p>Spark 是一个强大的分布式计算框架，能够从多种数据源读取、处理和写入数据。下面详细介绍 Spark 支持的数据源以及相关的示例代码。</p>
+<h2 id="1-内存数据"><a class="header" href="#1-内存数据">1. 内存数据</a></h2>
+<ul>
+<li><strong>RDD</strong>（Resilient Distributed Dataset）：Spark 的基础数据结构，可以从已有的集合（如 List、Array、等）创建。</li>
+<li><strong>DataFrame</strong> 和 <strong>Dataset</strong>：更高级的抽象和结构化的数据表示。</li>
+</ul>
+<h2 id="2-文件数据"><a class="header" href="#2-文件数据">2. 文件数据</a></h2>
+<ul>
+<li>
+<p><strong>文本文件</strong>：Spark 能够读取文本文件（如 CSV、JSON、Parquet 等），通常使用 SparkContext 的 <code>textFile</code> 或 <code>spark.read</code> 方法。</p>
+<p>示例代码：</p>
+<pre><code class="language-scala">// 读取文本文件
+val textRDD = spark.sparkContext.textFile("path/to/textfile.txt")
+val textDF = spark.read.text("path/to/textfile.txt")
+</code></pre>
+</li>
+</ul>
+<h2 id="3-json-数据"><a class="header" href="#3-json-数据">3. JSON 数据</a></h2>
+<ul>
+<li>
+<p>Spark 支持读取 JSON 格式的数据，使用 DataFrame API 进行加载。</p>
+<p>示例代码：</p>
+<pre><code class="language-scala">// 读取 JSON 文件
+val jsonDF = spark.read.json("path/to/data.json")
+jsonDF.show()
+</code></pre>
+</li>
+</ul>
+<h2 id="4-parquet-文件"><a class="header" href="#4-parquet-文件">4. Parquet 文件</a></h2>
+<ul>
+<li>
+<p>Parquet 是一种列式存储格式，具有高压缩率和高性能，适合与 Spark 一起使用。</p>
+<p>示例代码：</p>
+<pre><code class="language-scala">// 读取 Parquet 文件
+val parquetDF = spark.read.parquet("path/to/data.parquet")
+parquetDF.show()
+</code></pre>
+</li>
+</ul>
+<h2 id="5-hive-表"><a class="header" href="#5-hive-表">5. Hive 表</a></h2>
+<ul>
+<li>
+<p>Spark 能够直接访问存储在 Hive 的表，需要配置 Hive 支持。</p>
+<p>示例代码：</p>
+<pre><code class="language-scala">// 读取 Hive 表
+spark.sql("USE database_name")
+val hiveDF = spark.sql("SELECT * FROM table_name")
+hiveDF.show()
+</code></pre>
+</li>
+</ul>
+<h2 id="6-jdbc-数据库"><a class="header" href="#6-jdbc-数据库">6. JDBC 数据库</a></h2>
+<ul>
+<li>
+<p>Spark 支持通过 JDBC 从关系型数据库（如 MySQL、PostgreSQL、Oracle 等）读取和写入数据。</p>
+<p>示例代码：</p>
+<pre><code class="language-scala">// JDBC 读取数据
+val jdbcDF = spark.read
+  .format("jdbc")
+  .option("url", "jdbc:mysql://hostname:port/dbname")
+  .option("dbtable", "table_name")
+  .option("user", "username")
+  .option("password", "password")
+  .load()
+
+jdbcDF.show()
+</code></pre>
+</li>
+</ul>
+<h2 id="7-kafka"><a class="header" href="#7-kafka">7. Kafka</a></h2>
+<ul>
+<li>
+<p>Spark Streaming 可以与 Kafka 集成，读取实时流数据。</p>
+<p>示例代码：</p>
+<pre><code class="language-scala">// 从 Kafka 读取数据
+val kafkaDF = spark.read
+  .format("kafka")
+  .option("kafka.bootstrap.servers", "localhost:9092")
+  .option("subscribe", "topic_name")
+  .load()
+
+kafkaDF.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)").show()
+</code></pre>
+</li>
+</ul>
+<h2 id="8-其他数据源"><a class="header" href="#8-其他数据源">8. 其他数据源</a></h2>
+<p>Spark 还支持其他多种数据源，如：</p>
+<ul>
+<li>ORC 文件</li>
+<li>Avro 文件</li>
+<li>Cassandra 数据库</li>
+<li>Redis</li>
+<li>HBase</li>
+<li>以及其他可以通过 Spark 的 DataSource API 进行扩展的源</li>
+</ul>
+<h2 id="读取数据示例代码总结"><a class="header" href="#读取数据示例代码总结">读取数据示例代码总结</a></h2>
+<p>以下示例代码整合了不同数据源的读取方法：</p>
+<pre><code class="language-scala">import org.apache.spark.sql.SparkSession
+
+val spark = SparkSession.builder()
+  .appName("Spark Data Sources Example")
+  .getOrCreate()
+
+// 1. 从文本文件读取
+val textDF = spark.read.text("path/to/textfile.txt")
+textDF.show()
+
+// 2. 从 JSON 文件读取
+val jsonDF = spark.read.json("path/to/data.json")
+jsonDF.show()
+
+// 3. 从 Parquet 文件读取
+val parquetDF = spark.read.parquet("path/to/data.parquet")
+parquetDF.show()
+
+// 4. 从 Hive 表读取
+spark.sql("USE database_name")
+val hiveDF = spark.sql("SELECT * FROM table_name")
+hiveDF.show()
+
+// 5. 从 JDBC 数据库读取
+val jdbcDF = spark.read
+  .format("jdbc")
+  .option("url", "jdbc:mysql://hostname:port/dbname")
+  .option("dbtable", "table_name")
+  .option("user", "username")
+  .option("password", "password")
+  .load()
+jdbcDF.show()
+
+// 6. 从 Kafka 读取
+val kafkaDF = spark.read
+  .format("kafka")
+  .option("kafka.bootstrap.servers", "localhost:9092")
+  .option("subscribe", "topic_name")
+  .load()
+kafkaDF.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)").show()
+
+spark.stop()
+</code></pre>
+<h2 id="总结"><a class="header" href="#总结">总结</a></h2>
+<p>Spark 提供强大的数据源连接能力，涵盖了从传统的文件读取到实时流处理的广泛场景。使用 Spark 的 DataFrame 和 SQL API，可以方便地对数据进行处理和分析。</p>
+<h1 id="附录"><a class="header" href="#附录">附录</a></h1>
+<h2 id="csv文件"><a class="header" href="#csv文件">CSV文件</a></h2>
+<p>CSV文件就是将数据采用逗号分隔的数据文件。</p>
+<h3 id="read"><a class="header" href="#read">read</a></h3>
+<p>读取示例代码：</p>
+<pre><code class="language-java">final Dataset&lt;Row&gt; csv= sparkSession.read()
+.option("header"，"true")//配置
+.option("sep","_")// 配置：It=&gt;tsv，csv.csv(path:"data/user.csv");
+.csv.show();
+</code></pre>
+<pre><code class="language-java">import org.apache.spark.sql.Dataset;  
+import org.apache.spark.sql.Row;  
+import org.apache.spark.sql.SparkSession;  
+  
+public class SQL03_SQL_Source_CSV {  
+    public static void main(String[] args) {  
+        // 创建SparkSession  
+        SparkSession sparkSession = SparkSession.builder()  
+                .appName("SQL01_Model")  
+                .master("local[2]")  
+                .getOrCreate();  
+  
+        // 读取CSV文件  
+        Dataset&lt;Row&gt; csvDF = sparkSession.read()  
+                .format("csv")  
+                .option("header", "true").option("sep", ",")
+                .csv("D:\\Documents\\items\\BigData\\BigDataCode\\spark\\src\\main\\resources\\data\\user.csv");  
+  
+        // 显示数据  
+        csvDF.show();  
+  
+  
+        sparkSession.stop();  
+  
+    }  
+}
+</code></pre>
+<p>输出结果如下所示：</p>
+<pre><code>+---+----+---+
+| id|name|age|
++---+----+---+
+|  1|John| 25|
+|  2|Jane| 30|
+|  3| Bob| 40|
++---+----+---+
+</code></pre>
+<h3 id="write"><a class="header" href="#write">write</a></h3>
+<p>保存文件示例代码：</p>
+<pre><code class="language-java">csvDF.write().csv("output");
+</code></pre>
+<p>含有分区文件<code>part-00000-7122d0ef-0e2e-4507-a9cd-74b297e635f2-c000.csv</code>的目录</p>
+<p>设置mode，实现覆盖写或是追加，相关源代码如下所示：</p>
+<pre><code class="language-scala">public DataFrameWriter&lt;T&gt; mode(final String saveMode) {
+        String var4 = saveMode.toLowerCase(Locale.ROOT);
+        if ("overwrite".equals(var4)) {
+            return this.mode(SaveMode.Overwrite);
+        } else if ("append".equals(var4)) {
+            return this.mode(SaveMode.Append);
+        } else if ("ignore".equals(var4)) {
+            return this.mode(SaveMode.Ignore);
+        } else if ("error".equals(var4) ? true : ("errorifexists".equals(var4) ? true : "default".equals(var4))) {
+            return this.mode(SaveMode.ErrorIfExists);
+        } else {
+            throw new IllegalArgumentException((new StringBuilder(114)).append("Unknown save mode: ").append(saveMode).append(". Accepted ").append("save modes are 'overwrite', 'append', 'ignore', 'error', 'errorifexists', 'default'.").toString());
+        }
+    }
+</code></pre>
+<p>完整向CSV文件写入内容的代码如下所示：</p>
+<pre><code class="language-java">import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+
+public class SQL03_SQL_Source_CSV {
+    public static void main(String[] args) {
+        // 创建SparkSession
+        SparkSession sparkSession = SparkSession.builder()
+                .appName("SQL01_Model")
+                .master("local[2]")
+                .getOrCreate();
+
+        // 读取CSV文件
+        Dataset&lt;Row&gt; csvDF = sparkSession.read()
+                .format("csv")
+                .option("header", "true")
+                .option("sep", ",")
+                .csv("D:\\Documents\\items\\BigData\\BigDataCode\\spark\\src\\main\\resources\\data\\user.csv");
+
+        // 显示数据
+        csvDF.show();
+
+        csvDF.write()
+                .format("csv")
+                .option("header", "true")
+                .mode("overwrite")
+                .csv("output");
+
+
+        sparkSession.stop();
+
+    }
+}
+</code></pre>
+<h2 id="json文件"><a class="header" href="#json文件">JSON文件</a></h2>
+<p>JSON:JavaScript ObjectNotation</p>
+<p>对象：{}</p>
+<p>数组：[]</p>
+<p>JSON文件：整个文件的数据格式符合JSON格式，不是一行数据符合JSON格式</p>
+<p>SparkSQL其实就是对SparkCoreRDD的封装。RDD读取文件采用的是Hadoop，Hadoop按行读取文件内容。SparkSQL只需要保证JSON文件中一行数据符合JSON格式即可，无需整个文件符合JSON格式。</p>
+<p>Spark基于HDFS按行读取JSON格式文件，所以使用的JSON格式要按行存储，不能保存为一个完整的JSON文件，否则读取的大部分数据都为空。相关报错信息如下所示：</p>
+<pre><code>org.apache.spark.sql.AnalysisException:
+
+SinceSpark2.3，thequeriesfromrawJsoN/csVfilesaredisallowedwhenthe referencedcolumnsonlyincludetheinternalcorruptrecord column
+(named _corrupt_record by default)
+</code></pre>
+<h3 id="read-1"><a class="header" href="#read-1">read</a></h3>
+<pre><code class="language-java">final Dataset&lt;Row&gt;json =sparkSession.read().json(path:"data/user.json"); json.show();
+</code></pre>
+<p>完整代码如下所示：</p>
+<pre><code class="language-java">import org.apache.spark.sql.Dataset;  
+import org.apache.spark.sql.Row;  
+import org.apache.spark.sql.SparkSession;  
+  
+public class SQL03_SQL_Source_JSON {  
+    public static void main(String[] args) {  
+        // 创建SparkSession  
+        SparkSession sparkSession = SparkSession.builder()  
+                .appName("SQL01_Model")  
+                .master("local[2]")  
+                .getOrCreate();  
+  
+        // 读取CSV文件  
+        Dataset&lt;Row&gt; jsonDF = sparkSession.read()  
+                .json("D:\\Documents\\items\\BigData\\BigDataCode\\spark\\src\\main\\resources\\data\\user2.json");  
+  
+        // 显示数据  
+        jsonDF.show();  
+  
+        jsonDF.write().parquet("people.parquet");  
+  
+  
+  
+        sparkSession.stop();  
+  
+    }  
+}
+</code></pre>
+<h3 id="json和csv相互转换"><a class="header" href="#json和csv相互转换">JSON和CSV相互转换</a></h3>
+<p>通过Dataset</p>
+<h3 id="行式存储的文件primary-key"><a class="header" href="#行式存储的文件primary-key">行式存储的文件（Primary Key）</a></h3>
+<p>查询快，统计慢</p>
+<h3 id="列式存储的文件"><a class="header" href="#列式存储的文件">列式存储的文件</a></h3>
+<p>查询快，统计快</p>
+<p>HBase使用列式存储</p>
+<h2 id="parquet文件"><a class="header" href="#parquet文件">Parquet文件</a></h2>
+<p>列式存储的数据自带列分割。</p>
+<p><code>part-00000-6b7cb14a-b49f-4b68-b24e-05ed6955c863-c000.snappy.parquet</code>中snappy表示压缩格式（Hadoop）</p>
+<pre><code class="language-java">import org.apache.spark.sql.Dataset;  
+import org.apache.spark.sql.Row;  
+import org.apache.spark.sql.SparkSession;  
+  
+public class SQL03_SQL_Source_Parquet {  
+    public static void main(String[] args) {  
+        // 创建SparkSession  
+        SparkSession sparkSession = SparkSession.builder()  
+                .appName("SQL01_Model")  
+                .master("local[2]")  
+                .getOrCreate();  
+  
+        // 读取CSV文件  
+        Dataset&lt;Row&gt; parquetDF = sparkSession.read()  
+                .parquet("D:\\Documents\\items\\BigData\\BigDataCode\\spark\\src\\main\\resources\\data\\user.parquet");  
+  
+        // 显示数据  
+        parquetDF.show();  
+  
+        //parquetDF.write().parquet("people.parquet");  
+  
+  
+  
+        sparkSession.stop();  
+  
+    }  
+}
+</code></pre>
+<h2 id="mysqljdbc"><a class="header" href="#mysqljdbc">MySQL&amp;JDBC</a></h2>
+<pre><code class="language-java">import org.apache.spark.sql.Dataset;  
+import org.apache.spark.sql.Row;  
+import org.apache.spark.sql.SparkSession;  
+  
+import java.util.Properties;  
+  
+public class SQL03_SQL_Source_MySQL {  
+    public static void main(String[] args) {  
+        // 创建SparkSession  
+        SparkSession sparkSession = SparkSession.builder()  
+                .appName("SQL01_Model")  
+                .master("local[2]")  
+                .getOrCreate();  
+  
+        Properties properties = new Properties();  
+        properties.setProperty("user", "root");  
+        properties.setProperty("password", "root123");  
+  
+        // 读取MySQL数据  
+        Dataset&lt;Row&gt; dataset = sparkSession.read()  
+               .jdbc("jdbc:mysql://localhost:3306/tiandi", "users", properties);  
+  
+        dataset.show();  
+		dataset.write().jdbc("jdbc:mysql://localhost:3306/tiandi", "users2", properties);
+  
+  
+        sparkSession.stop();  
+  
+    }  
+}
+</code></pre>
+<h2 id="hive"><a class="header" href="#hive">HIVE</a></h2>
+<p>SparkSQL可以采用内嵌Hive（spark开箱即用的 hive），也可以采用外部 Hive。企业开发中，通常采用外部Hive。</p>
+<p>2）拷贝 hive-site.xml到resources 目录（如果需要操作Hadoop，需要拷贝 hdfs-site.xml、 core-site.xml、 yarn-site.xml）</p>
+<pre><code class="language-xml">&lt;?xml version="1.0"?&gt;
+&lt;?xml-stylesheet type="text/xsl" href="configuration.xsl"?&gt;
+&lt;configuration&gt;
+    &lt;!--配置Hive保存元数据信息所需的 MySQL URL地址--&gt;
+    &lt;property&gt;
+        &lt;name&gt;javax.jdo.option.ConnectionURL&lt;/name&gt;
+        &lt;value&gt;jdbc:mysql://localhost:3306/metastore?useSSL=false&amp;amp;useUnicode=true&amp;amp;characterEncoding=UTF-8&amp;amp;allowPublicKeyRetrieval=true&lt;/value&gt;
+    &lt;/property&gt;
+
+    &lt;!--配置Hive连接MySQL的驱动全类名--&gt;
+    &lt;property&gt;
+        &lt;name&gt;javax.jdo.option.ConnectionDriverName&lt;/name&gt;
+        &lt;value&gt;com.mysql.cj.jdbc.Driver&lt;/value&gt;
+    &lt;/property&gt;
+
+    &lt;!--配置Hive连接MySQL的用户名 --&gt;
+    &lt;property&gt;
+        &lt;name&gt;javax.jdo.option.ConnectionUserName&lt;/name&gt;
+        &lt;value&gt;root&lt;/value&gt;
+    &lt;/property&gt;
+
+    &lt;!--配置Hive连接MySQL的密码 --&gt;
+    &lt;property&gt;
+        &lt;name&gt;javax.jdo.option.ConnectionPassword&lt;/name&gt;
+        &lt;value&gt;root123&lt;/value&gt;
+    &lt;/property&gt;
+
+    &lt;property&gt;
+        &lt;name&gt;hive.metastore.warehouse.dir&lt;/name&gt;
+        &lt;value&gt;/user/hive/warehouse&lt;/value&gt;
+    &lt;/property&gt;
+
+    &lt;property&gt;
+        &lt;name&gt;hive.metastore.schema.verification&lt;/name&gt;
+        &lt;value&gt;false&lt;/value&gt;
+    &lt;/property&gt;
+
+    &lt;property&gt;
+    &lt;name&gt;hive.server2.thrift.port&lt;/name&gt;
+    &lt;value&gt;10000&lt;/value&gt;
+    &lt;/property&gt;
+
+    &lt;property&gt;
+        &lt;name&gt;hive.server2.thrift.bind.host&lt;/name&gt;
+        &lt;value&gt;hadoop100&lt;/value&gt;
+    &lt;/property&gt;
+
+    &lt;property&gt;
+        &lt;name&gt;hive.metastore.event.db.notification.api.auth&lt;/name&gt;
+        &lt;value&gt;false&lt;/value&gt;
+    &lt;/property&gt;
+    
+    &lt;property&gt;
+        &lt;name&gt;hive.cli.print.header&lt;/name&gt;
+        &lt;value&gt;true&lt;/value&gt;
+    &lt;/property&gt;
+
+    &lt;property&gt;
+        &lt;name&gt;hive.cli.print.current.db&lt;/name&gt;
+        &lt;value&gt;true&lt;/value&gt;
+    &lt;/property&gt;
+&lt;/configuration&gt;
+
+
+</code></pre>
+<p>hive-site.xml完整配置文件内容如下所示：</p>
+<pre><code class="language-xml">&lt;configuration&gt;
+  &lt;!-- Hive元数据存储的URI --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.metastore.uris&lt;/name&gt;
+    &lt;value&gt;thrift://myhost:9083&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- Hive元数据客户端套接字超时时间（以毫秒为单位） --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.metastore.client.socket.timeout&lt;/name&gt;
+    &lt;value&gt;300&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- Hive数据仓库目录 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.metastore.warehouse.dir&lt;/name&gt;
+    &lt;value&gt;/user/hive/warehouse&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 子目录是否继承权限 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.warehouse.subdir.inherit.perms&lt;/name&gt;
+    &lt;value&gt;true&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 自动转换连接类型的Join操作 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.auto.convert.join&lt;/name&gt;
+    &lt;value&gt;true&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 自动转换连接类型的Join操作时条件不满足的最大数据量（以字节为单位） --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.auto.convert.join.noconditionaltask.size&lt;/name&gt;
+    &lt;value&gt;20971520&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 是否优化Bucket Map Join的Sorted Merge --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.optimize.bucketmapjoin.sortedmerge&lt;/name&gt;
+    &lt;value&gt;false&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- SMB Join操作缓存的行数 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.smbjoin.cache.rows&lt;/name&gt;
+    &lt;value&gt;10000&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 是否启用Hive Server2日志记录操作 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.server2.logging.operation.enabled&lt;/name&gt;
+    &lt;value&gt;true&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- Hive Server2操作日志的存储位置 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.server2.logging.operation.log.location&lt;/name&gt;
+    &lt;value&gt;/var/log/hive/operation_logs&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- MapReduce作业的Reduce任务数 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;mapred.reduce.tasks&lt;/name&gt;
+    &lt;value&gt;-1&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 每个Reduce任务的数据量（以字节为单位） --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.exec.reducers.bytes.per.reducer&lt;/name&gt;
+    &lt;value&gt;67108864&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 最大允许复制文件的大小（以字节为单位） --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.exec.copyfile.maxsize&lt;/name&gt;
+    &lt;value&gt;33554432&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 同时运行的最大Reduce任务数 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.exec.reducers.max&lt;/name&gt;
+    &lt;value&gt;1099&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- Vectorized Group By操作的检查间隔 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.vectorized.groupby.checkinterval&lt;/name&gt;
+    &lt;value&gt;4096&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- Vectorized Group By操作的Flush比例 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.vectorized.groupby.flush.percent&lt;/name&gt;
+    &lt;value&gt;0.1&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 是否使用统计信息来优化查询计划 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.compute.query.using.stats&lt;/name&gt;
+    &lt;value&gt;false&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 是否启用向量化执行引擎 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.vectorized.execution.enabled&lt;/name&gt;
+    &lt;value&gt;true&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 是否在Reduce阶段启用向量化执行 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.vectorized.execution.reduce.enabled&lt;/name&gt;
+    &lt;value&gt;true&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 是否使用向量化输入格式 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.vectorized.use.vectorized.input.format&lt;/name&gt;
+    &lt;value&gt;true&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 是否使用检查表达式的向量化执行 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.vectorized.use.checked.expressions&lt;/name&gt;
+    &lt;value&gt;true&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 是否使用向量化序列化和反序列化 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.vectorized.use.vector.serde.deserialize&lt;/name&gt;
+    &lt;value&gt;false&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 向量化适配器的使用模式 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.vectorized.adaptor.usage.mode&lt;/name&gt;
+    &lt;value&gt;chosen&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 排除的向量化输入格式列表 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.vectorized.input.format.excludes&lt;/name&gt;
+    &lt;value&gt;org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 是否合并Map输出的小文件 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.merge.mapfiles&lt;/name&gt;
+    &lt;value&gt;true&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 是否合并MapReduce输出的小文件 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.merge.mapredfiles&lt;/name&gt;
+    &lt;value&gt;false&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 是否启用CBO优化 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.cbo.enable&lt;/name&gt;
+    &lt;value&gt;false&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- Fetch任务转换级别 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.fetch.task.conversion&lt;/name&gt;
+    &lt;value&gt;minimal&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 触发Fetch任务转换的数据量阈值（以字节为单位） --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.fetch.task.conversion.threshold&lt;/name&gt;
+    &lt;value&gt;268435456&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- Limit操作的内存使用百分比 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.limit.pushdown.memory.usage&lt;/name&gt;
+    &lt;value&gt;0.1&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 是否合并Spark任务输出的小文件 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.merge.sparkfiles&lt;/name&gt;
+    &lt;value&gt;true&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 合并小文件时的平均大小（以字节为单位） --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.merge.smallfiles.avgsize&lt;/name&gt;
+    &lt;value&gt;16777216&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 每个任务合并的数据量（以字节为单位） --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.merge.size.per.task&lt;/name&gt;
+    &lt;value&gt;268435456&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 是否启用重复消除优化 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.optimize.reducededuplication&lt;/name&gt;
+    &lt;value&gt;true&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 最小Reduce任务数以启用重复消除优化 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.optimize.reducededuplication.min.reducer&lt;/name&gt;
+    &lt;value&gt;4&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 是否启用Map端聚合 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.map.aggr&lt;/name&gt;
+    &lt;value&gt;true&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- Map端聚合的哈希表内存比例 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.map.aggr.hash.percentmemory&lt;/name&gt;
+    &lt;value&gt;0.5&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 是否优化动态分区排序 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.optimize.sort.dynamic.partition&lt;/name&gt;
+    &lt;value&gt;false&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- Hive执行引擎类型（mr、tez、spark） --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.execution.engine&lt;/name&gt;
+    &lt;value&gt;mr&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- Spark Executor的内存大小 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;spark.executor.memory&lt;/name&gt;
+    &lt;value&gt;2572261785b&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- Spark Driver的内存大小 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;spark.driver.memory&lt;/name&gt;
+    &lt;value&gt;3865470566b&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 每个Spark Executor的核心数 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;spark.executor.cores&lt;/name&gt;
+    &lt;value&gt;4&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- Spark Driver的内存Overhead --&gt;
+  &lt;property&gt;
+    &lt;name&gt;spark.yarn.driver.memoryOverhead&lt;/name&gt;
+    &lt;value&gt;409m&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- Spark Executor的内存Overhead --&gt;
+  &lt;property&gt;
+    &lt;name&gt;spark.yarn.executor.memoryOverhead&lt;/name&gt;
+    &lt;value&gt;432m&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 是否启用动态资源分配 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;spark.dynamicAllocation.enabled&lt;/name&gt;
+    &lt;value&gt;true&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 动态资源分配的初始Executor数量 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;spark.dynamicAllocation.initialExecutors&lt;/name&gt;
+    &lt;value&gt;1&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 动态资源分配的最小Executor数量 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;spark.dynamicAllocation.minExecutors&lt;/name&gt;
+    &lt;value&gt;1&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 动态资源分配的最大Executor数量 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;spark.dynamicAllocation.maxExecutors&lt;/name&gt;
+    &lt;value&gt;2147483647&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 是否在Hive元数据存储中执行setugi操作 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.metastore.execute.setugi&lt;/name&gt;
+    &lt;value&gt;true&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 是否支持并发操作 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.support.concurrency&lt;/name&gt;
+    &lt;value&gt;true&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- ZooKeeper服务器列表 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.zookeeper.quorum&lt;/name&gt;
+    &lt;value&gt;myhost04,myhost03,myhost02&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- ZooKeeper客户端端口号 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.zookeeper.client.port&lt;/name&gt;
+    &lt;value&gt;2181&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- Hive使用的ZooKeeper命名空间 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.zookeeper.namespace&lt;/name&gt;
+    &lt;value&gt;hive_zookeeper_namespace_hive&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 集群委派令牌存储类 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.cluster.delegation.token.store.class&lt;/name&gt;
+    &lt;value&gt;org.apache.hadoop.hive.thrift.MemoryTokenStore&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 是否启用Hive Server2用户代理模式 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.server2.enable.doAs&lt;/name&gt;
+    &lt;value&gt;true&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 是否启用Hive元数据存储的SASL认证 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.metastore.sasl.enabled&lt;/name&gt;
+    &lt;value&gt;true&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- Hive Server2的认证方式 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.server2.authentication&lt;/name&gt;
+    &lt;value&gt;kerberos&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- Hive元数据存储的Kerberos主体名称 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.metastore.kerberos.principal&lt;/name&gt;
+    &lt;value&gt;hive/_HOST@MY.COM&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- Hive Server2的Kerberos主体名称 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.server2.authentication.kerberos.principal&lt;/name&gt;
+    &lt;value&gt;hive/_HOST@MY.COM&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 是否启用Spark Shuffle服务 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;spark.shuffle.service.enabled&lt;/name&gt;
+    &lt;value&gt;true&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 是否在没有Limit操作的OrderBy语句中执行严格检查 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.strict.checks.orderby.no.limit&lt;/name&gt;
+    &lt;value&gt;false&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 是否在没有分区过滤条件的查询中执行严格检查 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.strict.checks.no.partition.filter&lt;/name&gt;
+    &lt;value&gt;false&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 是否执行严格的类型安全性检查 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.strict.checks.type.safety&lt;/name&gt;
+    &lt;value&gt;true&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 是否执行严格的笛卡尔积检查 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.strict.checks.cartesian.product&lt;/name&gt;
+    &lt;value&gt;false&lt;/value&gt;
+  &lt;/property&gt;
+
+  &lt;!-- 是否执行严格的桶排序检查 --&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.strict.checks.bucketing&lt;/name&gt;
+    &lt;value&gt;true&lt;/value&gt;
+  &lt;/property&gt;
+&lt;/configuration&gt;
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../Spark/SparkSQL实战.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../Spark/SparkStreaming.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../Spark/SparkSQL实战.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../Spark/SparkStreaming.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

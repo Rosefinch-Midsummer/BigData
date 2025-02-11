@@ -1,0 +1,467 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>SparkCore - Big Data</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Big Data</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="spark内核"><a class="header" href="#spark内核">Spark内核</a></h1>
+<ul>
+<li><a href="#%E8%BF%90%E8%A1%8C%E6%B5%81%E7%A8%8B">运行流程</a></li>
+<li><a href="#%E6%A0%B8%E5%BF%83%E5%AF%B9%E8%B1%A1">核心对象</a></li>
+<li><a href="#%E6%A0%B8%E5%BF%83%E5%AF%B9%E8%B1%A1%E9%80%9A%E4%BF%A1%E6%B5%81%E7%A8%8Bnetty">核心对象通信流程——Netty</a></li>
+<li><a href="#task%E4%BB%BB%E5%8A%A1%E7%9A%84%E8%B0%83%E5%BA%A6%E6%89%A7%E8%A1%8C">Task任务的调度执行</a></li>
+<li><a href="#shuffle%E5%BA%95%E5%B1%82%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86">Shuffle底层的实现原理</a></li>
+<li><a href="#%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86">内存管理</a></li>
+</ul>
+<h2 id="运行流程"><a class="header" href="#运行流程">运行流程</a></h2>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250116141936.png" alt="" /></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250116150729.png" alt="" /></p>
+<p><code>YarnClusterApplication.class</code></p>
+<pre><code class="language-java">package org.apache.spark.deploy.yarn;  
+  
+import org.apache.spark.SparkConf;  
+import org.apache.spark.deploy.SparkApplication;  
+import org.apache.spark.internal.config.package.;  
+import org.apache.spark.rpc.RpcEnv;  
+import scala.reflect.ScalaSignature;  
+  
+@ScalaSignature(  
+    bytes = "\u0006\u0001e2Qa\u0001\u0003\u0001\u00119AQ!\u0007\u0001\u0005\u0002mAQA\b\u0001\u0005B}\u0011a#W1s]\u000ecWo\u001d;fe\u0006\u0003\b\u000f\\5dCRLwN\u001c\u0006\u0003\u000b\u0019\tA!_1s]*\u0011q\u0001C\u0001\u0007I\u0016\u0004Hn\\=\u000b\u0005%Q\u0011!B:qCJ\\'BA\u0006\r\u0003\u0019\t\u0007/Y2iK*\tQ\"A\u0002pe\u001e\u001c2\u0001A\b\u0016!\t\u00012#D\u0001\u0012\u0015\u0005\u0011\u0012!B:dC2\f\u0017B\u0001\u000b\u0012\u0005\u0019\te.\u001f*fMB\u0011acF\u0007\u0002\r%\u0011\u0001D\u0002\u0002\u0011'B\f'o[!qa2L7-\u0019;j_:\fa\u0001P5oSRt4\u0001\u0001\u000b\u00029A\u0011Q\u0004A\u0007\u0002\t\u0005)1\u000f^1siR\u0019\u0001eI\u001a\u0011\u0005A\t\u0013B\u0001\u0012\u0012\u0005\u0011)f.\u001b;\t\u000b\u0011\u0012\u0001\u0019A\u0013\u0002\t\u0005\u0014xm\u001d\t\u0004!\u0019B\u0013BA\u0014\u0012\u0005\u0015\t%O]1z!\tI\u0003G\u0004\u0002+]A\u00111&amp;E\u0007\u0002Y)\u0011QFG\u0001\u0007yI|w\u000e\u001e \n\u0005=\n\u0012A\u0002)sK\u0012,g-\u0003\u00022e\t11\u000b\u001e:j]\u001eT!aL\t\t\u000bQ\u0012\u0001\u0019A\u001b\u0002\t\r|gN\u001a\t\u0003m]j\u0011\u0001C\u0005\u0003q!\u0011\u0011b\u00159be.\u001cuN\u001c4"  
+)  
+public class YarnClusterApplication implements SparkApplication {  
+    public void start(final String[] args, final SparkConf conf) {  
+        conf.remove(.MODULE$.JARS());  
+        conf.remove(.MODULE$.FILES());  
+        conf.remove(.MODULE$.ARCHIVES());  
+        (new Client(new ClientArguments(args), conf, (RpcEnv)null)).run();  
+    }  
+  
+    public YarnClusterApplication() {  
+    }  
+}
+</code></pre>
+<h2 id="核心对象"><a class="header" href="#核心对象">核心对象</a></h2>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250116153352.png" alt="" /></p>
+<h2 id="核心对象通信流程netty"><a class="header" href="#核心对象通信流程netty">核心对象通信流程——Netty</a></h2>
+<p>Java通信方式</p>
+<p>Java io=&gt; BIO（阻塞式IO）</p>
+<ul>
+<li>FileInputStream</li>
+<li>FileOutputStream</li>
+<li>Socket</li>
+</ul>
+<p>Java nio =&gt; NIO + (Linux Epoll)（非阻塞式IO+模拟异步）</p>
+<ul>
+<li>Kafka
+<ul>
+<li>FileChannel</li>
+<li>Selector</li>
+</ul>
+</li>
+</ul>
+<p>Java AIO =&gt; AIO（异步）</p>
+<p>Netty使用的就是NIO + (Linux Epoll)方式。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250116153308.png" alt="" /></p>
+<pre><code class="language-java">public class Inbox implements Logging {  
+    private final String endpointName;  
+    private final RpcEndpoint endpoint;  
+    @GuardedBy("this")  
+    private final LinkedList&lt;InboxMessage&gt; messages;  
+    @GuardedBy("this")  
+    private boolean stopped;  
+    @GuardedBy("this")  
+    private boolean enableConcurrent;  
+    @GuardedBy("this")  
+    private int numActiveThreads;  
+    private transient Logger org$apache$spark$internal$Logging$$log_;
+}
+</code></pre>
+<pre><code class="language-java">public class Outbox {  
+    public final NettyRpcEnv org$apache$spark$rpc$netty$Outbox$$nettyEnv;  
+    private final RpcAddress address;  
+    @GuardedBy("this")  
+    private final LinkedList&lt;OutboxMessage&gt; messages;  
+    @GuardedBy("this")  
+    private TransportClient org$apache$spark$rpc$netty$Outbox$$client;  
+    @GuardedBy("this")  
+    private Future&lt;BoxedUnit&gt; org$apache$spark$rpc$netty$Outbox$$connectFuture;  
+    @GuardedBy("this")  
+    private boolean org$apache$spark$rpc$netty$Outbox$$stopped;  
+    @GuardedBy("this")  
+    private boolean draining;
+}
+</code></pre>
+<h2 id="task任务的调度执行"><a class="header" href="#task任务的调度执行">Task任务的调度执行</a></h2>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250116155452.png" alt="" /></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250116160035.png" alt="" /></p>
+<p>DAGSheduler.java</p>
+<pre><code class="language-java">private ResultStage createResultStage(final RDD&lt;?&gt; rdd, final Function2&lt;TaskContext, Iterator&lt;?&gt;, ?&gt; func, final int[] partitions, final int jobId, final CallSite callSite) {
+        Tuple2 var8 = this.getShuffleDependenciesAndResourceProfiles(rdd);
+        if (var8 != null) {
+            HashSet shuffleDeps = (HashSet)var8._1();
+            HashSet resourceProfiles = (HashSet)var8._2();
+            Tuple2 var7 = new Tuple2(shuffleDeps, resourceProfiles);
+            HashSet shuffleDeps = (HashSet)var7._1();
+            HashSet resourceProfiles = (HashSet)var7._2();
+            ResourceProfile resourceProfile = this.mergeResourceProfilesForStage(resourceProfiles);
+            this.checkBarrierStageWithDynamicAllocation(rdd);
+            this.checkBarrierStageWithNumSlots(rdd, resourceProfile);
+            this.checkBarrierStageWithRDDChainPattern(rdd, (new ArrayOps.ofInt(scala.Predef..MODULE$.intArrayOps(partitions))).toSet().size());
+            List parents = this.getOrCreateParentStages(shuffleDeps, jobId);
+            int id = this.nextStageId().getAndIncrement();
+            ResultStage stage = new ResultStage(id, rdd, func, partitions, parents, jobId, callSite, resourceProfile.id());
+            this.stageIdToStage().update(BoxesRunTime.boxToInteger(id), stage);
+            this.updateJobIdStageIdMaps(jobId, stage);
+            return stage;
+        } else {
+            throw new MatchError(var8);
+        }
+    }
+
+
+
+public void handleJobSubmitted(final int jobId, final RDD&lt;?&gt; finalRDD, final Function2&lt;TaskContext, Iterator&lt;?&gt;, ?&gt; func, final int[] partitions, final CallSite callSite, final JobListener listener, final JobArtifactSet artifacts, final Properties properties) {
+        ObjectRef finalStage = ObjectRef.create((Object)null);
+
+        try {
+            finalStage.elem = this.createResultStage(finalRDD, func, partitions, jobId, callSite);
+        } catch (BarrierJobSlotsNumberCheckFailed var18) {
+            int numCheckFailures = BoxesRunTime.unboxToInt(this.barrierJobIdToNumTasksCheckFailures().compute(BoxesRunTime.boxToInteger(jobId), (x$22, value) -&gt; BoxesRunTime.boxToInteger($anonfun$handleJobSubmitted$1(BoxesRunTime.unboxToInt(x$22), BoxesRunTime.unboxToInt(value)))));
+            this.logWarning(() -&gt; (new StringBuilder(92)).append("Barrier stage in job ").append(jobId).append(" requires ").append(var18.requiredConcurrentTasks()).append(" slots, ").append("but only ").append(var18.maxConcurrentTasks()).append(" are available. ").append("Will retry up to ").append(this.maxFailureNumTasksCheck() - numCheckFailures + 1).append(" more times").toString());
+            if (numCheckFailures &lt;= this.maxFailureNumTasksCheck()) {
+                this.messageScheduler().schedule(new Runnable(jobId, finalRDD, func, partitions, callSite, listener, artifacts, properties) {
+                    private final int jobId$3;
+                    private final RDD finalRDD$1;
+                    private final Function2 func$1;
+                    private final int[] partitions$1;
+                    private final CallSite callSite$2;
+                    private final JobListener listener$1;
+                    private final JobArtifactSet artifacts$1;
+                    private final Properties properties$1;
+
+                    public void run() {
+                        this.$outer.eventProcessLoop().post(new JobSubmitted(this.jobId$3, this.finalRDD$1, this.func$1, this.partitions$1, this.callSite$2, this.listener$1, this.artifacts$1, this.properties$1));
+                    }
+
+                    public {
+                        if (DAGScheduler.this == null) {
+                            throw null;
+                        } else {
+                            this.$outer = DAGScheduler.this;
+                            this.jobId$3 = jobId$3;
+                            this.finalRDD$1 = finalRDD$1;
+                            this.func$1 = func$1;
+                            this.partitions$1 = partitions$1;
+                            this.callSite$2 = callSite$2;
+                            this.listener$1 = listener$1;
+                            this.artifacts$1 = artifacts$1;
+                            this.properties$1 = properties$1;
+                        }
+                    }
+                }, this.timeIntervalNumTasksCheck(), TimeUnit.SECONDS);
+                return;
+            }
+
+            this.barrierJobIdToNumTasksCheckFailures().remove(BoxesRunTime.boxToInteger(jobId));
+            listener.jobFailed(var18);
+            return;
+        } catch (Exception var19) {
+            this.logWarning(() -&gt; (new StringBuilder(50)).append("Creating new stage failed due to exception - job: ").append(jobId).toString(), var19);
+            listener.jobFailed(var19);
+            return;
+        }
+
+        this.barrierJobIdToNumTasksCheckFailures().remove(BoxesRunTime.boxToInteger(jobId));
+        ActiveJob job = new ActiveJob(jobId, (ResultStage)finalStage.elem, callSite, listener, artifacts, properties);
+        this.clearCacheLocs();
+        this.logInfo(() -&gt; (new StringOps(scala.Predef..MODULE$.augmentString("Got job %s (%s) with %d output partitions"))).format(scala.Predef..MODULE$.genericWrapArray(new Object[]{BoxesRunTime.boxToInteger(job.jobId()), callSite.shortForm(), BoxesRunTime.boxToInteger(partitions.length)})));
+        this.logInfo(() -&gt; (new StringBuilder(16)).append("Final stage: ").append((ResultStage)finalStage.elem).append(" (").append(((ResultStage)finalStage.elem).name()).append(")").toString());
+        this.logInfo(() -&gt; (new StringBuilder(24)).append("Parents of final stage: ").append(((ResultStage)finalStage.elem).parents()).toString());
+        this.logInfo(() -&gt; (new StringBuilder(17)).append("Missing parents: ").append(this.getMissingParentStages((ResultStage)finalStage.elem)).toString());
+        long jobSubmissionTime = this.clock.getTimeMillis();
+        this.jobIdToActiveJob().update(BoxesRunTime.boxToInteger(jobId), job);
+        this.activeJobs().$plus$eq(job);
+        ((ResultStage)finalStage.elem).setActiveJob(job);
+        int[] stageIds = (int[])((TraversableOnce)this.jobIdToStageIds().apply(BoxesRunTime.boxToInteger(jobId))).toArray(scala.reflect.ClassTag..MODULE$.Int());
+        StageInfo[] stageInfos = (StageInfo[])(new ArrayOps.ofInt(scala.Predef..MODULE$.intArrayOps(stageIds))).flatMap((id) -&gt; $anonfun$handleJobSubmitted$8(this, BoxesRunTime.unboxToInt(id)), scala.Array..MODULE$.canBuildFrom(scala.reflect.ClassTag..MODULE$.apply(StageInfo.class)));
+        this.listenerBus.post(new SparkListenerJobStart(job.jobId(), jobSubmissionTime, scala.Predef..MODULE$.wrapRefArray((Object[])stageInfos), org.apache.spark.util.Utils..MODULE$.cloneProperties(properties)));
+        this.submitStage((ResultStage)finalStage.elem);
+    }
+</code></pre>
+<p><code>Tuple2 var8 = this.getShuffleDependenciesAndResourceProfiles(rdd);</code></p>
+<p>Pool.class</p>
+<pre><code class="language-java">public Pool(final String poolName, final Enumeration.Value schedulingMode, final int initMinShare, final int initWeight) {
+        label30: {
+            Object var11;
+            label29: {
+                label32: {
+                    this.poolName = poolName;
+                    this.schedulingMode = schedulingMode;
+                    super();
+                    Logging.$init$(this);
+                    this.schedulableQueue = new ConcurrentLinkedQueue();
+                    this.schedulableNameToSchedulable = new ConcurrentHashMap();
+                    this.weight = initWeight;
+                    this.minShare = initMinShare;
+                    this.runningTasks = 0;
+                    this.priority = 0;
+                    this.stageId = -1;
+                    this.name = poolName;
+                    this.parent = null;
+                    Enumeration.Value var10001 = org.apache.spark.scheduler.SchedulingMode..MODULE$.FAIR();
+                    if (var10001 == null) {
+                        if (schedulingMode == null) {
+                            break label32;
+                        }
+                    } else if (var10001.equals(schedulingMode)) {
+                        break label32;
+                    }
+
+                    var10001 = org.apache.spark.scheduler.SchedulingMode..MODULE$.FIFO();
+                    if (var10001 == null) {
+                        if (schedulingMode != null) {
+                            break label30;
+                        }
+                    } else if (!var10001.equals(schedulingMode)) {
+                        break label30;
+                    }
+
+                    var11 = new FIFOSchedulingAlgorithm();
+                    break label29;
+                }
+
+                var11 = new FairSchedulingAlgorithm();
+            }
+
+            this.taskSetSchedulingAlgorithm = (SchedulingAlgorithm)var11;
+            return;
+        }
+</code></pre>
+<h2 id="shuffle底层的实现原理"><a class="header" href="#shuffle底层的实现原理">Shuffle底层的实现原理</a></h2>
+<p>以Task为单位可能存在数据安全问题、小文件过多问题。</p>
+<p>以CPU核为单位也存在小文件过多问题。</p>
+<p>实际：以Task为单位，但尽量避免可能存在的数据安全问题。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250116164756.png" alt="" /></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250116164729.png" alt="" /></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250116163109.png" alt="" /></p>
+<p>SortShuffleManager.class</p>
+<pre><code class="language-java">public &lt;K, V, C&gt; ShuffleHandle registerShuffle(final int shuffleId, final ShuffleDependency&lt;K, V, C&gt; dependency) {
+        if (.MODULE$.shouldBypassMergeSort(this.conf, dependency)) {
+            return new BypassMergeSortShuffleHandle(shuffleId, dependency);
+        } else {
+            return (ShuffleHandle)(SortShuffleManager$.MODULE$.canUseSerializedShuffle(dependency) ? new SerializedShuffleHandle(shuffleId, dependency) : new BaseShuffleHandle(shuffleId, dependency));
+        }
+    }
+</code></pre>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250116164652.png" alt="" /></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250116164841.png" alt="" /></p>
+<p><code>reduceByKey()</code>有预聚合</p>
+<p><code>groupByKey()</code>没有预聚合</p>
+<h2 id="内存管理"><a class="header" href="#内存管理">内存管理</a></h2>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250116165936.png" alt="" /></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250116181019.png" alt="" /></p>
+<p>堆外内存：JVM管理不了（操作系统）的内存，称之为堆外内存(Unsafe)</p>
+<p>堆内内存：JVM管理的内存，称之为堆内内存</p>
+<p>Spark封装了堆外内存和堆内内存。</p>
+<p>非堆内存：栈内存，方法区内存</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../Spark/SparkRDD.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../Spark/SparkCore实战.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../Spark/SparkRDD.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../Spark/SparkCore实战.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

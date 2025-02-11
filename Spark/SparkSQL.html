@@ -1,0 +1,966 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>SparkSQL - Big Data</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Big Data</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="sparksql"><a class="header" href="#sparksql">SparkSQL</a></h1>
+<ul>
+<li><a href="#sparksql-%E7%AE%80%E4%BB%8B">SparkSQL 简介</a>
+<ul>
+<li><a href="#1-sparksql-%E7%9A%84%E7%89%B9%E7%82%B9">1. SparkSQL 的特点</a></li>
+<li><a href="#2-sparksql-%E7%9A%84%E7%BB%84%E6%88%90%E9%83%A8%E5%88%86">2. SparkSQL 的组成部分</a>
+<ul>
+<li><a href="#21-dataframe">2.1 DataFrame</a></li>
+<li><a href="#22-dataset">2.2 Dataset</a></li>
+<li><a href="#23-catalyst-optimizer">2.3 Catalyst Optimizer</a></li>
+<li><a href="#24-tungsten-%E6%89%A7%E8%A1%8C%E5%BC%95%E6%93%8E">2.4 Tungsten 执行引擎</a></li>
+</ul>
+</li>
+<li><a href="#3-%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95">3. 基本用法</a>
+<ul>
+<li><a href="#31-%E5%88%9B%E5%BB%BA-sparksession">3.1 创建 SparkSession</a></li>
+<li><a href="#32-%E5%88%9B%E5%BB%BA-dataframe">3.2 创建 DataFrame</a></li>
+<li><a href="#33-sql-%E6%9F%A5%E8%AF%A2">3.3 SQL 查询</a></li>
+<li><a href="#34-dataframe-%E6%93%8D%E4%BD%9C">3.4 DataFrame 操作</a></li>
+<li><a href="#35-%E5%86%99%E5%85%A5%E6%95%B0%E6%8D%AE">3.5 写入数据</a></li>
+</ul>
+</li>
+<li><a href="#4-%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81">4. 示例代码</a></li>
+<li><a href="#5-%E7%BB%93%E8%AE%BA">5. 结论</a></li>
+</ul>
+</li>
+<li><a href="#sparksql-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA">SparkSQl 环境搭建</a>
+<ul>
+<li><a href="#%E6%9D%A5%E6%BA%90">来源</a></li>
+<li><a href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA">环境搭建</a></li>
+<li><a href="#%E6%A8%A1%E5%9E%8B">模型</a></li>
+<li><a href="#%E8%A7%A3%E5%86%B3%E6%8A%A5%E9%94%99job-aborted-due-to-stage-failure">解决报错<code>Job aborted due to stage failure</code></a></li>
+</ul>
+</li>
+<li><a href="#%E4%B8%8D%E5%90%8C%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%8E%AF%E5%A2%83%E5%AF%B9%E8%B1%A1%E7%9A%84%E8%BD%AC%E6%8D%A2">不同场景下环境对象的转换</a>
+<ul>
+<li><a href="#%E7%8E%AF%E5%A2%83%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2">环境之间的转换</a></li>
+<li><a href="#coresparkcontext--sqlsparksession">Core:SparkContext-&gt; SQL:SparkSession</a>
+<ul>
+<li><a href="#sqlsparksession--coresparkcontext">SQL:SparkSession-&gt; Core:SparkContext</a></li>
+<li><a href="#sqlsparksession---corejavasparkcontext">SQL:SparkSession -&gt; Core:JavaSparkContext</a></li>
+</ul>
+</li>
+<li><a href="#%E4%B8%8D%E5%90%8C%E5%9C%BA%E6%99%AF%E4%B8%8B%E6%A8%A1%E5%9E%8B%E6%95%B0%E6%8D%AE%E5%AF%B9%E8%B1%A1%E7%9A%84%E8%BD%AC%E6%8D%A2">不同场景下模型数据对象的转换</a>
+<ul>
+<li><a href="#rdd">RDD</a></li>
+<li><a href="#dataframe">DataFrame</a></li>
+<li><a href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E7%B1%BB%E5%9E%8B%E4%BB%A3%E7%A0%81%E6%9A%82%E6%97%B6%E6%97%A0%E6%B3%95%E6%AD%A3%E5%B8%B8%E8%BF%90%E8%A1%8C">自定义类型（代码暂时无法正常运行）</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#%E6%A8%A1%E5%9E%8B%E5%AF%B9%E8%B1%A1%E7%9A%84%E8%AE%BF%E9%97%AE">模型对象的访问</a>
+<ul>
+<li><a href="#%E4%BD%BF%E7%94%A8sql%E8%AF%AD%E6%B3%95">使用SQL语法</a></li>
+<li><a href="#%E4%BD%BF%E7%94%A8dsl%E8%AF%AD%E6%B3%95">使用DSL语法</a></li>
+<li><a href="#sql%E6%96%87%E7%9A%84%E7%BC%BA%E9%99%B7concat%E5%92%8C">SQL文的缺陷（concat和+）</a></li>
+</ul>
+</li>
+<li><a href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E6%96%B9%E6%B3%95udf%E5%92%8Cudaf">自定义方法（UDF和UDAF）</a>
+<ul>
+<li><a href="#udf">UDF</a></li>
+<li><a href="#udaf%E5%8E%9F%E7%90%86%E5%92%8C%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AE%9E%E7%8E%B0">UDAF原理和自定义实现</a></li>
+</ul>
+</li>
+</ul>
+<h1 id="sparksql-简介"><a class="header" href="#sparksql-简介">SparkSQL 简介</a></h1>
+<p>SparkSQL 是 Spark 生态系统的重要组成部分，用于处理结构化数据。它允许使用 SQL 查询语言访问和管理数据，同时结合了 Spark 的强大分布式计算能力，支持处理大量数据集。以下将详细介绍 SparkSQL 的关键特点、组成部分、基本用法以及一些示例代码。</p>
+<h2 id="1-sparksql-的特点"><a class="header" href="#1-sparksql-的特点">1. SparkSQL 的特点</a></h2>
+<ul>
+<li><strong>统一的数据处理</strong>：既可以使用 DataFrame 和 Dataset API 进行数据操作，也可以用 SQL 语句直接查询数据。</li>
+<li><strong>与 Hive 集成</strong>：支持访问 Hive 表和查询，能够与现有 Hive 生态系统无缝集成。</li>
+<li><strong>高效的查询执行</strong>：通过使用 Catalyst 查询优化器，提供高效的查询执行计划。</li>
+<li><strong>与多种数据源兼容</strong>：支持读取和写入多种数据源，包括 JSON、Parquet、ORC、JDBC、Kafka 等。</li>
+<li><strong>可扩展性</strong>：支持分布式计算，可扩展到大规模数据集。</li>
+</ul>
+<h2 id="2-sparksql-的组成部分"><a class="header" href="#2-sparksql-的组成部分">2. SparkSQL 的组成部分</a></h2>
+<h3 id="21-dataframe"><a class="header" href="#21-dataframe">2.1 DataFrame</a></h3>
+<ul>
+<li>DataFrame 是 SparkSQL 中的核心数据结构，类似于 Pandas 的 DataFrame，具有行和列的结构，表格形式的数据表示。可以通过各种方式创建 DataFrame，例如从 RDD、JSON 文件、Hive 表等。</li>
+</ul>
+<h3 id="22-dataset"><a class="header" href="#22-dataset">2.2 Dataset</a></h3>
+<ul>
+<li>Dataset 是结合了 DataFrame 的优点与强类型的 API，属于 SparkSQL 的扩展。它提供了编译时类型检查，借此确保数据的类型安全性。</li>
+</ul>
+<h3 id="23-catalyst-optimizer"><a class="header" href="#23-catalyst-optimizer">2.3 Catalyst Optimizer</a></h3>
+<ul>
+<li>Catalyst 是 SparkSQL 的查询优化器，它对 SQL 查询进行分析、优化和编译，确保有效率高的执行计划。</li>
+</ul>
+<h3 id="24-tungsten-执行引擎"><a class="header" href="#24-tungsten-执行引擎">2.4 Tungsten 执行引擎</a></h3>
+<ul>
+<li>Tungsten 是 Spark 的一个执行引擎，针对内存管理、物理计划生成等方面进行了优化，能够提高 SparkSQL 的执行性能。</li>
+</ul>
+<h2 id="3-基本用法"><a class="header" href="#3-基本用法">3. 基本用法</a></h2>
+<h3 id="31-创建-sparksession"><a class="header" href="#31-创建-sparksession">3.1 创建 SparkSession</a></h3>
+<p>要使用 SparkSQL，首先需要创建一个 <code>SparkSession</code> 对象，它是 Spark 应用程序的入口点。</p>
+<pre><code class="language-scala">import org.apache.spark.sql.SparkSession
+
+val spark = SparkSession.builder()
+  .appName("Spark SQL Example")
+  .config("spark.some.config.option", "config-value")
+  .getOrCreate()
+</code></pre>
+<h3 id="32-创建-dataframe"><a class="header" href="#32-创建-dataframe">3.2 创建 DataFrame</a></h3>
+<p>可以从多种数据源创建 DataFrame。</p>
+<pre><code class="language-scala">// 从 JSON 文件创建 DataFrame
+val jsonDF = spark.read.json("path/to/data.json")
+
+// 从 CSV 文件创建 DataFrame
+val csvDF = spark.read.option("header", "true").csv("path/to/data.csv")
+
+// 从 RDD 创建 DataFrame
+import spark.implicits._
+val rdd = spark.sparkContext.parallelize(Seq(("Alice", 1), ("Bob", 2)))
+val dfFromRDD = rdd.toDF("name", "id")
+</code></pre>
+<h3 id="33-sql-查询"><a class="header" href="#33-sql-查询">3.3 SQL 查询</a></h3>
+<p>在 DataFrame 上使用 SQL 查询，首先需将 DataFrame 注册为临时视图。</p>
+<pre><code class="language-scala">// 注册一个临时视图
+jsonDF.createOrReplaceTempView("people")
+
+// 使用 SQL 查询数据
+val resultDF = spark.sql("SELECT * FROM people WHERE age &gt; 21")
+resultDF.show()
+</code></pre>
+<h3 id="34-dataframe-操作"><a class="header" href="#34-dataframe-操作">3.4 DataFrame 操作</a></h3>
+<p>可以使用 DataFrame API 对数据进行多种操作，包括选择、过滤、分组、聚合等。</p>
+<pre><code class="language-scala">// 选择特定列
+val selectedDF = jsonDF.select("name", "age")
+
+// 过滤数据
+val filteredDF = jsonDF.filter($"age" &gt; 21)
+
+// 分组聚合
+val groupByDF = jsonDF.groupBy("age").count()
+</code></pre>
+<h3 id="35-写入数据"><a class="header" href="#35-写入数据">3.5 写入数据</a></h3>
+<p>可以将处理后的 DataFrame 写入不同的数据源。</p>
+<pre><code class="language-scala">// 写入为 Parquet 格式
+resultDF.write.parquet("path/to/output.parquet")
+
+// 写入为 CSV 格式
+resultDF.write.option("header", "true").csv("path/to/output.csv")
+</code></pre>
+<h2 id="4-示例代码"><a class="header" href="#4-示例代码">4. 示例代码</a></h2>
+<p>以下是一个完整的 SparkSQL 示例，涵盖从数据读取、处理到结果写入的全过程：</p>
+<pre><code class="language-scala">import org.apache.spark.sql.SparkSession
+
+val spark = SparkSession.builder()
+  .appName("Spark SQL Example")
+  .getOrCreate()
+
+// 1. 读取 JSON 数据
+val jsonDF = spark.read.json("path/to/data.json")
+
+// 2. 显示 DataFrame 内容
+jsonDF.show()
+
+// 3. 创建临时视图以便使用 SQL
+jsonDF.createOrReplaceTempView("people")
+
+// 4. 使用 SQL 查询
+val resultDF = spark.sql("SELECT name, age FROM people WHERE age &gt; 21")
+resultDF.show()
+
+// 5. 使用 DataFrame API 进行处理
+val groupedDF = jsonDF.groupBy("age").count()
+groupedDF.show()
+
+// 6. 写入处理结果
+groupedDF.write.parquet("path/to/output.parquet")
+
+spark.stop()
+</code></pre>
+<h2 id="5-结论"><a class="header" href="#5-结论">5. 结论</a></h2>
+<p>SparkSQL 是处理结构化数据的一种灵活、高效的方式。它结合了 SQL 的易用性和 Spark 的高性能计算能力，非常适合大数据分析和实时数据处理。</p>
+<h1 id="sparksql-环境搭建"><a class="header" href="#sparksql-环境搭建">SparkSQl 环境搭建</a></h1>
+<h2 id="来源"><a class="header" href="#来源">来源</a></h2>
+<p>Spark + Hive =&gt; Shark =&gt; Spark On Hive =&gt; SparkSQL
+Spark + Hive =&gt; Shark =&gt; Hive On Spark =&gt; Hive -&gt; SQL -&gt; RDD</p>
+<p>Shark =&gt;Spark On Hive=&gt;SparkSQL=&gt; Spark parse SQL</p>
+<p>Shark =&gt;HiveOnSpark=&gt;数据仓库=&gt;Hive parse SQL</p>
+<h2 id="环境搭建"><a class="header" href="#环境搭建">环境搭建</a></h2>
+<p>没有JavaSparkSession，只有sparkSession</p>
+<p>sparkSession底层使用的仍旧是Scala语言</p>
+<p>推荐使用构建器模式构建SparkSQL环境对象，少用new</p>
+<pre><code class="language-java">import org.apache.spark.sql.SparkSession;  
+  
+public class SQL01_Env {  
+    public static void main(String[] args) {  
+        SparkSession sparkSession = SparkSession.builder().appName("SQL01_Env").master("local").getOrCreate();  
+        System.out.println("Spark SQL 环境创建成功！");  
+        sparkSession.stop();  
+        System.out.println("Spark SQL 环境已停止！");  
+    }  
+}
+</code></pre>
+<p>思考：close()和stop()有何区别？</p>
+<h2 id="模型"><a class="header" href="#模型">模型</a></h2>
+<p>SparkSQL中对数据模型也进行了封装：RDD-&gt;Dataset</p>
+<p>对接文件数据源时，会将文件中的一行数据封装为Row对象</p>
+<pre><code class="language-java">import org.apache.spark.rdd.RDD;  
+import org.apache.spark.sql.Dataset;  
+import org.apache.spark.sql.Row;  
+import org.apache.spark.sql.SparkSession;  
+  
+public class SQL01_Model {  
+    public static void main(String[] args) {  
+        SparkSession sparkSession = SparkSession.builder().appName("SQL01_Model").master("local[2]").getOrCreate();  
+        System.out.println("Spark SQL 环境创建成功！");  
+  
+        Dataset&lt;Row&gt; dataset = sparkSession.read().json("D:\\Documents\\items\\BigData\\BigDataCode\\spark\\src\\main\\resources\\data\\user.json");  
+        RDD&lt;Row&gt; rdd = dataset.rdd();  
+          
+        sparkSession.stop();  
+        System.out.println("Spark SQL 环境已停止！");  
+    }  
+}
+</code></pre>
+<h2 id="解决报错job-aborted-due-to-stage-failure"><a class="header" href="#解决报错job-aborted-due-to-stage-failure">解决报错<code>Job aborted due to stage failure</code></a></h2>
+<pre><code>Exception in thread "main" org.apache.spark.SparkException: Job aborted due to stage failure: Task 0 in stage 0.0 failed 1 times, most recent failure: Lost task 0.0 in stage 0.0 (TID 0) (TH executor driver): java.lang.NoClassDefFoundError: com/fasterxml/jackson/core/StreamReadConstraints
+	......
+</code></pre>
+<pre><code>Exception in thread "main" org.apache.spark.sql.AnalysisException: Since Spark 2.3, the queries from raw JSON/CSV files are disallowed when the
+referenced columns only include the internal corrupt record column
+(named _corrupt_record by default).
+</code></pre>
+<p>https://stackoverflow.org.cn/questions/54517775</p>
+<p><a href="https://stackoverflow.org.cn/questions/54517775">java - 在 Apache Spark 中解析 JSON 时出现奇怪的错误</a></p>
+<pre><code class="language-java">import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+
+public class SQL03_SQL {
+    public static void main(String[] args) {
+        // 创建SparkSession
+        SparkSession sparkSession = SparkSession.builder()
+                .appName("SQL01_Model")
+                .master("local[2]")
+                .getOrCreate();
+
+        System.out.println("Spark SQL 环境创建成功！");
+
+        // 读取 JSON 数据
+        Dataset&lt;Row&gt; dataset = sparkSession.read().format("json").option("multiline", "true")
+                .load("D:\\Documents\\items\\BigData\\BigDataCode\\spark\\src\\main\\resources\\data\\user.json");
+
+        // 注册临时视图
+        dataset.createOrReplaceTempView("users");
+
+        // 执行 SQL 查询
+        String sqlText = "SELECT * FROM users";
+        Dataset&lt;Row&gt; result = sparkSession.sql(sqlText);
+
+        // 展示结果
+        result.show();
+
+        // 停止 SparkSession
+        sparkSession.stop();
+        System.out.println("Spark SQL 环境已停止！");
+    }
+}
+</code></pre>
+<pre><code>Spark SQL 环境创建成功！
++---+----+----+
+| id|姓名|年龄|
++---+----+----+
+|  1|张三|  25|
+|  2|李四|  30|
+|  3|王五|  22|
++---+----+----+
+
+Spark SQL 环境已停止！
+</code></pre>
+<p>因为我的JSON格式是多行的，只需要改为一行即可</p>
+<pre><code>**{
+  "name": "Michael",
+  "age": 12
+}
+{
+  "name": "Andy",
+  "age": 13
+}
+{
+  "name": "Justin",
+  "age": 8
+}**
+</code></pre>
+<p>修改为：</p>
+<pre><code>**{"name": "Michael",  "age": 12}
+{"name": "Andy",  "age": 13}
+{"name": "Justin",  "age": 8}
+</code></pre>
+<p>我这创建的user.json内容如下所示：</p>
+<pre><code class="language-json">[
+  {
+    "id": 1,
+    "姓名": "张三",
+    "年龄": 25
+  },
+  {
+    "id": 2,
+    "姓名": "李四",
+    "年龄": 30
+  },
+  {
+    "id": 3,
+    "姓名": "王五",
+    "年龄": 22
+  }
+]
+</code></pre>
+<p>读取单行</p>
+<pre><code class="language-java">Dataset&lt;Row&gt; dataset = sparkSession.read().json("D:\\Documents\\items\\BigData\\BigDataCode\\spark\\src\\main\\resources\\data\\user2.json");
+</code></pre>
+<pre><code class="language-json">{"id":1,"姓名":"张三","年龄":25}  
+{"id":2,"姓名":"李四","年龄":30}  
+{"id":3,"姓名":"王五","年龄":22}
+</code></pre>
+<p>row背后是数组</p>
+<pre><code class="language-java">dataset.foreach(  
+        row -&gt; {  
+            System.out.println(row.getLong(0) + ", " + row.getString(1) + ", " + row.getLong(2));  
+        }  
+);  
+  
+//row背后是数组
+</code></pre>
+<pre><code>Spark SQL 环境创建成功！
+1, 张三, 25
+2, 李四, 30
+3, 王五, 22
++---+----+----+
+| id|姓名|年龄|
++---+----+----+
+|  1|张三|  25|
+|  2|李四|  30|
+|  3|王五|  22|
++---+----+----+
+</code></pre>
+<h1 id="不同场景下环境对象的转换"><a class="header" href="#不同场景下环境对象的转换">不同场景下环境对象的转换</a></h1>
+<h2 id="环境之间的转换"><a class="header" href="#环境之间的转换">环境之间的转换</a></h2>
+<h2 id="coresparkcontext--sqlsparksession"><a class="header" href="#coresparkcontext--sqlsparksession">Core:SparkContext-&gt; SQL:SparkSession</a></h2>
+<pre><code class="language-java">new SparkSession(new SparkContext(conf));
+</code></pre>
+<h3 id="sqlsparksession--coresparkcontext"><a class="header" href="#sqlsparksession--coresparkcontext">SQL:SparkSession-&gt; Core:SparkContext</a></h3>
+<pre><code class="language-java">final SparkContext sparkContext = sparkSession.sparkContext();
+sparkcontext.parallelize();
+</code></pre>
+<h3 id="sqlsparksession---corejavasparkcontext"><a class="header" href="#sqlsparksession---corejavasparkcontext">SQL:SparkSession -&gt; Core:JavaSparkContext</a></h3>
+<pre><code class="language-java">final SparkContext sparkContext= sparkSession.sparkContext();
+final JavaSparkContext jsc = new JavaSparkContext(sparkContext); 
+jsc.parallelize（Arrays.asList(1,2,3,4));
+</code></pre>
+<h2 id="不同场景下模型数据对象的转换"><a class="header" href="#不同场景下模型数据对象的转换">不同场景下模型数据对象的转换</a></h2>
+<h3 id="rdd"><a class="header" href="#rdd">RDD</a></h3>
+<pre><code class="language-java">Dataset&lt;Row&gt; dataset = sparkSession.read().json("D:\\Documents\\items\\BigData\\BigDataCode\\spark\\src\\main\\resources\\data\\user.json");  
+RDD&lt;Row&gt; rdd = dataset.rdd();
+</code></pre>
+<h3 id="dataframe"><a class="header" href="#dataframe">DataFrame</a></h3>
+<p>读取单行</p>
+<pre><code class="language-java">Dataset&lt;Row&gt; dataset = sparkSession.read().json("D:\\Documents\\items\\BigData\\BigDataCode\\spark\\src\\main\\resources\\data\\user2.json");
+</code></pre>
+<pre><code class="language-json">{"id":1,"姓名":"张三","年龄":25}  
+{"id":2,"姓名":"李四","年龄":30}  
+{"id":3,"姓名":"王五","年龄":22}
+</code></pre>
+<p>row背后是数组</p>
+<pre><code class="language-java">dataset.foreach(  
+        row -&gt; {  
+            System.out.println(row.getLong(0) + ", " + row.getString(1) + ", " + row.getLong(2));  
+        }  
+);  
+  
+//row背后是数组
+</code></pre>
+<pre><code>Spark SQL 环境创建成功！
+1, 张三, 25
+2, 李四, 30
+3, 王五, 22
++---+----+----+
+| id|姓名|年龄|
++---+----+----+
+|  1|张三|  25|
+|  2|李四|  30|
+|  3|王五|  22|
++---+----+----+
+</code></pre>
+<h3 id="自定义类型代码暂时无法正常运行"><a class="header" href="#自定义类型代码暂时无法正常运行">自定义类型（代码暂时无法正常运行）</a></h3>
+<p>将数据模型中的数据类型进行转换，将Row转换成其他对象进行处理</p>
+<pre><code class="language-java">import org.apache.spark.sql.Dataset;  
+import org.apache.spark.sql.Encoders;  
+import org.apache.spark.sql.Row;  
+import org.apache.spark.sql.SparkSession;  
+  
+import java.io.Serializable;  
+  
+public class SQL01_Model {  
+    public static void main(String[] args) {  
+        SparkSession sparkSession = SparkSession.builder().appName("SQL01_Model").master("local[2]").getOrCreate();  
+        System.out.println("Spark SQL 环境创建成功！");  
+  
+        Dataset&lt;Row&gt; dataset = sparkSession.read().json("D:\\Documents\\items\\BigData\\BigDataCode\\spark\\src\\main\\resources\\data\\user2.json");  
+  
+        Dataset&lt;User&gt; userDataset = dataset.as(Encoders.bean(User.class));  
+        userDataset.foreach(  
+                user -&gt; {  
+                    System.out.println(user.getName() );  
+                }  
+        );  
+  
+        sparkSession.stop();  
+        System.out.println("Spark SQL 环境已停止！");  
+    }  
+}  
+class User implements Serializable {  
+    private String name;  
+    private Long age;  
+    private Long id;  
+  
+    public User(String name, Long age, Long id) {  
+        this.name = name;  
+        this.age = age;  
+        this.id = id;  
+    }  
+    public User() {  
+    }  
+  
+    public String getName() {  
+        return name;  
+    }  
+  
+    public void setName(String name) {  
+        this.name = name;  
+    }  
+  
+    public Long getAge() {  
+        return age;  
+    }  
+  
+    public void setAge(Long age) {  
+        this.age = age;  
+    }  
+  
+    public Long getId() {  
+        return id;  
+    }  
+  
+    public void setId(Long id) {  
+        this.id = id;  
+    }  
+}
+</code></pre>
+<p>报错信息：</p>
+<pre><code>Caused by: java.util.concurrent.ExecutionException: org.codehaus.commons.compiler.CompileException: File 'generated.java', Line 41, Column 8: failed to compile: org.codehaus.commons.compiler.CompileException: File 'generated.java', Line 41, Column 8: "com.zzw.bigdata.spark.sparksql.User" is inaccessible from this package
+	......
+
+</code></pre>
+<p>可能原因：User类不是public的。</p>
+<p>具体实践中错误地方：</p>
+<pre><code class="language-java">userDataset.foreach(
+                user -&gt; {
+                    System.out.println(user.getName() );
+                }
+        );
+</code></pre>
+<p>执行这个语句就会报错。</p>
+<h1 id="模型对象的访问"><a class="header" href="#模型对象的访问">模型对象的访问</a></h1>
+<h2 id="使用sql语法"><a class="header" href="#使用sql语法">使用SQL语法</a></h2>
+<p>将数据模型转换为二维的结构（行，列），可以通过SQL文进行访问视图：是表的查询结果集。表可以增加，修改，删除，查询。</p>
+<p>视图不能增加，不能修改，不能删除，只能查询</p>
+<p><code>ds.createOrReplaceTempView(viewName:"user");</code></p>
+<pre><code class="language-java">import org.apache.spark.sql.Dataset;  
+import org.apache.spark.sql.Encoders;  
+import org.apache.spark.sql.Row;  
+import org.apache.spark.sql.SparkSession;  
+  
+public class SQL01_Model_1 {  
+    public static void main(String[] args) {  
+        SparkSession sparkSession = SparkSession.builder().appName("SQL01_Model_1").master("local[2]").getOrCreate();  
+        System.out.println("Spark SQL 环境创建成功！");  
+  
+        Dataset&lt;Row&gt; dataset = sparkSession.read().json("D:\\Documents\\items\\BigData\\BigDataCode\\spark\\src\\main\\resources\\data\\user2.json");  
+  
+        dataset.createOrReplaceTempView("user");  
+  
+        Dataset&lt;Row&gt; result = sparkSession.sql("SELECT * FROM user");  
+  
+        result.show();  
+  
+        sparkSession.stop();  
+        System.out.println("Spark SQL 环境已停止！");  
+    }  
+}
+</code></pre>
+<p>JDK1.8字符串不能跨行</p>
+<h2 id="使用dsl语法"><a class="header" href="#使用dsl语法">使用DSL语法</a></h2>
+<pre><code class="language-java">import org.apache.spark.sql.Dataset;  
+import org.apache.spark.sql.Encoders;  
+import org.apache.spark.sql.Row;  
+import org.apache.spark.sql.SparkSession;  
+  
+public class SQL01_Model_1 {  
+    public static void main(String[] args) {  
+        SparkSession sparkSession = SparkSession.builder().appName("SQL01_Model_1").master("local[2]").getOrCreate();  
+        System.out.println("Spark SQL 环境创建成功！");  
+  
+        Dataset&lt;Row&gt; dataset = sparkSession.read().json("D:\\Documents\\items\\BigData\\BigDataCode\\spark\\src\\main\\resources\\data\\user2.json");  
+  
+        dataset.select("*").show();  
+  
+        sparkSession.stop();  
+        System.out.println("Spark SQL 环境已停止！");  
+    }  
+}
+</code></pre>
+<h2 id="sql文的缺陷concat和"><a class="header" href="#sql文的缺陷concat和">SQL文的缺陷（concat和+）</a></h2>
+<pre><code class="language-java">import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+
+public class SQL03_SQL3 {
+    public static void main(String[] args) {
+        // 创建SparkSession
+        SparkSession sparkSession = SparkSession.builder()
+                .appName("SQL01_Model3")
+                .master("local[2]")
+                .getOrCreate();
+
+        System.out.println("Spark SQL 环境创建成功！");
+
+        // 读取 JSON 数据
+        Dataset&lt;Row&gt; dataset = sparkSession.read()
+                .json("D:\\Documents\\items\\BigData\\BigDataCode\\spark\\src\\main\\resources\\data\\user2.json");
+
+        // 注册临时视图
+        dataset.createOrReplaceTempView("users");
+
+        // 执行 SQL 查询
+        String sqlText = "SELECT concat('first_name',name) AS full_name FROM users";
+        Dataset&lt;Row&gt; result = sparkSession.sql(sqlText);
+
+        // 展示结果
+        result.show();
+
+        // 停止 SparkSession
+        sparkSession.stop();
+        System.out.println("Spark SQL 环境已停止！");
+    }
+}
+</code></pre>
+<p>concat不通用</p>
+<pre><code class="language-java">String sql="select concat('Name:',name) from user";
+//String sql="select'Name:'Ilname from user";//mysql，oracle(ll)，db2，sqlserver
+
+final Dataset&lt;Row&gt; sqlDS = sparkSession.sql(sql); sqLDS.show();
+</code></pre>
+<h1 id="自定义方法udf和udaf"><a class="header" href="#自定义方法udf和udaf">自定义方法（UDF和UDAF）</a></h1>
+<p>SparkSQL提供了一种特殊的方式，可以在SQL中增加自定义方法来实现复杂的逻辑</p>
+<h2 id="udf"><a class="header" href="#udf">UDF</a></h2>
+<p>如果想要自定义的方法能够在SQL中使用，那么必须在SPark中进行声明和注册</p>
+<p>register方法需要传递3个参数</p>
+<p>第一个参数表示SQL中使用的方法名</p>
+<p>第二个参数表示逻辑：IN=&gt;OUT</p>
+<p>第三个参数表示返回的数据类型：DataType类型数据，需要使用scala语法操作，需要特殊的使用方式。</p>
+<pre><code class="language-java">sparkSession.udf().register(name:"prefixName",new UDF1&lt;String, String&gt;() {
+@Override
+public String call(String name) throws Exception {
+return "Name:"+ name;}
+}，StringType$.MODULE$);
+
+String sql="select prefixName(name) from user"; 
+final Dataset&lt;Row&gt; sqlDS = sparkSession.sql(sql); 
+sqLDS.show();
+</code></pre>
+<pre><code class="language-java">import org.apache.spark.sql.Dataset;  
+import org.apache.spark.sql.Row;  
+import org.apache.spark.sql.SparkSession;  
+import org.apache.spark.sql.types.StringType$;  
+  
+public class SQL03_SQL3 {  
+    public static void main(String[] args) {  
+        // 创建SparkSession  
+        SparkSession sparkSession = SparkSession.builder()  
+                .appName("SQL01_Model3")  
+                .master("local[2]")  
+                .getOrCreate();  
+  
+        System.out.println("Spark SQL 环境创建成功！");  
+  
+        // 读取 JSON 数据  
+        Dataset&lt;Row&gt; dataset = sparkSession.read()  
+                .json("D:\\Documents\\items\\BigData\\BigDataCode\\spark\\src\\main\\resources\\data\\user2.json");  
+  
+        // 注册临时视图  
+        dataset.createOrReplaceTempView("users");  
+  
+        sparkSession.udf().register("prefixName", (String name) -&gt; "first_name" + name, StringType$.MODULE$);  
+  
+        // 执行 SQL 查询  
+        String sqlText = "SELECT prefixName(name) AS full_name FROM users";  
+        Dataset&lt;Row&gt; result = sparkSession.sql(sqlText);  
+  
+        // 展示结果  
+        result.show();  
+  
+        // 停止 SparkSession        sparkSession.stop();  
+        System.out.println("Spark SQL 环境已停止！");  
+    }  
+}
+</code></pre>
+<p>输出结果如下所示：</p>
+<pre><code>Spark SQL 环境创建成功！
++--------------+
+|     full_name|
++--------------+
+|first_name张三|
+|first_name李四|
+|first_name王五|
++--------------+
+
+Spark SQL 环境已停止！
+</code></pre>
+<p><code>sparkSession.udf().register("prefixName", (String name) -&gt; "first_name" + name, StringType$.MODULE$); </code>另一种写法<code>sparkSession.udf().register("prefixName", (String name) -&gt; "first_name" + name, DataTypes.StringType);</code></p>
+<p>也可以静态导入</p>
+<h2 id="udaf原理和自定义实现"><a class="header" href="#udaf原理和自定义实现">UDAF原理和自定义实现</a></h2>
+<p>每行数据都用一次UDF函数，类似map</p>
+<p>所有数据共用一次UDAF函数，类似reduce</p>
+<p>UDAF函数底层实现中需要存在一个缓冲区，用于临时存放数据</p>
+<p>SparkSQL采用特殊的方式将UDAF转换成UDF使用</p>
+<p>UDAF使用时需要创建自定义聚合对象 udaf方法需要传递2个参数</p>
+<p>第一个参数表示UDAF对象</p>
+<p>第二个参数表示UDAF对象</p>
+<pre><code class="language-java">sparkSession.udf().register(name:"avgAge",functions.udaf(
+new MyAvgAgeUDAF()，Encoders.LoNG()
+);
+String sql ="select avgAge(age) from user";
+final Dataset&lt;Row&gt; sqlDS = sparkSession.sql(sql);
+sqLDS.show();
+</code></pre>
+<p>自定义UDAF函数，实现年龄的平均值</p>
+<p>1.创建自定义的类</p>
+<p>2.继承 <code>org.apache.spark.sql.expressions.Aggregator</code></p>
+<p>3．设定泛型</p>
+<p>IN：输入数据类型</p>
+<p>BUF：缓冲区的数据类型</p>
+<p>OUT：输出数据类型</p>
+<p>4.重写方法（4（计算）+2（状态））</p>
+<p>这里需要使用<code>import static org.apache.spark.sql.functions.udaf;</code></p>
+<p>文件写在一块会报错<code>Caused by: java.lang.IllegalAccessException: Class org.apache.spark.sql.catalyst.expressions.objects.InitializeJavaBean can not access a member of class com.zzw.bigdata.spark.sparksql.AvgAgeBuffer with modifiers "public</code></p>
+<pre><code class="language-java">import org.apache.spark.sql.*;  
+  
+import static org.apache.spark.sql.functions.udaf;  
+  
+public class SQL03_SQL_UDAF {  
+    public static void main(String[] args) {  
+        // 创建SparkSession  
+        SparkSession sparkSession = SparkSession.builder()  
+                .appName("SQL01_Model_API")  
+                .master("local[2]")  
+                .getOrCreate();  
+  
+        System.out.println("Spark SQL 环境创建成功！");  
+  
+        // 读取 JSON 数据  
+        Dataset&lt;Row&gt; dataset = sparkSession.read()  
+                .json("D:\\Documents\\items\\BigData\\BigDataCode\\spark\\src\\main\\resources\\data\\user2.json");  
+  
+        // 注册临时视图  
+        dataset.createOrReplaceTempView("users");  
+  
+        sparkSession.udf().register("avg_age", udaf(new MyAvgAgeUDAF(), Encoders.LONG()));  
+  
+        // 执行 SQL 查询  
+        String sqlText = "SELECT avg_age(age) AS avg_age FROM users";  
+        Dataset&lt;Row&gt; result = sparkSession.sql(sqlText);  
+  
+        // 展示结果  
+        result.show();  
+  
+        // 停止 SparkSession        sparkSession.stop();  
+        System.out.println("Spark SQL 环境已停止！");  
+    }  
+}
+</code></pre>
+<pre><code class="language-java">import org.apache.spark.sql.Encoder;  
+import org.apache.spark.sql.Encoders;  
+import org.apache.spark.sql.expressions.Aggregator;  
+  
+public class MyAvgAgeUDAF extends Aggregator&lt;Long, AvgAgeBuffer, Long&gt; {  
+    @Override  
+    //初始化缓冲区  
+    public AvgAgeBuffer zero() {  
+        return new AvgAgeBuffer(0L, 0L);  
+    }  
+  
+    @Override  
+    //聚合输入的年龄和缓冲区中的数据，更新缓冲区  
+    public AvgAgeBuffer reduce(AvgAgeBuffer buffer, Long value) {  
+        buffer.setSum(buffer.getSum() + value);  
+        buffer.setCount(buffer.getCount() + 1);  
+        return buffer;  
+    }  
+  
+    @Override  
+    //合并两个缓冲区，将两个缓冲区中的数据合并到一起  
+    public AvgAgeBuffer merge(AvgAgeBuffer buffer1, AvgAgeBuffer buffer2) {  
+        buffer1.setSum(buffer1.getSum() + buffer2.getSum());  
+        buffer1.setCount(buffer1.getCount() + buffer2.getCount());  
+        return buffer1;  
+    }  
+  
+    @Override  
+    //计算最终结果  
+    public Long finish(AvgAgeBuffer buffer) {  
+        return buffer.getSum()/buffer.getCount();  
+    }  
+    @Override  
+    public Encoder&lt;AvgAgeBuffer&gt; bufferEncoder() {  
+        return Encoders.bean(AvgAgeBuffer.class);  
+    }  
+  
+    @Override  
+    public Encoder&lt;Long&gt; outputEncoder() {  
+        return Encoders.LONG();  
+    }  
+}
+</code></pre>
+<pre><code class="language-java">import java.io.Serializable;  
+  
+public class AvgAgeBuffer  implements Serializable {  
+    private long sum = 0;  
+    private long count = 0;  
+  
+    public AvgAgeBuffer() {  
+    }  
+  
+    public AvgAgeBuffer(long sum, long count) {  
+        this.sum = sum;  
+        this.count = count;  
+    }  
+  
+    public long getSum() {  
+        return sum;  
+    }  
+  
+    public void setSum(long sum) {  
+        this.sum = sum;  
+    }  
+  
+    public long getCount() {  
+        return count;  
+    }  
+  
+    public void setCount(long count) {  
+        this.count = count;  
+    }  
+}
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../Spark/SparkCore实战.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../Spark/SparkSQL实战.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../Spark/SparkCore实战.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../Spark/SparkSQL实战.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

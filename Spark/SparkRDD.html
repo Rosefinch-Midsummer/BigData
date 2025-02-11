@@ -1,0 +1,1879 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>SparkRDD - Big Data</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Big Data</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="spark-rdd"><a class="header" href="#spark-rdd">Spark RDD</a></h1>
+<ul>
+<li><a href="#%E6%A6%82%E8%BF%B0">概述</a></li>
+<li><a href="#%E8%AF%A6%E7%BB%86%E4%BB%8B%E7%BB%8D">详细介绍</a>
+<ul>
+<li><a href="#1-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5">1. 基本概念</a></li>
+<li><a href="#2-%E5%88%9B%E5%BB%BArdd">2. 创建RDD</a></li>
+<li><a href="#3-rdd%E6%93%8D%E4%BD%9C">3. RDD操作</a>
+<ul>
+<li><a href="#%E8%BD%AC%E6%8D%A2transformations">转换（Transformations）</a></li>
+<li><a href="#%E8%A1%8C%E5%8A%A8actions">行动（Actions）</a></li>
+</ul>
+</li>
+<li><a href="#4-%E5%AE%B9%E9%94%99%E6%9C%BA%E5%88%B6">4. 容错机制</a></li>
+<li><a href="#5-%E8%AE%A1%E7%AE%97%E6%A8%A1%E5%9E%8B">5. 计算模型</a></li>
+<li><a href="#6-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96">6. 性能优化</a></li>
+<li><a href="#%E6%80%BB%E7%BB%93">总结</a></li>
+</ul>
+</li>
+<li><a href="#rdd-%E7%BC%96%E7%A8%8B">RDD 编程</a>
+<ul>
+<li><a href="#21rdd%E7%9A%84%E5%88%9B%E5%BB%BA">2.1RDD的创建</a></li>
+<li><a href="#211idea%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87">2.1.1IDEA环境准备</a></li>
+</ul>
+</li>
+<li><a href="#rdd%E6%96%B9%E6%B3%95">RDD方法</a>
+<ul>
+<li><a href="#%E5%A4%84%E7%90%86%E6%95%B0%E6%8D%AE%E6%96%B9%E6%B3%95%E7%9A%84%E5%88%86%E7%B1%BB">处理数据方法的分类</a></li>
+</ul>
+</li>
+<li><a href="#spark-on-yarn-%E9%83%A8%E7%BD%B2%E6%90%AD%E5%BB%BA%E8%AF%A6%E7%BB%86%E5%9B%BE%E6%96%87%E6%95%99%E7%A8%8B">Spark on YARN 部署搭建详细图文教程</a>
+<ul>
+<li><a href="#1-function-%E6%8E%A5%E5%8F%A3%E7%9A%84%E7%94%A8%E6%B3%95">1. Function 接口的用法</a></li>
+<li><a href="#2-%E9%80%89%E6%8B%A9%E5%90%88%E9%80%82%E7%9A%84%E7%B1%BB%E5%9E%8B">2. 选择合适的类型</a></li>
+<li><a href="#3-%E4%BF%AE%E6%AD%A3-map-%E7%9A%84-lambda-%E8%A1%A8%E8%BE%BE%E5%BC%8F%E4%BD%BF%E7%94%A8">3. 修正 <code>map</code> 的 lambda 表达式使用</a></li>
+<li><a href="#filter">Filter</a></li>
+<li><a href="#flatmap">FlatMap</a></li>
+<li><a href="#groupby%E6%96%B9%E6%B3%95">groupby方法</a></li>
+<li><a href="#distinct">distinct</a></li>
+<li><a href="#sortby">sortBy</a></li>
+</ul>
+</li>
+<li><a href="#kv%E7%B1%BB%E5%9E%8B">KV类型</a>
+<ul>
+<li><a href="#%E5%8D%95%E5%80%BC%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2%E4%B8%BAkv%E7%B1%BB%E5%9E%8B">单值类型转换为KV类型</a></li>
+<li><a href="#groupby%E5%92%8Ckv%E7%B1%BB%E5%9E%8B">groupBy和KV类型</a></li>
+<li><a href="#wordcount">WordCount</a></li>
+<li><a href="#groupbykey%E6%8C%89key%E5%AF%B9value%E8%BF%9B%E8%A1%8C%E5%88%86%E7%BB%84">GroupByKey（按Key对Value进行分组）</a></li>
+<li><a href="#reducebykey%E6%8C%89%E7%85%A7key%E5%AF%B9value%E4%B8%A4%E4%B8%A4%E8%81%9A%E5%90%88">ReduceByKey（按照key对value两两聚合）</a></li>
+<li><a href="#sortbykey%E6%8C%89%E7%85%A7key%E6%8E%92%E5%BA%8F">sortByKey（按照key排序）</a></li>
+<li><a href="#%E4%BC%98%E5%8C%96shuffle%E6%80%A7%E8%83%BD">优化shuffle性能</a></li>
+<li><a href="#%E7%BC%A9%E5%87%8F%E5%88%86%E5%8C%BAcoalesce">缩减分区（coalesce）</a></li>
+<li><a href="#repartition%E6%89%A9%E5%A4%A7%E5%88%86%E5%8C%BA">repartition（扩大分区）</a></li>
+</ul>
+</li>
+<li><a href="#action%E7%AE%97%E5%AD%90">Action算子</a>
+<ul>
+<li><a href="#%E5%A6%82%E4%BD%95%E5%8C%BA%E5%88%86%E8%BD%AC%E6%8D%A2%E7%AE%97%E5%AD%90%E5%92%8C%E8%A1%8C%E5%8A%A8%E7%AE%97%E5%AD%90">如何区分转换算子和行动算子？</a></li>
+<li><a href="#collect%E6%96%B9%E6%B3%95">collect()方法</a></li>
+<li><a href="#%E5%85%B6%E4%BB%96%E6%96%B9%E6%B3%95">其他方法</a>
+<ul>
+<li><a href="#saveastextfilevssaveasobjectfile"><code>saveAsTextFile</code>VS<code>saveAsObjectFile</code></a></li>
+<li><a href="#collect%E5%92%8Cforeach%E8%81%94%E5%8A%A8">collect()和foreach()联动</a></li>
+</ul>
+</li>
+<li><a href="#%E5%BA%8F%E5%88%97%E5%8C%96">序列化</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="概述"><a class="header" href="#概述">概述</a></h2>
+<p>在Apache Spark中，RDD（Resilient Distributed Dataset，弹性分布式数据集）是Spark的核心概念之一，是一种不可变的分布式数据集。RDD为大规模数据处理提供了一种高效且容错的方式。</p>
+<p>RDD：分布式计算模型</p>
+<ol>
+<li>一定是一个对象</li>
+<li>一定封装了大量方法和属性（计算逻辑）</li>
+<li>一定需要适合进行分布式处理（降低数据规模，实现并行计算）</li>
+</ol>
+<p>分布式集群中心化基础架构——主从架构（Master-Slave）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20241126153006.png" alt="" /></p>
+<h2 id="详细介绍"><a class="header" href="#详细介绍">详细介绍</a></h2>
+<p>以下是对RDD的详细介绍：</p>
+<h3 id="1-基本概念"><a class="header" href="#1-基本概念">1. 基本概念</a></h3>
+<ul>
+<li><strong>弹性</strong>：RDD支持在节点故障时自动恢复丢失的数据。它通过记录数据的来源（血统信息）来实现这一点。</li>
+<li><strong>分布式</strong>：RDD的数据会被分散存储在集群的多个节点上，利用并行计算提高数据处理的效率。</li>
+<li><strong>不可变性</strong>：一旦创建，RDD中的数据不能被改变。这意味着对RDD的操作会返回一个新的RDD，而不是修改原有的RDD。</li>
+</ul>
+<h3 id="2-创建rdd"><a class="header" href="#2-创建rdd">2. 创建RDD</a></h3>
+<p>RDD可以通过以下几种方式创建：</p>
+<ul>
+<li><strong>从已有的集合</strong>：可以直接从本地的Python、Scala等集合创建RDD。例如，在Scala中使用<code>sc.parallelize()</code>方法。</li>
+<li><strong>从外部存储</strong>：可以从HDFS、S3等外部存储系统读取数据，比如使用<code>sc.textFile()</code>方法来读取文本文件。</li>
+</ul>
+<h3 id="3-rdd操作"><a class="header" href="#3-rdd操作">3. RDD操作</a></h3>
+<p>RDD支持两类操作：转换和行动。</p>
+<h4 id="转换transformations"><a class="header" href="#转换transformations">转换（Transformations）</a></h4>
+<p>转换是指对RDD进行的一种操作，生成一个新的RDD。转换是惰性执行的，即只有在需要结果时才会被计算。常见的转换操作包括：</p>
+<ul>
+<li><code>map(func)</code>：对RDD中的每个元素应用<code>func</code>函数，返回一个新的RDD。</li>
+<li><code>filter(func)</code>：根据给定的<code>func</code>函数进行筛选，返回满足条件的元素的新RDD。</li>
+<li><code>flatMap(func)</code>：类似于<code>map</code>，但每个输入元素可以映射到零个或多个输出元素。</li>
+<li><code>union(otherRDD)</code>：返回一个新的RDD，包括两个RDD的所有元素。</li>
+<li><code>join(otherRDD)</code>：对两个RDD进行连接操作，返回一个包含键值对的新RDD。</li>
+</ul>
+<h4 id="行动actions"><a class="header" href="#行动actions">行动（Actions）</a></h4>
+<p>行动是指对RDD进行的操作，会触发计算并返回结果。不像转换，行动会立即执行。常见的行动操作包括：</p>
+<ul>
+<li><code>collect()</code>：从所有节点收集数据到驱动程序，返回一个包含所有数据的数组。</li>
+<li><code>count()</code>：返回RDD中元素的数量。</li>
+<li><code>first()</code>：返回RDD中的第一个元素。</li>
+<li><code>take(n)</code>：返回RDD中的前n个元素。</li>
+<li><code>saveAsTextFile(path)</code>：将RDD的数据保存到指定路径的文本文件中。</li>
+</ul>
+<h3 id="4-容错机制"><a class="header" href="#4-容错机制">4. 容错机制</a></h3>
+<p>RDD的容错机制是通过血统（Lineage）来实现的。每个RDD都maintains了其转换操作的一个有向无环图。在发生节点故障时，Spark可以根据这个血统信息重新计算丢失的分区，确保数据的完整性和可靠性。</p>
+<h3 id="5-计算模型"><a class="header" href="#5-计算模型">5. 计算模型</a></h3>
+<p>RDD采用延迟计算的模型，实际的计算只有在执行行动操作时才会发生。这种特性可以优化job的执行效率，使得Spark能够更好地利用集群的资源。</p>
+<h3 id="6-性能优化"><a class="header" href="#6-性能优化">6. 性能优化</a></h3>
+<p>Spark中的RDD通过各种特性来提升性能，包括：</p>
+<ul>
+<li>数据的分区（Partitioning）：合理的分区可以提高并行度，减少任务之间的Shuffle。</li>
+<li>缓存（Caching）：经常使用的RDD可以被缓存到内存中，以提速后续计算。</li>
+</ul>
+<h3 id="总结"><a class="header" href="#总结">总结</a></h3>
+<p>RDD是Apache Spark的基础数据结构，提供了强大的分布式计算能力和容错特性。它的设计使得开发者可以用简洁的操作来处理大规模数据，从而提高了数据处理的效率和可扩展性。在使用Spark进行大数据处理时，了解RDD的原理和操作是非常重要的。</p>
+<p>RDD模型可以封装数据的处理逻辑，但是这个逻辑不能太复杂，类似于字符串。</p>
+<p>RDD的功能类似于字符串的功能，需要通过大量的RDD对象组合在一起实现复杂的功能。</p>
+<p>RDD和字符串的区别：</p>
+<ol>
+<li>字符串的功能是单点操作，功能一旦调用，就会马上执行</li>
+<li>RDD的功能是分布式操作，功能调用但不会马上执行</li>
+</ol>
+<h1 id="rdd-编程"><a class="header" href="#rdd-编程">RDD 编程</a></h1>
+<h2 id="21rdd的创建"><a class="header" href="#21rdd的创建">2.1RDD的创建</a></h2>
+<p>在Spark中创建RDD的创建方式可以分为三种：从集合中创建RDD、从外部存储创
+建RDD、从其他RDD创建。</p>
+<h2 id="211idea环境准备"><a class="header" href="#211idea环境准备">2.1.1IDEA环境准备</a></h2>
+<pre><code class="language-java">import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
+
+import java.util.Arrays;
+import java.util.List;
+
+public class Spark02_RDD_Memory_Partition {
+    public static void main(String[] args) {
+        // 1.创建配置对象
+        SparkConf conf = new SparkConf();
+        conf.setAppName("Spark01_Env");
+        conf.setMaster("local[*]");
+        conf.set("spark.default.parallelism", "4");
+
+        // 2. 创建sparkContext
+        JavaSparkContext jsc = new JavaSparkContext(conf);
+
+        // 3. 编写代码
+        List&lt;String&gt; names = Arrays.asList("zhangsan", "lisi", "wangwu", "zhaoliu");
+        JavaRDD&lt;String&gt; rdd = jsc.parallelize(names, 3);
+        rdd.saveAsTextFile("output");
+        // 4. 关闭sc
+        jsc.stop();
+    }
+}
+
+</code></pre>
+<p>parallelize方法可以传递2个参数的</p>
+<p>第一个参数表示对接的数据源集合</p>
+<p>第二个参数表示切片（分区）的数量</p>
+<p>可以不需要指定，spark会采用默认值进行分区（切片）</p>
+<p>numSlices =scheduler.conf.getInt("spark.default.parallelism",totalcores)</p>
+<p>从配置对象中获取配置参数：spark.default.parallelism（默认并行度）</p>
+<p>如果配置参数不存在，那么默认取值为totalCores（当前环境总的虚拟核数），</p>
+<p>Kafka可以将数据进行切片（减小规模），也称之为分区，这个分区操作是底层完成的。</p>
+<p>Local环境中，分区数量和环境核数相关，但是一般不推荐分区数量需要手动设定</p>
+<p>Spark在读取集合数据时，分区设定存在3种不同场合</p>
+<ol>
+<li>优先使用方法参数</li>
+<li>使用配置参数：spark.default.parallelism</li>
+<li>采用环境默认值</li>
+</ol>
+<p>TOD0文件数据源分区设定也存在多个位置</p>
+<p>1.textFile可以传递第二个参数：minPartitions（最小分区数）</p>
+<p>参数可以不需要传递的，那么Spark会采用默认值</p>
+<p><code>minPartitions =math.min(defaultParallelism，2)</code></p>
+<p>2.使用配置参数：<code>spark.default.parallelism=&gt;1=&gt;math.min（参数，2）</code></p>
+<p>3.采用环境默认总核值=&gt;math.min（总核数，2）</p>
+<p>Spark框架基于MR开发的。</p>
+<p>Spark框架文件的操作没有自已的实现的。采用MR库（Hadoop）来实现当前读取文件的切片数量不是由Spark决定的，而是由Hadoop决定</p>
+<p>Hadoop切片规则：</p>
+<pre><code>totalsize:7byte
+goalsize:totalsize/min-part-num=&gt;7/3=2byte
+part-num:totalsize/goalsize=&gt;7/2=&gt;3....1
+</code></pre>
+<pre><code>finalList&lt;Integer&gt;names =Arrays.asList（1,2,3,4,5,6);
+
+/*
+【1】【2,3】【4】【5，6】
+
+len=6,partnum=4
+
+(0 until 4) =&gt; [0，1,2,3]
+
+θ=&gt;((i*length)/numSlices，(((i+1）*length)/numSlices)) 
+=&gt;（(0*6）/4，（((0+1）*6）/4))
+（0，1）=&gt;1
+
+1 =&gt;（(i*length）/numSlices，（((i+1）*length）/numSlices))
+=&gt; =&gt;
+=&gt; 3=&gt;
+=&gt;
+（(1*6）/4，（((2)*6)/4))(1，3）=&gt;2
+（(i*length）/numSlices，（((i+1）*length）/numSlices))
+/4，（((3）*6）/4))
+*6)((2
+4）=&gt;1(3,
+*length）/numSlices，（((i+1）*length）/numSlices))((i
+（((4）*6）/4))
+((3
+6)
+/4,
+*
+(4, 6) =&gt; 2
+=&gt;
+</code></pre>
+<p>Spark进行分区处理时，需要对每个分区的数据尽快能地平均分配</p>
+<p>totalsize=7
+goalsize=totalsize/minpartnum=7/2=3
+partnum=totalsize/goalsize =7/3=2...1=&gt;2+1=3</p>
+<p>Spark不支持文件操作的。文件操作都是由Hadoop完成的</p>
+<p>Hadoop进行文件切片数量的计算和文件数据存储计算规则不一样。</p>
+<p>1.分区数量计算的时候，考虑的是尽可能的平均：按字节来计算</p>
+<p>2.分区数据的存储是考虑业务数据的完整性：按照行来读取</p>
+<p>读取数据时，还需要考虑数据偏移量，偏移量从0开始的，相同偏移量对应的数据不能重复读取。</p>
+<pre><code>1．分区数量
+goalsize =14/4=&gt;3
+= 14/3=4...2=&gt;4+1=5
+partnum 2．分区数据
+[0,3][3，6][6，9][9，12][12, 14]
+110 =&gt;
+=&gt; =&gt; =&gt; =&gt; =&gt;
+0123
+4567
+22
+=&gt;
+【11】【22】【33】【44】 4
+891011
+33@@
+=&gt;
+44
+1213
+</code></pre>
+<p>注意避免数据倾斜问题，以行为单位存储业务</p>
+<h1 id="rdd方法"><a class="header" href="#rdd方法">RDD方法</a></h1>
+<p>注意方法名、IN、OUT</p>
+<p>两大类</p>
+<p>RDD类似于数据管道，可以流转数据，但是不能保存数据</p>
+<p>RDD有很多的方法可以将数据向下流转，称之为转换</p>
+<p>RDD有很多的方法可以控制数据流转，称之为行动</p>
+<p>算子（operate）：操作、方法</p>
+<h2 id="处理数据方法的分类"><a class="header" href="#处理数据方法的分类">处理数据方法的分类</a></h2>
+<p>两大类：单值、键值</p>
+<p>Scala中()构成元组</p>
+<p>Scala语言中可以将无关的数据封装在一起，形成一个整体，称之为元素的组合，简称为【元组】</p>
+<p>如果想要访问元组中的数据，必须采用顺序号</p>
+<p>如果元组中的数据只有2个的场合，称之为对偶元组，也称之为键值对</p>
+<p>马丁将Scala融合到Java，形成的JDK1.8中的Tuple类</p>
+<pre><code class="language-scala">var kV=（0，1) 
+var kv1 =("zhangsan", 20,1001) 
+</code></pre>
+<pre><code class="language-java">import scala.Tuple1;  
+import scala.Tuple2;
+
+
+
+Tuple2&lt;String, Integer&gt; tuple = new Tuple2&lt;&gt;("zhangsan", 18);  
+System.out.println(tuple._1 + " " + tuple._2;  
+  
+Tuple1&lt;String&gt; tuple1 = new Tuple1&lt;&gt;("zhangsan");  
+System.out.println(tuple1._1());
+</code></pre>
+<p>Java中元组的最大数据容量为22</p>
+<h1 id="spark-on-yarn-部署搭建详细图文教程"><a class="header" href="#spark-on-yarn-部署搭建详细图文教程">Spark on YARN 部署搭建详细图文教程</a></h1>
+<p>https://blog.csdn.net/weixin_46560589/article/details/132898417</p>
+<p>在您提供的代码中，最主要的问题出现在 <code>rdd.map</code> 调用中的 <code>Function</code> 接口的实现上。<code>Function</code> 接口是用于定义一个返回值的函数，但在 Spark 中的 <code>map</code> 操作中采用的是 <code>Function&lt;T, R&gt;</code> 接口类型。因此，您只需要实现 <code>apply</code> 方法，而没有必要实现 <code>call</code> 方法。</p>
+<p>以下是您代码中需要修改的地方：</p>
+<h3 id="1-function-接口的用法"><a class="header" href="#1-function-接口的用法">1. <strong>Function 接口的用法</strong></a></h3>
+<p>在 Spark Java API 中 <code>Function</code> 接口只有一个方法 <code>apply</code>，并且 <code>apply</code> 方法参数与返回类型匹配。这是不需要实现 <code>call</code> 方法的。</p>
+<h3 id="2-选择合适的类型"><a class="header" href="#2-选择合适的类型">2. <strong>选择合适的类型</strong></a></h3>
+<p>为了使 <code>apply</code> 方法返回 <code>Integer</code> 而不是 <code>Object</code>，你应该将 <code>mapRdd</code> 的类型定义为 <code>JavaRDD&lt;Integer&gt;</code>，而不是 <code>JavaRDD&lt;Object&gt;</code>。</p>
+<h3 id="3-修正-map-的-lambda-表达式使用"><a class="header" href="#3-修正-map-的-lambda-表达式使用">3. <strong>修正 <code>map</code> 的 lambda 表达式使用</strong></a></h3>
+<p>可以考虑使用 lambda 表达式来简化代码。</p>
+<p>修正后的代码如下：</p>
+<pre><code class="language-java">import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
+
+import java.util.Arrays;
+import java.util.List;
+
+public class Spark02_Operate_Transform_Map {
+    public static void main(String[] args) {
+        // 1.创建配置对象
+        SparkConf conf = new SparkConf();
+        conf.setMaster("local[*]");
+        conf.setAppName("sparkCore");
+
+        // 2. 创建sparkContext
+        JavaSparkContext sc = new JavaSparkContext(conf);
+
+        // 3. 编写代码
+        List&lt;Integer&gt; nums = Arrays.asList(1, 2, 3, 4, 5);
+        JavaRDD&lt;Integer&gt; rdd = sc.parallelize(nums, 2);
+
+        // map操作，返回类型应为 JavaRDD&lt;Integer&gt;
+        JavaRDD&lt;Integer&gt; mapRdd = rdd.map(integer -&gt; integer * 2);
+        
+        // collect() 返回的是 List 类型，所以后续不能直接调用 foreach，要使用方法调用
+        mapRdd.collect().forEach(System.out::println);
+
+        System.out.println("---------------------------");
+        System.out.println(nums);
+
+        // 4. 关闭sc
+        sc.stop();
+    }
+}
+</code></pre>
+<pre><code>ToDo如果Java中接口采用注解oFunctionaLInterface声明，那么接口的使用就可以采用JDK提供的函数式编程的语法实现（lambda表达式）
+1.return可以省略：map方法就需要返回值，所以不需要return
+2.分号可以省略：可以采用换行的方式表示代码逻辑 
+3.大括号可以省略：如果逻辑代码只有一行
+4.小括号可以省略：参数列表中的参数只有一个
+5.参数和箭头可以省略：参数在逻辑中只使用了一次（需要有对象来实现功能）
+</code></pre>
+<pre><code class="language-java">import org.apache.spark.SparkConf;  
+import org.apache.spark.api.java.JavaRDD;  
+import org.apache.spark.api.java.JavaSparkContext;  
+  
+import java.util.Arrays;  
+import java.util.List;  
+import java.util.function.Function;  
+  
+public class Spark02_Operate_Transform_Map {  
+    public static void main(String[] args) {  
+        // 1.创建配置对象  
+        SparkConf conf = new SparkConf();  
+        conf.setMaster("local[*]");  
+        conf.setAppName("sparkCore");  
+  
+        // 2. 创建sparkContext  
+        JavaSparkContext sc = new JavaSparkContext(conf);  
+  
+        // 3. 编写代码  
+  
+        List&lt;Integer&gt; nums = Arrays.asList(1, 2, 3, 4, 5);  
+        JavaRDD&lt;Integer&gt; rdd = sc.parallelize(nums, 2);  
+  
+        // map操作  
+        //JavaRDD&lt;Integer&gt; mapRdd = rdd.map(integer -&gt; integer * 2);  
+        JavaRDD&lt;Integer&gt; mapRdd = rdd.map(NumberTest::doubleNumber);  
+        mapRdd.collect().forEach(System.out::println);  
+  
+        System.out.println("---------------------------");  
+        System.out.println(nums);  
+  
+        // 4. 关闭sc  
+        sc.stop();  
+  
+    }  
+}  
+class NumberTest {  
+    public static int doubleNumber(int num) {  
+        return num * 2;  
+    }  
+}
+</code></pre>
+<p>函数式编程写法</p>
+<pre><code class="language-java">import org.apache.spark.SparkConf;  
+import org.apache.spark.api.java.JavaSparkContext;  
+  
+import java.util.Arrays;  
+  
+public class Spark02_Operate_Transform_Map {  
+    public static void main(String[] args) {  
+        // 1.创建配置对象  
+        SparkConf conf = new SparkConf();  
+        conf.setMaster("local[*]");  
+        conf.setAppName("sparkCore");  
+  
+        // 2. 创建sparkContext  
+        JavaSparkContext sc = new JavaSparkContext(conf);  
+  
+        // 3. 编写代码  
+        sc.parallelize(Arrays.asList(1, 2, 3, 4, 5), 2)  
+                .map(NumberTest::doubleNumber)  
+                .collect()  
+                .forEach(System.out::println);  
+  
+        // 4. 关闭sc  
+        sc.stop();  
+  
+    }  
+}  
+class NumberTest {  
+    public static int doubleNumber(int num) {  
+        return num * 2;  
+    }  
+}
+</code></pre>
+<p>Map转换方法，将传递的数据转换为其他数据返回</p>
+<p>默认情况下，新创建的RDD的分区数量和之前旧的RDD的数量保持一致</p>
+<p>数据流转过程中，数据所在分区会如何变化？</p>
+<p>默认情况下，数据流转，所在的分区编号不变。分组处理后会发生变化。</p>
+<p>Spark处理不同分区数据时：分区内有序，分区间无序</p>
+<pre><code class="language-java">import org.apache.spark.SparkConf;  
+import org.apache.spark.api.java.JavaSparkContext;  
+  
+import java.util.Arrays;  
+  
+public class Spark02_Operate_Transform_Map2 {  
+    public static void main(String[] args) {  
+        // 1.创建配置对象  
+        SparkConf conf = new SparkConf();  
+        conf.setMaster("local[2]");  
+        conf.setAppName("sparkCore");  
+  
+        // 2. 创建sparkContext  
+        JavaSparkContext sc = new JavaSparkContext(conf);  
+  
+        // 3. 编写代码  
+        sc.parallelize(Arrays.asList(1, 2, 3, 4), 2)  
+                .map(NumberTest2::doubleNumber)  
+                .collect();  
+  
+        // 4. 关闭sc  
+        sc.stop();  
+  
+    }  
+}  
+class NumberTest2 {  
+    public static int doubleNumber(int num) {  
+        System.out.println("doubleNumber: @" + num);  
+        return num * 2;  
+    }  
+}
+</code></pre>
+<pre><code>doubleNumber: @3
+doubleNumber: @1
+doubleNumber: @4
+doubleNumber: @2
+</code></pre>
+<p>一个RDD中处理完所有数据后，下一个RDD才会继续处理数据。</p>
+<p>原因：RDD不保存数据</p>
+<pre><code class="language-java">import org.apache.spark.SparkConf;  
+import org.apache.spark.api.java.JavaRDD;  
+import org.apache.spark.api.java.JavaSparkContext;  
+  
+import java.util.Arrays;  
+import java.util.List;  
+  
+public class Spark02_Operate_Transform_Map2 {  
+    public static void main(String[] args) {  
+        // 1.创建配置对象  
+        SparkConf conf = new SparkConf();  
+        conf.setMaster("local[2]");  
+        conf.setAppName("sparkCore");  
+  
+        // 2. 创建sparkContext  
+        JavaSparkContext sc = new JavaSparkContext(conf);  
+  
+        // 3. 编写代码  
+        List&lt;Integer&gt; nums = Arrays.asList(1, 2, 3, 4);  
+        JavaRDD&lt;Integer&gt; rdd = sc.parallelize(nums, 2);  
+        JavaRDD&lt;Integer&gt; mapRdd1 = rdd.map(num -&gt; {  
+            System.out.println("map1: @" + num);  
+            return num;  
+        });  
+        JavaRDD&lt;Integer&gt; mapRdd2 = mapRdd1.map(num -&gt; {  
+            System.out.println("map1: #####" + num);  
+            return num;  
+        });  
+        mapRdd2.foreach(num -&gt; System.out.println("foreach: " + num));  
+  
+        // 4. 关闭sc  
+        sc.stop();  
+  
+    }  
+}
+</code></pre>
+<pre><code>map1: @3
+map1: @1
+map1: #####3
+map1: #####1
+foreach: 1
+foreach: 3
+map1: @2
+map1: @4
+map1: #####4
+map1: #####2
+foreach: 4
+foreach: 2
+</code></pre>
+<h2 id="filter"><a class="header" href="#filter">Filter</a></h2>
+<pre><code class="language-java">package com.zzw.bigdata.spark.rdd.operate;  
+  
+import org.apache.spark.SparkConf;  
+import org.apache.spark.api.java.JavaRDD;  
+import org.apache.spark.api.java.JavaSparkContext;  
+  
+import java.util.Arrays;  
+import java.util.List;  
+  
+public class Spark02_Operate_Transform_Filter {  
+    public static void main(String[] args) {  
+        // 1.创建配置对象  
+        SparkConf conf = new SparkConf();  
+        conf.setMaster("local[*]");  
+        conf.setAppName("sparkCore");  
+  
+        // 2. 创建sparkContext  
+        JavaSparkContext sc = new JavaSparkContext(conf);  
+  
+        // 3. 编写代码  
+        List&lt;Integer&gt; nums = Arrays.asList(1, 2, 3, 4);  
+        JavaRDD&lt;Integer&gt; rdd = sc.parallelize(nums, 2);  
+        rdd.filter(num -&gt; num % 2 == 0).collect().forEach(System.out::println);  
+  
+        // 4. 关闭sc  
+        sc.stop();  
+  
+    }  
+}
+</code></pre>
+<h2 id="flatmap"><a class="header" href="#flatmap">FlatMap</a></h2>
+<p>将整体数据拆分成个体来使用的操作称为扁平化操作</p>
+<pre><code class="language-java">package com.zzw.bigdata.spark.rdd.operate;  
+  
+import org.apache.spark.SparkConf;  
+import org.apache.spark.api.java.JavaRDD;  
+import org.apache.spark.api.java.JavaSparkContext;  
+import org.apache.spark.api.java.function.FlatMapFunction;  
+  
+import java.util.ArrayList;  
+import java.util.Arrays;  
+import java.util.Iterator;  
+import java.util.List;  
+  
+public class Spark02_Operate_Transform_FlatMap {  
+    public static void main(String[] args) {  
+        // 1.创建配置对象  
+        SparkConf conf = new SparkConf();  
+        conf.setMaster("local[2]");  
+        conf.setAppName("sparkCore");  
+  
+        // 2. 创建sparkContext  
+        JavaSparkContext sc = new JavaSparkContext(conf);  
+  
+        // 3. 编写代码  
+        List&lt;List&lt;Integer&gt;&gt; data = Arrays.asList(Arrays.asList(1, 2, 3), Arrays.asList(4, 5, 6));  
+        JavaRDD&lt;List&lt;Integer&gt;&gt; rdd = sc.parallelize(data, 2);  
+        //rdd.flatMap(list -&gt; list.iterator()).collect().forEach(System.out::println);  
+        JavaRDD&lt;Integer&gt; flatMapRdd = rdd.flatMap(new FlatMapFunction&lt;List&lt;Integer&gt;, Integer&gt;(){  
+  
+            public Iterator&lt;Integer&gt; call(List&lt;Integer&gt; list) throws Exception {  
+                List&lt;Integer&gt; nums = new ArrayList&lt;&gt;();  
+                list.forEach(num -&gt; nums.add(num * 2));  
+                return nums.iterator();  
+            }  
+        });  
+        flatMapRdd.collect().forEach(System.out::println);  
+  
+        // 4. 关闭sc  
+        sc.stop();  
+  
+    }  
+}
+</code></pre>
+<pre><code>2
+4
+6
+8
+10
+12
+</code></pre>
+<p>map方法只负责转换数据（A-&gt;B[B1，B2，B3])，不能将数据拆分后独立使用</p>
+<p>flatMap方法可以将数据拆分后独立使用（A-&gt;B1，B2，B3）</p>
+<pre><code class="language-java">package com.zzw.bigdata.spark.rdd.operate;  
+  
+import org.apache.spark.SparkConf;  
+import org.apache.spark.api.java.JavaRDD;  
+import org.apache.spark.api.java.JavaSparkContext;  
+import org.apache.spark.api.java.function.FlatMapFunction;  
+  
+import java.util.ArrayList;  
+import java.util.Arrays;  
+import java.util.Iterator;  
+import java.util.List;  
+  
+public class Spark02_Operate_Transform_FlatMap1 {  
+    public static void main(String[] args) {  
+        // 1.创建配置对象  
+        SparkConf conf = new SparkConf();  
+        conf.setMaster("local[2]");  
+        conf.setAppName("sparkCore");  
+  
+        // 2. 创建sparkContext  
+        JavaSparkContext sc = new JavaSparkContext(conf);  
+  
+        // 3. 编写代码  
+  
+        JavaRDD&lt;String&gt; rdd = sc.textFile("spark/src/main/resources/data/test.txt");  
+        JavaRDD&lt;String&gt; flatMapRdd = rdd.flatMap(line -&gt; Arrays.asList(line.split(" ")).iterator());  
+        flatMapRdd.collect().forEach(System.out::println);  
+  
+        // 4. 关闭sc  
+        sc.stop();  
+  
+    }  
+}
+</code></pre>
+<pre><code>hadoop
+flume
+spark
+hive
+mysql
+navicat
+oracle
+bazaar
+git
+</code></pre>
+<h2 id="groupby方法"><a class="header" href="#groupby方法">groupby方法</a></h2>
+<pre><code class="language-java">import org.apache.spark.SparkConf;  
+import org.apache.spark.api.java.JavaRDD;  
+import org.apache.spark.api.java.JavaSparkContext;  
+  
+import java.util.Arrays;  
+import java.util.List;  
+  
+public class Spark02_Operate_Transform_Groupby {  
+    public static void main(String[] args) {  
+        // 1.创建配置对象  
+        SparkConf conf = new SparkConf();  
+        conf.setMaster("local[2]");  
+        conf.setAppName("sparkCore");  
+  
+        // 2. 创建sparkContext  
+        JavaSparkContext sc = new JavaSparkContext(conf);  
+  
+        // 3. 编写代码  
+        List&lt;Integer&gt; nums = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);  
+        JavaRDD&lt;Integer&gt; rdd = sc.parallelize(nums, 2);  
+        rdd.groupBy(num -&gt; num % 5).collect().forEach(System.out::println);  
+  
+        // 4. 关闭sc  
+        sc.stop();  
+  
+    }  
+}
+</code></pre>
+<p>输出结果如下所示：</p>
+<pre><code>(4,[4, 9])
+(0,[5, 10])
+(2,[2, 7])
+(1,[1, 6])
+(3,[3, 8])
+</code></pre>
+<p>如何解决数据倾斜？</p>
+<p>重新分组？</p>
+<p>默认情况下，数据处理后，所在的分区不会发生变化，但是groupBy方法例外</p>
+<p>Spark在数据处理中，要求同一个组的数据必须在同一个分区中</p>
+<p>所以分组操作会将<strong>数据分区中的数据</strong>打乱重新组合，在Spark中这个操作被称为Shuffle</p>
+<p>一个分区可以存放多个组</p>
+<p>Spark要求所有的数据必须分组后才能继续执行后续操作</p>
+<p>RDD对象不能保存数据</p>
+<p>当前groupBy操作会将数据保存到磁盘文件中，保证数据全部分组后执行后续操作</p>
+<p>Shuffle操作一定会落盘，但可能会导致资源浪费</p>
+<p>Spark中含有Shuffle操作的方法都有改变分区的能力</p>
+<p>RDD的分区和Task之间有关系。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20241231155313.png" alt="" /></p>
+<p>Shuffle会将完整的计算流程一分为二，其中一部分任务会写磁盘，另外一部分的任务会读磁盘</p>
+<p>写磁盘的操作不完成，不允许读磁盘</p>
+<pre><code class="language-java">import org.apache.spark.SparkConf;  
+import org.apache.spark.api.java.JavaRDD;  
+import org.apache.spark.api.java.JavaSparkContext;  
+  
+import java.util.Arrays;  
+import java.util.List;  
+  
+public class Spark02_Operate_Transform_Groupby {  
+    public static void main(String[] args) throws InterruptedException {  
+        // 1.创建配置对象  
+        SparkConf conf = new SparkConf();  
+        conf.setMaster("local[2]");  
+        conf.setAppName("sparkCore");  
+  
+        // 2. 创建sparkContext  
+        JavaSparkContext sc = new JavaSparkContext(conf);  
+  
+        // 3. 编写代码  
+        List&lt;Integer&gt; nums = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);  
+        JavaRDD&lt;Integer&gt; rdd = sc.parallelize(nums, 2);  
+        rdd.groupBy(num -&gt; num % 5).collect().forEach(System.out::println);  
+  
+        System.out.println("执行结束");  
+  
+  
+        //监控页面：http://localhost:4040  
+        Thread.sleep(300000);  
+  
+        // 4. 关闭sc  
+        sc.stop();  
+  
+    }  
+}
+</code></pre>
+<h2 id="distinct"><a class="header" href="#distinct">distinct</a></h2>
+<p>distinct 分布式去重，采用了分组+Shuffle的处理方式</p>
+<p>hashSet 单点去重</p>
+<pre><code class="language-java">import org.apache.spark.SparkConf;  
+import org.apache.spark.api.java.JavaRDD;  
+import org.apache.spark.api.java.JavaSparkContext;  
+  
+import java.util.Arrays;  
+import java.util.List;  
+  
+public class Spark02_Operate_Transform_Distinct {  
+    public static void main(String[] args) throws InterruptedException {  
+        // 1.创建配置对象  
+        SparkConf conf = new SparkConf();  
+        conf.setMaster("local[2]");  
+        conf.setAppName("sparkCore");  
+  
+        // 2. 创建sparkContext  
+        JavaSparkContext sc = new JavaSparkContext(conf);  
+  
+        // 3. 编写代码  
+        List&lt;Integer&gt; nums = Arrays.asList(1, 1,1,12,2,2);  
+        JavaRDD&lt;Integer&gt; rdd = sc.parallelize(nums, 3);  
+        rdd.distinct().collect().forEach(System.out::println);  
+  
+        System.out.println("执行结束");  
+  
+        // 4. 关闭sc  
+        sc.stop();  
+  
+    }  
+}
+</code></pre>
+<h2 id="sortby"><a class="header" href="#sortby">sortBy</a></h2>
+<p>传递三个参数</p>
+<p>第一个参数表示排序规则——Spark会为每一个数据增加一个标记，然后按照标记对数据进行排序</p>
+<p>第二个参数表示排序的方式</p>
+<p>第三个参数表示分区数量</p>
+<pre><code class="language-java">package com.zzw.bigdata.spark.rdd.operate;  
+  
+import org.apache.spark.SparkConf;  
+import org.apache.spark.api.java.JavaRDD;  
+import org.apache.spark.api.java.JavaSparkContext;  
+  
+import java.util.Arrays;  
+import java.util.List;  
+  
+public class Spark02_Operate_Transform_SortBy {  
+    public static void main(String[] args) throws InterruptedException {  
+        // 1.创建配置对象  
+        SparkConf conf = new SparkConf();  
+        conf.setMaster("local[2]");  
+        conf.setAppName("sparkCore");  
+  
+        // 2. 创建sparkContext  
+        JavaSparkContext sc = new JavaSparkContext(conf);  
+  
+        // 3. 编写代码  
+        List&lt;Integer&gt; nums = Arrays.asList(1, 4,9,12,2,2);  
+        JavaRDD&lt;Integer&gt; rdd = sc.parallelize(nums, 3);  
+        rdd.distinct().sortBy(num -&gt; num, true, 2).collect().forEach(System.out::println);  
+  
+        System.out.println("执行结束");  
+  
+        // 4. 关闭sc  
+        sc.stop();  
+  
+    }  
+}
+</code></pre>
+<pre><code class="language-java">package com.zzw.bigdata.spark.rdd.operate;  
+  
+import org.apache.spark.SparkConf;  
+import org.apache.spark.api.java.JavaRDD;  
+import org.apache.spark.api.java.JavaSparkContext;  
+  
+import java.util.Arrays;  
+import java.util.List;  
+  
+public class Spark02_Operate_Transform_SortBy {  
+    public static void main(String[] args) throws InterruptedException {  
+        // 1.创建配置对象  
+        SparkConf conf = new SparkConf();  
+        conf.setMaster("local[2]");  
+        conf.setAppName("sparkCore");  
+  
+        // 2. 创建sparkContext  
+        JavaSparkContext sc = new JavaSparkContext(conf);  
+  
+        // 3. 编写代码  
+        List&lt;Integer&gt; nums = Arrays.asList(1, 4,9,12,2,2);  
+        JavaRDD&lt;Integer&gt; rdd = sc.parallelize(nums, 3);  
+        rdd.distinct().sortBy(num -&gt; "" + num, true, 2).collect().forEach(System.out::println);  
+  
+        System.out.println("执行结束");  
+  
+        // 4. 关闭sc  
+        sc.stop();  
+  
+    }  
+}
+</code></pre>
+<p>输出结果如下所示：</p>
+<pre><code>1
+12
+2
+4
+9
+执行结束
+</code></pre>
+<p>字符串按照字典顺序排列</p>
+<h1 id="kv类型"><a class="header" href="#kv类型">KV类型</a></h1>
+<pre><code class="language-java">import org.apache.spark.SparkConf;  
+import org.apache.spark.api.java.JavaPairRDD;  
+import org.apache.spark.api.java.JavaRDD;  
+import org.apache.spark.api.java.JavaSparkContext;  
+import scala.Tuple2;  
+  
+import java.util.Arrays;  
+import java.util.List;  
+  
+public class Spark02_Operate_Transform_KV {  
+    public static void main(String[] args) throws InterruptedException {  
+        // 1.创建配置对象  
+        SparkConf conf = new SparkConf();  
+        conf.setMaster("local[2]");  
+        conf.setAppName("sparkCore");  
+  
+        // 2. 创建sparkContext  
+        JavaSparkContext sc = new JavaSparkContext(conf);  
+  
+        // 3. 编写代码  
+        //KV类型一般表示二元组，如(key, value)，SparkRDD中对数据整体的处理称为单值操作，对数据中的每个元素进行操作称为KV操作。  
+        Tuple2&lt;String, Integer&gt; t1 = new Tuple2&lt;String, Integer&gt;("zhangsan", 18);  
+        Tuple2&lt;String, Integer&gt; t2 = new Tuple2&lt;String, Integer&gt;("lisi", 20);  
+        Tuple2&lt;String, Integer&gt; t3 = new Tuple2&lt;String, Integer&gt;("wangwu", 22);  
+        Tuple2&lt;String, Integer&gt; t4 = new Tuple2&lt;String, Integer&gt;("zhaoliu", 25);  
+  
+        List&lt;Tuple2&lt;String, Integer&gt;&gt; list = Arrays.asList(t1, t2, t3, t4);  
+        JavaRDD&lt;Tuple2&lt;String, Integer&gt;&gt; rdd = sc.parallelize(list);  
+  
+        //单值处理  
+        rdd.map(t -&gt; new Tuple2&lt;&gt;(t._1, t._2 * 2)).collect().forEach(System.out::println);  
+  
+        // 3.1 KV操作  
+        // 3.1.1 mapValues  
+        JavaPairRDD&lt;String, Integer&gt; pairRdd = sc.parallelizePairs(list);  
+        pairRdd.mapValues(value -&gt; value * 2).collect().forEach(System.out::println);  
+  
+        System.out.println("执行结束");  
+  
+        // 4. 关闭sc  
+        sc.stop();  
+  
+    }  
+}
+</code></pre>
+<pre><code>(zhangsan,36)
+(lisi,40)
+(wangwu,44)
+(zhaoliu,50)
+(zhangsan,36)
+(lisi,40)
+(wangwu,44)
+(zhaoliu,50)
+执行结束
+</code></pre>
+<h2 id="单值类型转换为kv类型"><a class="header" href="#单值类型转换为kv类型">单值类型转换为KV类型</a></h2>
+<pre><code class="language-java">import org.apache.spark.SparkConf;  
+import org.apache.spark.api.java.JavaPairRDD;  
+import org.apache.spark.api.java.JavaRDD;  
+import org.apache.spark.api.java.JavaSparkContext;  
+import scala.Tuple2;  
+  
+import java.util.Arrays;  
+import java.util.List;  
+  
+public class Spark02_Operate_Transform_KV_1 {  
+    public static void main(String[] args) throws InterruptedException {  
+        // 1.创建配置对象  
+        SparkConf conf = new SparkConf();  
+        conf.setMaster("local[2]");  
+        conf.setAppName("sparkCore");  
+  
+        // 2. 创建sparkContext  
+        JavaSparkContext sc = new JavaSparkContext(conf);  
+  
+        // 3. 编写代码  
+        List&lt;Integer&gt; nums = Arrays.asList(1, 2, 3, 4, 5);  
+        JavaRDD&lt;Integer&gt; rdd = sc.parallelize(nums);  
+  
+        rdd.mapToPair(num -&gt; new Tuple2&lt;&gt;(num, num * 2)).mapValues(num -&gt; num * 2).collect().forEach(System.out::println);  
+  
+        // 4. 关闭sc  
+        sc.stop();  
+  
+    }  
+}
+</code></pre>
+<pre><code>(1,4)
+(2,8)
+(3,12)
+(4,16)
+(5,20)
+</code></pre>
+<h2 id="groupby和kv类型"><a class="header" href="#groupby和kv类型">groupBy和KV类型</a></h2>
+<pre><code class="language-java">import org.apache.spark.SparkConf;  
+import org.apache.spark.api.java.JavaPairRDD;  
+import org.apache.spark.api.java.JavaRDD;  
+import org.apache.spark.api.java.JavaSparkContext;  
+import scala.Tuple2;  
+  
+import java.util.Arrays;  
+import java.util.List;  
+  
+public class Spark02_Operate_Transform_KV_GroupBy {  
+    public static void main(String[] args) throws InterruptedException {  
+        // 1.创建配置对象  
+        SparkConf conf = new SparkConf();  
+        conf.setMaster("local[2]");  
+        conf.setAppName("sparkCore");  
+  
+        // 2. 创建sparkContext  
+        JavaSparkContext sc = new JavaSparkContext(conf);  
+  
+        // 3. 编写代码  
+        List&lt;Integer&gt; nums = Arrays.asList(1, 2, 3, 4);  
+        JavaRDD&lt;Integer&gt; rdd = sc.parallelize(nums, 2);  
+  
+        JavaPairRDD&lt;Integer, Iterable&lt;Integer&gt;&gt; groupRDD = rdd.groupBy(num -&gt; num % 2);  
+        groupRDD.mapValues(iter -&gt; {  
+            int sum = 0;  
+            for (Integer num : iter) {  
+                sum += num;  
+            }  
+            return sum;  
+        }).collect().forEach(System.out::println);  
+  
+        // 4. 关闭sc  
+        sc.stop();  
+  
+    }  
+}
+</code></pre>
+<pre><code>(0,6)
+(1,4)
+</code></pre>
+<h2 id="wordcount"><a class="header" href="#wordcount">WordCount</a></h2>
+<pre><code class="language-java">import org.apache.spark.SparkConf;  
+import org.apache.spark.api.java.JavaPairRDD;  
+import org.apache.spark.api.java.JavaRDD;  
+import org.apache.spark.api.java.JavaSparkContext;  
+  
+import java.util.Arrays;  
+import java.util.List;  
+  
+public class Spark02_Operate_Transform_KV_WordCount {  
+    public static void main(String[] args) throws InterruptedException {  
+        // 1.创建配置对象  
+        SparkConf conf = new SparkConf();  
+        conf.setMaster("local[2]");  
+        conf.setAppName("sparkCore");  
+  
+        // 2. 创建sparkContext  
+        JavaSparkContext sc = new JavaSparkContext(conf);  
+  
+        // 3. 编写代码  
+  
+        JavaRDD&lt;String&gt; lineRDD = sc.textFile("D:\\Documents\\items\\BigData\\BigDataCode\\spark\\src\\main\\resources\\data\\word.txt");  
+        JavaRDD&lt;String&gt; wordRDD = lineRDD.flatMap(line -&gt; Arrays.asList(line.split(" ")).iterator());  
+        JavaPairRDD&lt;String, Iterable&lt;String&gt;&gt; wordGroupRDD = wordRDD.groupBy(word -&gt; word);  
+        JavaPairRDD&lt;String, Integer&gt; wordCountRDD = wordGroupRDD.mapValues(iter -&gt; {  
+            int count = 0;  
+            for (String s : iter) {  
+                count++;  
+            }  
+            return count;  
+        });  
+        wordCountRDD.collect().forEach(System.out::println);  
+  
+        // 4. 关闭sc  
+        sc.stop();  
+  
+    }  
+}
+</code></pre>
+<pre><code>(Flink,1)
+(Zookeeper,1)
+(Kafka,3)
+(Cassandra,1)
+(Spark,2)
+(Flume,2)
+(Redis,1)
+(HBase,1)
+(Hadoop,2)
+</code></pre>
+<h2 id="groupbykey按key对value进行分组"><a class="header" href="#groupbykey按key对value进行分组">GroupByKey（按Key对Value进行分组）</a></h2>
+<pre><code class="language-java">import org.apache.spark.SparkConf;  
+import org.apache.spark.api.java.JavaPairRDD;  
+import org.apache.spark.api.java.JavaRDD;  
+import org.apache.spark.api.java.JavaSparkContext;  
+import scala.Tuple2;  
+  
+import java.util.Arrays;  
+import java.util.List;  
+  
+public class Spark02_Operate_Transform_KV_GroupByKey {  
+    public static void main(String[] args) throws InterruptedException {  
+        // 1.创建配置对象  
+        SparkConf conf = new SparkConf();  
+        conf.setMaster("local[2]");  
+        conf.setAppName("sparkCore");  
+  
+        // 2. 创建sparkContext  
+        JavaSparkContext sc = new JavaSparkContext(conf);  
+  
+        // 3. 编写代码  
+        JavaRDD&lt;Tuple2&lt;String, Integer&gt;&gt; rdd = sc.parallelize(Arrays.asList(new Tuple2&lt;&gt;("a", 1), new Tuple2&lt;&gt;("b", 2), new Tuple2&lt;&gt;("a", 3), new Tuple2&lt;&gt;("c", 4)));  
+        JavaPairRDD&lt;String, Iterable&lt;Tuple2&lt;String, Integer&gt;&gt;&gt; groupRDD = rdd.groupBy(t -&gt; t._1);  
+        groupRDD.collect().forEach(System.out::println);  
+  
+        // 4. 关闭sc  
+        sc.stop();  
+  
+    }  
+}
+</code></pre>
+<p>输出结果如下所示：</p>
+<pre><code>(b,[(b,2)])
+(a,[(a,1), (a,3)])
+(c,[(c,4)])
+</code></pre>
+<p>简单写法如下所示：</p>
+<pre><code class="language-java">import org.apache.spark.SparkConf;  
+import org.apache.spark.api.java.JavaPairRDD;  
+import org.apache.spark.api.java.JavaRDD;  
+import org.apache.spark.api.java.JavaSparkContext;  
+import scala.Tuple2;  
+  
+import java.util.Arrays;  
+import java.util.List;  
+  
+public class Spark02_Operate_Transform_KV_GroupByKey {  
+    public static void main(String[] args) throws InterruptedException {  
+        // 1.创建配置对象  
+        SparkConf conf = new SparkConf();  
+        conf.setMaster("local[2]");  
+        conf.setAppName("sparkCore");  
+  
+        // 2. 创建sparkContext  
+        JavaSparkContext sc = new JavaSparkContext(conf);  
+  
+        // 3. 编写代码  
+        sc.parallelizePairs(Arrays.asList(new Tuple2&lt;&gt;("a", 1), new Tuple2&lt;&gt;("b", 2), new Tuple2&lt;&gt;("a", 3), new Tuple2&lt;&gt;("c", 4))).groupByKey().collect().forEach(System.out::println);  
+  
+        // 4. 关闭sc  
+        sc.stop();  
+  
+    }  
+}
+</code></pre>
+<p>输出结果如下所示：</p>
+<pre><code>(b,[2])
+(a,[1, 3])
+(c,[4])
+</code></pre>
+<p>加入求和逻辑：</p>
+<pre><code class="language-java">import org.apache.spark.SparkConf;  
+import org.apache.spark.api.java.JavaPairRDD;  
+import org.apache.spark.api.java.JavaRDD;  
+import org.apache.spark.api.java.JavaSparkContext;  
+import scala.Tuple2;  
+  
+import java.util.Arrays;  
+import java.util.List;  
+  
+public class Spark02_Operate_Transform_KV_GroupByKey {  
+    public static void main(String[] args) throws InterruptedException {  
+        // 1.创建配置对象  
+        SparkConf conf = new SparkConf();  
+        conf.setMaster("local[2]");  
+        conf.setAppName("sparkCore");  
+  
+        // 2. 创建sparkContext  
+        JavaSparkContext sc = new JavaSparkContext(conf);  
+  
+        // 3. 编写代码  
+        sc.parallelizePairs(Arrays.asList(new Tuple2&lt;&gt;("a", 1), new Tuple2&lt;&gt;("b", 2), new Tuple2&lt;&gt;("a", 3), new Tuple2&lt;&gt;("c", 4)))  
+                .groupByKey().mapValues(iter -&gt; {  
+                    int sum = 0;  
+                    for (int i : iter) {  
+                        sum += i;  
+                    }  
+                    return sum;  
+                })  
+                .collect()  
+                .forEach(System.out::println);  
+  
+        // 4. 关闭sc  
+        sc.stop();  
+  
+    }  
+}
+</code></pre>
+<pre><code>(b,2)
+(a,4)
+(c,4)
+</code></pre>
+<h2 id="reducebykey按照key对value两两聚合"><a class="header" href="#reducebykey按照key对value两两聚合">ReduceByKey（按照key对value两两聚合）</a></h2>
+<pre><code class="language-java">import org.apache.spark.SparkConf;  
+import org.apache.spark.api.java.JavaSparkContext;  
+import scala.Tuple2;  
+  
+import java.util.Arrays;  
+  
+public class Spark02_Operate_Transform_KV_ReduceByKey {  
+    public static void main(String[] args) throws InterruptedException {  
+        // 1.创建配置对象  
+        SparkConf conf = new SparkConf();  
+        conf.setMaster("local[2]");  
+        conf.setAppName("sparkCore");  
+  
+        // 2. 创建sparkContext  
+        JavaSparkContext sc = new JavaSparkContext(conf);  
+  
+        // 3. 编写代码  
+        sc.parallelize(Arrays.asList(new Tuple2&lt;&gt;("a", 1), new Tuple2&lt;&gt;("b", 2), new Tuple2&lt;&gt;("a", 3), new Tuple2&lt;&gt;("c", 4)))  
+                .mapToPair(t -&gt; t).reduceByKey(Integer::sum)  
+                .collect()  
+                .forEach(System.out::println);  
+  
+        // 4. 关闭sc  
+        sc.stop();  
+  
+    }  
+}
+</code></pre>
+<pre><code>(b,2)
+(a,4)
+(c,4)
+</code></pre>
+<h2 id="sortbykey按照key排序"><a class="header" href="#sortbykey按照key排序">sortByKey（按照key排序）</a></h2>
+<pre><code class="language-java">import org.apache.spark.SparkConf;  
+import org.apache.spark.api.java.JavaSparkContext;  
+import scala.Tuple2;  
+  
+import java.util.Arrays;  
+  
+public class Spark02_Operate_Transform_KV_SortByKey {  
+    public static void main(String[] args) throws InterruptedException {  
+        // 1.创建配置对象  
+        SparkConf conf = new SparkConf();  
+        conf.setMaster("local[2]");  
+        conf.setAppName("sparkCore");  
+  
+        // 2. 创建sparkContext  
+        JavaSparkContext sc = new JavaSparkContext(conf);  
+  
+        // 3. 编写代码  
+        sc.parallelize(Arrays.asList(new Tuple2&lt;&gt;("a", 1), new Tuple2&lt;&gt;("b", 2), new Tuple2&lt;&gt;("a", 3), new Tuple2&lt;&gt;("c", 4)))  
+                .mapToPair(t -&gt; t).sortByKey(false)  
+                .collect()  
+                .forEach(System.out::println);  
+  
+        // 4. 关闭sc  
+        sc.stop();  
+  
+    }  
+}
+</code></pre>
+<pre><code>(c,4)
+(b,2)
+(a,1)
+(a,3)
+</code></pre>
+<pre><code class="language-java">import org.apache.spark.SparkConf;  
+import org.apache.spark.api.java.JavaSparkContext;  
+import scala.Tuple2;  
+  
+import java.util.Arrays;  
+  
+public class Spark02_Operate_Transform_KV_SortByKey {  
+    public static void main(String[] args) throws InterruptedException {  
+        // 1.创建配置对象  
+        SparkConf conf = new SparkConf();  
+        conf.setMaster("local[2]");  
+        conf.setAppName("sparkCore");  
+  
+        // 2. 创建sparkContext  
+        JavaSparkContext sc = new JavaSparkContext(conf);  
+  
+        // 3. 编写代码  
+        sc.parallelize(Arrays.asList(new Tuple2&lt;&gt;("a", 1), new Tuple2&lt;&gt;("a", 2), new Tuple2&lt;&gt;("a", 3), new Tuple2&lt;&gt;("a", 4)))  
+                .mapToPair(t -&gt; new Tuple2&lt;&gt;(t._2, t)).sortByKey(false).map(t -&gt; t._2)  
+                .collect()  
+                .forEach(System.out::println);  
+  
+        // 4. 关闭sc  
+        sc.stop();  
+  
+    }  
+}
+</code></pre>
+<pre><code>(a,4)
+(a,3)
+(a,2)
+(a,1)
+</code></pre>
+<h2 id="优化shuffle性能"><a class="header" href="#优化shuffle性能">优化shuffle性能</a></h2>
+<ol>
+<li>花钱</li>
+<li>增加磁盘读写缓冲区</li>
+<li>如果不影响最终结果的话，那么磁盘读写的数据越少，性能越高。（reduceByKey可以在Shuffle之前就预先聚合Combine，极大地提高性能）</li>
+</ol>
+<h2 id="缩减分区coalesce"><a class="header" href="#缩减分区coalesce">缩减分区（coalesce）</a></h2>
+<p>该方法没有Shuffle功能，所以数据不会被打乱然后重新组合。</p>
+<pre><code class="language-java">import org.apache.spark.SparkConf;  
+import org.apache.spark.api.java.JavaRDD;  
+import org.apache.spark.api.java.JavaSparkContext;  
+  
+import java.util.Arrays;  
+import java.util.List;  
+  
+public class Spark02_Operate_Transform_Partition {  
+    public static void main(String[] args) {  
+        // 1.创建配置对象  
+        SparkConf conf = new SparkConf();  
+        conf.setMaster("local");  
+        conf.setAppName("sparkCore");  
+  
+        // 2. 创建sparkContext  
+        JavaSparkContext sc = new JavaSparkContext(conf);  
+  
+        // 3. 编写代码  
+        List&lt;Integer&gt; nums = Arrays.asList(1, 2, 3, 4, 5, 6);  
+        JavaRDD&lt;Integer&gt; rdd = sc.parallelize(nums, 2);  
+        JavaRDD&lt;Integer&gt; filterRDD = rdd.filter(num -&gt; num % 2 == 0);  
+  
+        JavaRDD&lt;Integer&gt; coalesceRDD = filterRDD.coalesce(1);  
+        coalesceRDD.saveAsTextFile("./output");  
+  
+        // 4. 关闭sc  
+        sc.stop();  
+  
+    }  
+}
+</code></pre>
+<p>该方法默认无法扩大分区，只能缩减分区。</p>
+<p>设定shuffle参数为true，可以实现扩大分区</p>
+<pre><code class="language-java">import org.apache.spark.SparkConf;  
+import org.apache.spark.api.java.JavaRDD;  
+import org.apache.spark.api.java.JavaSparkContext;  
+  
+import java.util.Arrays;  
+import java.util.List;  
+  
+public class Spark02_Operate_Transform_Partition {  
+    public static void main(String[] args) {  
+        // 1.创建配置对象  
+        SparkConf conf = new SparkConf();  
+        conf.setMaster("local");  
+        conf.setAppName("sparkCore");  
+  
+        // 2. 创建sparkContext  
+        JavaSparkContext sc = new JavaSparkContext(conf);  
+  
+        // 3. 编写代码  
+        List&lt;Integer&gt; nums = Arrays.asList(1, 2, 3, 4, 5, 6);  
+        JavaRDD&lt;Integer&gt; rdd = sc.parallelize(nums, 2);  
+        JavaRDD&lt;Integer&gt; filterRDD = rdd.filter(num -&gt; num % 2 == 0);  
+  
+        JavaRDD&lt;Integer&gt; coalesceRDD = filterRDD.coalesce(3, true);  
+        coalesceRDD.saveAsTextFile("./output");  
+  
+        // 4. 关闭sc  
+        sc.stop();  
+  
+    }  
+}
+</code></pre>
+<h2 id="repartition扩大分区"><a class="header" href="#repartition扩大分区">repartition（扩大分区）</a></h2>
+<pre><code class="language-java">import org.apache.spark.SparkConf;  
+import org.apache.spark.api.java.JavaRDD;  
+import org.apache.spark.api.java.JavaSparkContext;  
+  
+import java.util.Arrays;  
+import java.util.List;  
+  
+public class Spark02_Operate_Transform_Partition {  
+    public static void main(String[] args) {  
+        // 1.创建配置对象  
+        SparkConf conf = new SparkConf();  
+        conf.setMaster("local");  
+        conf.setAppName("sparkCore");  
+  
+        // 2. 创建sparkContext  
+        JavaSparkContext sc = new JavaSparkContext(conf);  
+  
+        // 3. 编写代码  
+        List&lt;Integer&gt; nums = Arrays.asList(1, 2, 3, 4, 5, 6);  
+        JavaRDD&lt;Integer&gt; rdd = sc.parallelize(nums, 2);  
+        JavaRDD&lt;Integer&gt; filterRDD = rdd.filter(num -&gt; num % 2 == 0);  
+  
+        filterRDD.repartition(3).saveAsTextFile("./output");  
+  
+        // 4. 关闭sc  
+        sc.stop();  
+  
+    }  
+}
+</code></pre>
+<h1 id="action算子"><a class="header" href="#action算子">Action算子</a></h1>
+<h2 id="如何区分转换算子和行动算子"><a class="header" href="#如何区分转换算子和行动算子">如何区分转换算子和行动算子？</a></h2>
+<p>不能用是否启动Job来区分</p>
+<p>转换算子目的：将旧的RDD转换成新的RDD来组合多个RDD的功能，格式：RDD（In）-&gt;RDD(Out)</p>
+<p>行动算子目的：返回具体执行结果</p>
+<p>sortBy()方法会sample，然后提前执行一下collect()方法，故而有Job进行</p>
+<h2 id="collect方法"><a class="header" href="#collect方法">collect()方法</a></h2>
+<p>将Executor端执行的结果按照分区的顺序拉取（采集）到Driver端，将结果组合成集合对象</p>
+<p>特殊情况：文件内容存在于HDFS</p>
+<p>collect()方法可能会将多个Executor的数据大量拉取到Driver端，导致内存溢出。生产环境下慎用</p>
+<h2 id="其他方法"><a class="header" href="#其他方法">其他方法</a></h2>
+<pre><code class="language-java">import org.apache.spark.SparkConf;  
+import org.apache.spark.api.java.JavaRDD;  
+import org.apache.spark.api.java.JavaSparkContext;  
+  
+import java.util.Arrays;  
+import java.util.List;  
+  
+public class Spark02_Operate_Action {  
+    public static void main(String[] args) throws InterruptedException {  
+        // 1.创建配置对象  
+        SparkConf conf = new SparkConf();  
+        conf.setMaster("local[2]");  
+        conf.setAppName("sparkCore");  
+  
+        // 2. 创建sparkContext  
+        JavaSparkContext sc = new JavaSparkContext(conf);  
+  
+        // 3. 编写代码  
+        List&lt;Integer&gt; nums = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);  
+        JavaRDD&lt;Integer&gt; rdd = sc.parallelize(nums, 2);  
+  
+        List&lt;Integer&gt; collect = rdd.collect();  
+        rdd.count();  
+        Integer first = rdd.first();  
+        List&lt;Integer&gt; take = rdd.take(3);  
+        System.out.println("collect: " + collect);  
+        System.out.println("count: " + rdd.count());  
+        System.out.println("first: " + first);  
+        System.out.println("take: " + take);  
+  
+        System.out.println("执行结束");  
+  
+  
+        //监控页面：http://localhost:4040  
+        //Thread.sleep(300000);  
+        // 4. 关闭sc  
+        sc.stop();  
+  
+    }  
+}
+</code></pre>
+<pre><code>collect: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+first: 1
+take: [1, 2, 3]
+执行结束
+</code></pre>
+<pre><code class="language-java">import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaPairRDD;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
+import scala.Tuple2;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+public class Spark02_Operate_Action {
+    public static void main(String[] args) throws InterruptedException {
+        // 1.创建配置对象
+        SparkConf conf = new SparkConf();
+        conf.setMaster("local[2]");
+        conf.setAppName("sparkCore");
+
+        // 2. 创建sparkContext
+        JavaSparkContext sc = new JavaSparkContext(conf);
+
+        // 3. 编写代码
+        List&lt;Integer&gt; nums = Arrays.asList(1, 2, 3, 4);
+        JavaRDD&lt;Integer&gt; rdd = sc.parallelize(nums, 2);
+
+        JavaPairRDD&lt;Integer, Integer&gt; pairRDD = rdd.mapToPair((x) -&gt; new Tuple2&lt;&gt;(x, x * x));
+        Map&lt;Integer, Long&gt; integerLongMap = pairRDD.countByKey();
+        System.out.println(integerLongMap);
+
+        // 4. 关闭sc
+        sc.stop();
+
+    }
+}
+</code></pre>
+<pre><code>{4=1, 2=1, 1=1, 3=1}
+</code></pre>
+<h3 id="saveastextfilevssaveasobjectfile"><a class="header" href="#saveastextfilevssaveasobjectfile"><code>saveAsTextFile</code>VS<code>saveAsObjectFile</code></a></h3>
+<p>后者用于保存对象比如User</p>
+<h3 id="collect和foreach联动"><a class="header" href="#collect和foreach联动">collect()和foreach()联动</a></h3>
+<p>foreach()在Executor端输出，分布式无序输出</p>
+<p>collect()和foreach()联动之后在Driver端单点有序输出</p>
+<p>foreachPartition执行效率高，但是受到内存大小限制</p>
+<pre><code class="language-java">SparkConf conf = new SparkConf();  
+conf.setMaster("local[2]");  
+conf.setAppName("sparkCore");  
+  
+// 2. 创建sparkContext  
+JavaSparkContext sc = new JavaSparkContext(conf);  
+  
+// 3. 编写代码  
+List&lt;Integer&gt; nums = Arrays.asList(1, 2, 3, 4);  
+JavaRDD&lt;Integer&gt; rdd = sc.parallelize(nums, 2);  
+  
+rdd.collect().forEach(System.out::println);  
+System.out.println("--------------------------");  
+rdd.foreach(System.out::println);  
+System.out.println("------------------");  
+rdd.foreachPartition(  
+        list -&gt; {  
+            System.out.println(list);  
+        }  
+);  
+  
+// 4. 关闭sc  
+sc.stop();
+</code></pre>
+<p>执行会报错<code>Exception in thread "main" org.apache.spark.SparkException: Task not serializable</code></p>
+<p>错误原因：foreach里面使用了lambda表达式</p>
+<p>正确代码如下所示：</p>
+<pre><code class="language-java">import org.apache.spark.SparkConf;  
+import org.apache.spark.api.java.JavaPairRDD;  
+import org.apache.spark.api.java.JavaRDD;  
+import org.apache.spark.api.java.JavaSparkContext;  
+import scala.Tuple2;  
+  
+import java.util.Arrays;  
+import java.util.List;  
+import java.util.Map;  
+  
+public class Spark02_Operate_Action {  
+    public static void main(String[] args) throws InterruptedException {  
+        // 1.创建配置对象  
+        SparkConf conf = new SparkConf();  
+        conf.setMaster("local[2]");  
+        conf.setAppName("sparkCore");  
+  
+        // 2. 创建sparkContext  
+        JavaSparkContext sc = new JavaSparkContext(conf);  
+  
+        // 3. 编写代码  
+        List&lt;Integer&gt; nums = Arrays.asList(1, 2, 3, 4);  
+        JavaRDD&lt;Integer&gt; rdd = sc.parallelize(nums, 2);  
+  
+        rdd.collect().forEach(System.out::println);  
+        System.out.println("--------------------------");  
+        rdd.foreach(num -&gt; System.out.println(num));  
+        System.out.println("------------------");  
+        rdd.foreachPartition(  
+                list -&gt; {  
+                    System.out.println(list);  
+                }  
+        );  
+  
+        // 4. 关闭sc  
+        sc.stop();  
+  
+    }  
+}
+</code></pre>
+<p>输出结果如下所示：</p>
+<pre><code>1
+2
+3
+4
+--------------------------
+1
+3
+4
+2
+------------------
+IteratorWrapper(&lt;iterator&gt;)
+IteratorWrapper(&lt;iterator&gt;)
+</code></pre>
+<h2 id="序列化"><a class="header" href="#序列化">序列化</a></h2>
+<pre><code class="language-java">import org.apache.spark.SparkConf;  
+import org.apache.spark.api.java.JavaPairRDD;  
+import org.apache.spark.api.java.JavaRDD;  
+import org.apache.spark.api.java.JavaSparkContext;  
+import scala.Tuple2;  
+  
+import java.io.Serializable;  
+import java.util.Arrays;  
+import java.util.List;  
+import java.util.Map;  
+  
+public class Spark02_Operate_Action {  
+    public static void main(String[] args) throws InterruptedException {  
+        // 1.创建配置对象  
+        SparkConf conf = new SparkConf();  
+        conf.setMaster("local[2]");  
+        conf.setAppName("sparkCore");  
+  
+        // 2. 创建sparkContext  
+        JavaSparkContext sc = new JavaSparkContext(conf);  
+  
+        // 3. 编写代码  
+        List&lt;Integer&gt; nums = Arrays.asList(1, 2, 3, 4);  
+        JavaRDD&lt;Integer&gt; rdd = sc.parallelize(nums, 2);  
+  
+        Student student = new Student();  
+  
+        rdd.foreach(num -&gt; System.out.println(student.name + " " + num));  
+        System.out.println("------------------");  
+  
+        // 4. 关闭sc  
+        sc.stop();  
+  
+    }  
+}  
+class Student implements Serializable {  
+    public String name = "baozi";  
+}
+</code></pre>
+<p>在Executor端循环遍历的时候使用到了Driver端对象</p>
+<p>运行过程中就需要将Driver端的对象通过网络传递到Executor端，否则无法使用</p>
+<p>这里传输的对象必须要实现可序列化接口，否则无法传递</p>
+<p>RDD算子的逻辑代码是在Executor端执行的，其他的代码都在Driver端执行</p>
+<p>下面两份代码都是正确的：</p>
+<pre><code class="language-java">import org.apache.spark.SparkConf;  
+import org.apache.spark.api.java.JavaPairRDD;  
+import org.apache.spark.api.java.JavaRDD;  
+import org.apache.spark.api.java.JavaSparkContext;  
+import scala.Tuple2;  
+  
+import java.io.Serializable;  
+import java.util.Arrays;  
+import java.util.List;  
+import java.util.Map;  
+  
+public class Spark02_Operate_Action {  
+    public static void main(String[] args) throws InterruptedException {  
+        // 1.创建配置对象  
+        SparkConf conf = new SparkConf();  
+        conf.setMaster("local[2]");  
+        conf.setAppName("sparkCore");  
+  
+        // 2. 创建sparkContext  
+        JavaSparkContext sc = new JavaSparkContext(conf);  
+  
+        // 3. 编写代码  
+        List&lt;String&gt; list = Arrays.asList("Hive", "Hadoop", "Spark", "Flink");  
+        JavaRDD&lt;String&gt; rdd = sc.parallelize(list, 2);  
+  
+        new Search("H").match(rdd);  
+  
+        // 4. 关闭sc  
+        sc.stop();  
+  
+    }  
+}  
+class Search implements Serializable {  
+    private String query;  
+    public Search(String query){  
+        this.query = query;  
+    }  
+    public void match(JavaRDD&lt;String&gt; rdd){  
+        rdd.filter(line -&gt; line.startsWith(query)).collect().forEach(System.out::println);  
+    }  
+}
+</code></pre>
+<pre><code>Hive
+Hadoop
+</code></pre>
+<pre><code class="language-java">import org.apache.spark.SparkConf;  
+import org.apache.spark.api.java.JavaPairRDD;  
+import org.apache.spark.api.java.JavaRDD;  
+import org.apache.spark.api.java.JavaSparkContext;  
+import scala.Tuple2;  
+  
+import java.io.Serializable;  
+import java.util.Arrays;  
+import java.util.List;  
+import java.util.Map;  
+  
+public class Spark02_Operate_Action {  
+    public static void main(String[] args) throws InterruptedException {  
+        // 1.创建配置对象  
+        SparkConf conf = new SparkConf();  
+        conf.setMaster("local[2]");  
+        conf.setAppName("sparkCore");  
+  
+        // 2. 创建sparkContext  
+        JavaSparkContext sc = new JavaSparkContext(conf);  
+  
+        // 3. 编写代码  
+        List&lt;String&gt; list = Arrays.asList("Hive", "Hadoop", "Spark", "Flink");  
+        JavaRDD&lt;String&gt; rdd = sc.parallelize(list, 2);  
+  
+        new Search("H").match(rdd);  
+  
+        // 4. 关闭sc  
+        sc.stop();  
+  
+    }  
+}  
+class Search{  
+    private String query;  
+    public Search(String query){  
+        this.query = query;  
+    }  
+    public void match(JavaRDD&lt;String&gt; rdd){  
+        String keyword = this.query;  
+        rdd.filter(line -&gt; line.startsWith(keyword)).collect().forEach(System.out::println);  
+    }  
+}
+</code></pre>
+<p>String默认实现了Serializable接口</p>
+<pre><code class="language-java">SparkConf conf = new SparkConf();  
+conf.setMaster("local[2]");  
+conf.setAppName("sparkCore");  
+  
+// 2. 创建sparkContext  
+JavaSparkContext sc = new JavaSparkContext(conf);  
+  
+// 3. 编写代码  
+List&lt;Integer&gt; nums = Arrays.asList(1, 2, 3, 4);  
+JavaRDD&lt;Integer&gt; rdd = sc.parallelize(nums, 2);  
+  
+rdd.collect().forEach(System.out::println);  
+System.out.println("--------------------------");  
+rdd.foreach(System.out::println);  
+System.out.println("------------------");  
+rdd.foreachPartition(  
+        list -&gt; {  
+            System.out.println(list);  
+        }  
+);  
+  
+// 4. 关闭sc  
+sc.stop();
+</code></pre>
+<p>执行会报错<code>Exception in thread "main" org.apache.spark.SparkException: Task not serializable</code></p>
+<p>错误原因：foreach中System.out是一个Driver端的对象</p>
+<pre><code class="language-java">PrintStream out = System.out;  
+rdd.foreachPartition(  
+        out::println  
+);
+</code></pre>
+<p>Java1.8的函数式编程是通过对象模拟出来的，不是真正的函数式编程。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../Spark/Spark核心概念.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../Spark/SparkCore.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../Spark/Spark核心概念.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../Spark/SparkCore.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

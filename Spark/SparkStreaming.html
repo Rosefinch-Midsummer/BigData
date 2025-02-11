@@ -1,0 +1,1259 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>SparkStreaming - Big Data</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Big Data</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="spark-streaming"><a class="header" href="#spark-streaming">Spark Streaming</a></h1>
+<ul>
+<li><a href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%BF%E7%94%A8spark-streaming">为什么使用Spark Streaming？</a>
+<ul>
+<li><a href="#%E6%9C%89%E7%95%8C%E6%95%B0%E6%8D%AE%E6%B5%81%E5%92%8C%E6%97%A0%E7%95%8C%E6%95%B0%E6%8D%AE%E6%B5%81">有界数据流和无界数据流</a></li>
+<li><a href="#%E5%AE%9E%E6%97%B6%E8%AE%A1%E7%AE%97%E7%A6%BB%E7%BA%BF%E8%AE%A1%E7%AE%97%E6%B5%81%E5%BC%8F%E8%AE%A1%E7%AE%97%E6%89%B9%E9%87%8F%E8%AE%A1%E7%AE%97">实时计算、离线计算、流式计算、批量计算</a></li>
+<li><a href="#%E4%BB%80%E4%B9%88%E6%98%AFdstream">什么是DStream？</a></li>
+<li><a href="#%E6%9E%B6%E6%9E%84%E5%9B%BE">架构图</a></li>
+<li><a href="#%E6%96%B9%E6%B3%95vs%E7%AE%97%E5%AD%90">方法VS算子</a></li>
+<li><a href="#sparkstreaming-vs-rdd%E7%AE%97%E5%AD%90">SparkStreaming VS RDD算子</a></li>
+</ul>
+</li>
+<li><a href="#spark-streaming%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA">Spark Streaming环境搭建</a></li>
+<li><a href="#socket-vs-kafka">Socket VS Kafka</a>
+<ul>
+<li><a href="#%E7%BD%91%E7%BB%9Csocket%E6%95%B0%E6%8D%AE%E6%B5%81%E5%A4%84%E7%90%86">网络（socket）数据流处理</a></li>
+<li><a href="#kafka%E6%95%B0%E6%8D%AE%E6%B5%81%E5%A4%84%E7%90%86">Kafka数据流处理</a></li>
+<li><a href="#%E6%A1%88%E4%BE%8B%E8%A7%A3%E6%9E%90">案例解析</a></li>
+</ul>
+</li>
+<li><a href="#dstream%E8%BD%AC%E6%8D%A2">DStream转换</a>
+<ul>
+<li><a href="#%E6%97%A0%E7%8A%B6%E6%80%81%E8%BD%AC%E5%8C%96%E6%93%8D%E4%BD%9C">无状态转化操作</a></li>
+<li><a href="#dstream%E5%92%8Crdd">DStream和RDD</a></li>
+</ul>
+</li>
+<li><a href="#%E7%AA%97%E5%8F%A3%E6%93%8D%E4%BD%9C">窗口操作</a>
+<ul>
+<li><a href="#%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3%E5%8F%8A%E7%AA%97%E5%8F%A3%E5%8F%82%E6%95%B0">滑动窗口及窗口参数</a></li>
+<li><a href="#windowoperations">WindowOperations</a></li>
+<li><a href="#window">Window</a></li>
+<li><a href="#reducebykeyandwindow">reduceByKeyAndWindow</a></li>
+</ul>
+</li>
+<li><a href="#dstream%E8%BE%93%E5%87%BA">DStream输出</a></li>
+<li><a href="#%E5%85%B3%E9%97%ADmain%E7%BA%BF%E7%A8%8B">关闭main线程</a>
+<ul>
+<li><a href="#%E6%96%B0%E5%A2%9E%E7%BA%BF%E7%A8%8B%E6%96%B9%E5%BC%8F">新增线程方式</a></li>
+<li><a href="#%E8%BE%83%E4%B8%BA%E4%BC%98%E9%9B%85%E7%9A%84%E6%96%B9%E5%BC%8Fstop">较为优雅的方式（stop）</a></li>
+<li><a href="#%E4%BD%BF%E7%94%A8kafka%E6%97%B6%E4%BC%98%E9%9B%85%E5%85%B3%E9%97%AD">使用kafka时优雅关闭</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="为什么使用spark-streaming"><a class="header" href="#为什么使用spark-streaming">为什么使用Spark Streaming？</a></h2>
+<p>Spark Streaming用于流式数据的处理。</p>
+<p>Spark Streaming支持的数据输入源很多，例如：Kafka、Flume、HDFS等。</p>
+<p>数据输入后可以用Spark的高度抽象原语如：map丶reduce、join、window等进行运算。</p>
+<p>结果也能保存在很多地方，如HDFS、数据库等。</p>
+<h3 id="有界数据流和无界数据流"><a class="header" href="#有界数据流和无界数据流">有界数据流和无界数据流</a></h3>
+<p>有界数据流可以计算</p>
+<p>无界数据流无法计算</p>
+<p>Spark Streaming通过数据采集器将无界数据流切分成有界数据流，方便计算</p>
+<p>SparkStreaming底层还是SparkCore，就是在流式数据处理中进行的封装</p>
+<h3 id="实时计算离线计算流式计算批量计算"><a class="header" href="#实时计算离线计算流式计算批量计算">实时计算、离线计算、流式计算、批量计算</a></h3>
+<p>从数据处理方式的角度</p>
+<ul>
+<li>流式数据处理：一个数据一个数据的处理</li>
+<li>微批量数据处理：一小批数据一小批数据的处理</li>
+<li>批量数据处理：一批数据一批数据的处理</li>
+</ul>
+<p>从数据处理延迟的角度</p>
+<ul>
+<li>实时数据处理：数据处理的延迟以毫秒为单位</li>
+<li>准实时数据处理：数据处理的延迟以秒、分钟为单位</li>
+<li>离线数据处理：数据处理的延迟以小时，天为单位</li>
+</ul>
+<p>Spark批量、离线</p>
+<p>Spark Streaming微批量、准实时</p>
+<p>一小批不是按个数而是按时间来定义比如3s内数据作为一小批，对应数据模型为离散化流dstream</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250114162016.png" alt="" /></p>
+<h3 id="什么是dstream"><a class="header" href="#什么是dstream">什么是DStream？</a></h3>
+<p>SparkCore =&gt; RDD</p>
+<p>SparkSQL =&gt; DataFrame、DataSet</p>
+<p>Spark Streaming使用离散化流（Discretized Stream）作为抽象表示，叫作DStream。</p>
+<p>DStream是随时间推移而收到的数据的序列。</p>
+<p>在DStream内部，每个时间区间收到的数据都作为RDD存在，而DStream是由这些RDD所组成的序列（因此得名“离散化"）。</p>
+<p>所以简单来讲，DStream就是对RDD在实时数据处理场景的一种封装。</p>
+<h3 id="架构图"><a class="header" href="#架构图">架构图</a></h3>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250115165321.png" alt="" /></p>
+<p>整体架构图</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250115165412.png" alt="" /></p>
+<p>SparkStreaming架构图</p>
+<h3 id="方法vs算子"><a class="header" href="#方法vs算子">方法VS算子</a></h3>
+<p>RDD算子是分布式计算，效率更高</p>
+<h3 id="sparkstreaming-vs-rdd算子"><a class="header" href="#sparkstreaming-vs-rdd算子">SparkStreaming VS RDD算子</a></h3>
+<p>SparkStreaming有三个地方可以写代码，SparkStreaming的方法被称为原语。</p>
+<p>DStream 上的操作与 RDD 的类似，分为转换和输出两种，此外转换操作中还有一些比较特殊的原语，如：transform()以及各种Window 相关的原语。</p>
+<p>RDD算子只有两个地方可以写代码，Driver端和Executor端</p>
+<pre><code class="language-java">//int i= 10;(Driver 1)
+        wordCountDS.foreachRDD(
+                rdd -&gt; {
+                    //int j = 20;(Driver X)
+                    rdd.foreach(
+                            (num) -&gt; {
+                                //int k=30;(Executor N)
+                                System.out.println(num);
+                            }
+                );}
+        );
+</code></pre>
+<h2 id="spark-streaming环境搭建"><a class="header" href="#spark-streaming环境搭建">Spark Streaming环境搭建</a></h2>
+<p>Spark在流式数据的处理场景中对核心功能环境进行了封装</p>
+<pre><code class="language-java">package com.zzw.bigdata.spark.sparkstreaming;
+
+import org.apache.spark.SparkConf;
+import org.apache.spark.streaming.Duration;
+import org.apache.spark.streaming.Durations;
+import org.apache.spark.streaming.api.java.JavaStreamingContext;
+
+public class SparkStreamingEnv01 {
+    public static void main(String[] args) throws Exception {
+        SparkConf conf = new SparkConf();
+        conf.setAppName("SparkStreamingEnv01");
+        conf.setMaster("local[2]");
+        JavaStreamingContext javaStreamingContext = new JavaStreamingContext(conf, new Duration(3 * 1000));
+        javaStreamingContext.start();
+//        等待数据采集器的结束，如果采集器停止运行，那么main线程会继续执行
+        javaStreamingContext.awaitTermination();
+//        数据采集器是一个长期执行的任务，所以不能停止，也不能释放资源，只能等待任务结束
+//        javaStreamingContext.close();
+//        while (true) {
+//        }
+    }
+}
+</code></pre>
+<p>上面的代码执行会抛出异常<code>Exception in thread "main" java.lang.IllegalArgumentException: requirement failed: No output operations registered, so nothing to execute</code></p>
+<p>原因：没有启动行动算子。</p>
+<p>Spark Streaming对应的是无界数据流，没有启动行动算子比如print()就会报错。</p>
+<p>Socket数据不会保留，不输出就会出问题。</p>
+<p>你的代码抛出 <code>java.lang.IllegalArgumentException: requirement failed: No output operations registered, so nothing to execute</code> 的异常是因为在创建 <code>JavaStreamingContext</code> 后没有注册任何输出操作（如接收输入流，处理数据等），Spark Streaming 在没有任何操作的情况下无法执行任务。</p>
+<p><strong>解决方案</strong>：</p>
+<ol>
+<li>需要创建一个输入流，比如通过 <code>socketTextStream</code> 或者其他接收源。</li>
+<li>注册一些输出操作，例如调用 <code>print()</code>、<code>saveAsTextFiles()</code> 等方法来处理数据。</li>
+</ol>
+<p>以下是一个修正后的代码示例，假设使用 <code>socketTextStream</code> 来接收数据：</p>
+<pre><code class="language-java">import org.apache.spark.SparkConf;
+import org.apache.spark.streaming.Duration;
+import org.apache.spark.streaming.api.java.JavaPairDStream;
+import org.apache.spark.streaming.api.java.JavaStreamingContext;
+import org.apache.spark.streaming.api.java.JavaDStream;
+import org.apache.spark.streaming.api.java.JavaInputDStream;
+import org.apache.spark.api.java.function.Function;
+import org.apache.spark.api.java.function.VoidFunction;
+import java.util.Arrays;
+
+public class SparkStreamingEnv01 {
+    public static void main(String[] args) throws Exception {
+        SparkConf conf = new SparkConf();
+        conf.setAppName("SparkStreamingEnv01");
+        conf.setMaster("local[2]");
+        
+        JavaStreamingContext javaStreamingContext = new JavaStreamingContext(conf, new Duration(3000));
+        
+        // 创建一个输入流，假设我们在 localhost:9999 上接收数据
+        JavaInputDStream&lt;String&gt; lines = javaStreamingContext.socketTextStream("localhost", 9999);
+        
+        // 注册输出操作，例如打印接收到的每一行
+        lines.foreachRDD(new VoidFunction&lt;JavaRDD&lt;String&gt;&gt;() {
+            @Override
+            public void call(JavaRDD&lt;String&gt; rdd) throws Exception {
+                // 打印每一行
+                rdd.foreach(line -&gt; System.out.println(line));
+            }
+        });
+        
+        javaStreamingContext.start();
+        javaStreamingContext.awaitTermination();
+    }
+}
+</code></pre>
+<p>注意事项：</p>
+<ol>
+<li><strong>输入源</strong>：你需要在运行前确保有一个 socket 服务在 <code>localhost:9999</code> 监听。可以使用 <code>nc -lk 9999</code> 命令在终端开启一个简单的字符发送服务。</li>
+<li><strong>依赖</strong>：确保你的项目能找到 Spark 的相关依赖。</li>
+</ol>
+<p>这段代码创建了一个接收来自 <code>localhost</code> 在 9999 端口的文本流，并且会将接收到的每一行打印到控制台。这种方式可以确保有输出操作被注册，避免抛出上述异常。</p>
+<h2 id="socket-vs-kafka"><a class="header" href="#socket-vs-kafka">Socket VS Kafka</a></h2>
+<p>版本选型</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250115160549.png" alt="" /></p>
+<p>注意：目前spark3.0.0以上版本只有Direct模式。</p>
+<h3 id="网络socket数据流处理"><a class="header" href="#网络socket数据流处理">网络（socket）数据流处理</a></h3>
+<p>下载<code>netcat</code>工具，执行<code>nc -lp 9999</code>，运行下面的代码：</p>
+<pre><code class="language-java">import org.apache.spark.SparkConf;
+import org.apache.spark.streaming.Duration;
+import org.apache.spark.streaming.api.java.JavaReceiverInputDStream;
+import org.apache.spark.streaming.api.java.JavaStreamingContext;
+
+public class SparkStreamingSocket {
+    public static void main(String[] args) throws Exception {
+        SparkConf conf = new SparkConf();
+        conf.setAppName("SparkStreamingEnv01");
+        conf.setMaster("local[2]");
+        JavaStreamingContext javaStreamingContext = new JavaStreamingContext(conf, new Duration(3 * 1000));
+
+        //通过环境对象对接socket数据源，获取数据模型，进行数据处理
+        JavaReceiverInputDStream&lt;String&gt; socketDS = javaStreamingContext.socketTextStream("localhost", 9999);
+
+        socketDS.print();
+
+        javaStreamingContext.start();
+
+        javaStreamingContext.awaitTermination();
+
+    }
+}
+</code></pre>
+<p>输出结果如下所示：</p>
+<pre><code>-------------------------------------------
+Time: 1736923509000 ms
+-------------------------------------------
+a
+a
+a
+a
+a
+
+-------------------------------------------
+Time: 1736923512000 ms
+-------------------------------------------
+wwww
+</code></pre>
+<p>调用print()才生成时间戳。</p>
+<h3 id="kafka数据流处理"><a class="header" href="#kafka数据流处理">Kafka数据流处理</a></h3>
+<p>先启动zookeeper，再启动kafka</p>
+<p>使用offset explorer工具</p>
+<p>相关代码如下所示：</p>
+<pre><code class="language-java">import org.apache.kafka.clients.consumer.ConsumerConfig;  
+import org.apache.kafka.clients.consumer.ConsumerRecord;  
+import org.apache.spark.api.java.function.Function;  
+import org.apache.spark.streaming.Duration;  
+import org.apache.spark.streaming.api.java.JavaInputDStream;  
+import org.apache.spark.streaming.api.java.JavaStreamingContext;  
+import org.apache.spark.streaming.kafka010.ConsumerStrategies;  
+import org.apache.spark.streaming.kafka010.KafkaUtils;  
+import org.apache.spark.streaming.kafka010.LocationStrategies;  
+  
+import java.util.ArrayList;  
+import java.util.HashMap;  
+  
+  
+public class SparkStreamingKafka {  
+    public static void main(String[] args) throws InterruptedException {  
+        // 创建流环境  
+        JavaStreamingContext javaStreamingContext = new JavaStreamingContext("local[*]", "HelloWorld", Duration.apply(3000));  
+  
+        // 创建配置参数  
+        HashMap&lt;String, Object&gt; map = new HashMap&lt;&gt;();  
+        map.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "hadoop102:9092,hadoop103:9092,hadoop104:9092");  
+        map.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");  
+        map.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");  
+        map.put(ConsumerConfig.GROUP_ID_CONFIG, "atguigu");  
+        map.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");  
+  
+        // 需要消费的主题  
+        ArrayList&lt;String&gt; strings = new ArrayList&lt;&gt;();  
+        strings.add("topic_db");  
+  
+        JavaInputDStream&lt;ConsumerRecord&lt;String, String&gt;&gt; directStream = KafkaUtils.createDirectStream(javaStreamingContext, LocationStrategies.PreferBrokers(), ConsumerStrategies.&lt;String, String&gt;Subscribe(strings, map));  
+  
+        directStream.map(new Function&lt;ConsumerRecord&lt;String, String&gt;, String&gt;() {  
+            @Override  
+            public String call(ConsumerRecord&lt;String, String&gt; v1) throws Exception {  
+                return v1.value();  
+            }  
+        }).print(100);  
+  
+        // 执行流的任务  
+        javaStreamingContext.start();  
+        javaStreamingContext.awaitTermination();  
+    }  
+}
+</code></pre>
+<p>更改日志打印级别</p>
+<p>如果不希望运行时打印大量日志，可以在resources文件夹中添加<code>log4j2.properties</code>文件，并添加日志配置信息</p>
+<pre><code class="language-properties"># Set everything to be logged to the console
+
+rootLogger.level = ERROR
+
+rootLogger.appenderRef.stdout.ref = console
+
+# In the pattern layout configuration below, we specify an explicit `%ex` conversion
+
+# pattern for logging Throwables. If this was omitted, then (by default) Log4J would
+
+# implicitly add an `%xEx` conversion pattern which logs stacktraces with additional
+
+# class packaging information. That extra information can sometimes add a substantial
+
+# performance overhead, so we disable it in our default logging config.
+
+# For more information, see SPARK-39361.
+
+appender.console.type = Console
+
+appender.console.name = console
+
+appender.console.target = SYSTEM_ERR
+
+appender.console.layout.type = PatternLayout
+
+appender.console.layout.pattern = %d{yy/MM/dd HH:mm:ss} %p %c{1}: %m%n%ex
+
+# Set the default spark-shell/spark-sql log level to WARN. When running the
+
+# spark-shell/spark-sql, the log level for these classes is used to overwrite
+
+# the root logger's log level, so that the user can have different defaults
+
+# for the shell and regular Spark apps.
+
+logger.repl.name = org.apache.spark.repl.Main
+
+logger.repl.level = warn
+
+logger.thriftserver.name = org.apache.spark.sql.hive.thriftserver.SparkSQLCLIDriver
+
+logger.thriftserver.level = warn
+
+# Settings to quiet third party logs that are too verbose
+
+logger.jetty1.name = org.sparkproject.jetty
+
+logger.jetty1.level = warn
+
+logger.jetty2.name = org.sparkproject.jetty.util.component.AbstractLifeCycle
+
+logger.jetty2.level = error
+
+logger.replexprTyper.name = org.apache.spark.repl.SparkIMain$exprTyper
+
+logger.replexprTyper.level = info
+
+logger.replSparkILoopInterpreter.name = org.apache.spark.repl.SparkILoop$SparkILoopInterpreter
+
+logger.replSparkILoopInterpreter.level = info
+
+logger.parquet1.name = org.apache.parquet
+
+logger.parquet1.level = error
+
+logger.parquet2.name = parquet
+
+logger.parquet2.level = error
+
+# SPARK-9183: Settings to avoid annoying messages when looking up nonexistent UDFs in SparkSQL with Hive support
+
+logger.RetryingHMSHandler.name = org.apache.hadoop.hive.metastore.RetryingHMSHandler
+
+logger.RetryingHMSHandler.level = fatal
+
+logger.FunctionRegistry.name = org.apache.hadoop.hive.ql.exec.FunctionRegistry
+
+logger.FunctionRegistry.level = error
+
+# For deploying Spark ThriftServer
+
+# SPARK-34128: Suppress undesirable TTransportException warnings involved in THRIFT-4805
+
+appender.console.filter.1.type = RegexFilter
+
+appender.console.filter.1.regex = .*Thrift error occurred during processing of message.*
+
+appender.console.filter.1.onMatch = deny appender.console.filter.1.onMismatch = neutral
+</code></pre>
+<p>启动生产者生产数据</p>
+<pre><code>[atguigu@hadoop102 ~]$ kafka-console-producer.sh --broker-list hadoop102:9092 --topic topicA hello spark
+</code></pre>
+<p>在IDEA控制台输出如下内容</p>
+<pre><code>-------------------------------------------
+
+Time: 1602731772000 ms
+
+-------------------------------------------
+
+hello spark
+</code></pre>
+<h3 id="案例解析"><a class="header" href="#案例解析">案例解析</a></h3>
+<p>DStream是Spark Streaming的基础抽象，代表持续性的数据流和经过各种Spark算子操作后的结果数据流。</p>
+<p>在内部实现上，每一批次的数据封装成一个RDD，一系列连续的RDD组成了DStream。对这些RDD的转换是由Spark引擎来计算。</p>
+<p>说明：DStream中批次与批次之间计算相互独立。如果批次设置时间小于计算时间会出现计算任务叠加情况，需要多分配资源。通常情况，批次设置时间要大于计算时间。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250115164944.png" alt="" /></p>
+<h2 id="dstream转换"><a class="header" href="#dstream转换">DStream转换</a></h2>
+<p>DStream上的操作与RDD的类似，分为转换和输出两种，此外转换操作中还有一些比较特殊的原语，如：transform()以及各种Window相关的原语。</p>
+<h3 id="无状态转化操作"><a class="header" href="#无状态转化操作">无状态转化操作</a></h3>
+<p>无状态转化操作：就是把RDD转化操作应用到DStream每个批次上，每个批次相互独立，自己算自己的。</p>
+<p>DStream的部分无状态转化操作列在了下表中，都是DStream自己的API。</p>
+<p>注意，只有JavaPairDStream&lt;Key, Value&gt;才能使用xxxByKey()类型的转换算子。</p>
+<div class="table-wrapper"><table><thead><tr><th></th><th></th><th></th></tr></thead><tbody>
+<tr><td><strong>函数名称</strong></td><td><strong>目的</strong></td><td><strong>函数类型</strong></td></tr>
+<tr><td>map()</td><td>对DStream中的每个元素应用给定函数，返回由各元素输出的元素组成的DStream。</td><td>Function&lt;in, out&gt;</td></tr>
+<tr><td>flatMap()</td><td>对DStream中的每个元素应用给定函数，返回由各元素输出的迭代器组成的DStream。</td><td>FlatMapFunction&lt;in, out&gt;</td></tr>
+<tr><td>filter()</td><td>返回由给定DStream中通过筛选的元素组成的DStream</td><td>Function&lt;in, Boolean&gt;</td></tr>
+<tr><td>mapToPair()</td><td>改变DStream的分区数</td><td>PairFunction&lt;in, key, value&gt;</td></tr>
+<tr><td>reduceByKey()</td><td>将每个批次中键相同的记录规约。</td><td>Function2&lt;in, in, in&gt;</td></tr>
+<tr><td>groupByKey()</td><td>将每个批次中的记录根据键分组。</td><td>ds.groupByKey()</td></tr>
+</tbody></table>
+</div>
+<p>需要记住的是，尽管这些函数看起来像作用在整个流上一样，但事实上每个DStream在内部是由许多RDD批次组成，且无状态转化操作是分别应用到每个RDD(一个批次的数据)上的。</p>
+<h3 id="dstream和rdd"><a class="header" href="#dstream和rdd">DStream和RDD</a></h3>
+<pre><code class="language-java">import org.apache.spark.SparkConf;  
+import org.apache.spark.streaming.Duration;  
+import org.apache.spark.streaming.api.java.JavaDStream;  
+import org.apache.spark.streaming.api.java.JavaPairDStream;  
+import org.apache.spark.streaming.api.java.JavaReceiverInputDStream;  
+import org.apache.spark.streaming.api.java.JavaStreamingContext;  
+import scala.Tuple2;  
+  
+import java.util.Arrays;  
+  
+public class SparkStreamingFunction {  
+    public static void main(String[] args) throws Exception {  
+        SparkConf conf = new SparkConf();  
+        conf.setAppName("SparkStreamingEnv01");  
+        conf.setMaster("local[2]");  
+        JavaStreamingContext javaStreamingContext = new JavaStreamingContext(conf, new Duration(3 * 1000));  
+  
+        //通过环境对象对接socket数据源，获取数据模型，进行数据处理  
+        JavaReceiverInputDStream&lt;String&gt; socketDS = javaStreamingContext.socketTextStream("localhost", 9999);  
+        JavaDStream&lt;String&gt; flatDS = socketDS.flatMap(  
+                line -&gt; Arrays.asList(line.split(" ")).iterator()  
+        );  
+  
+        JavaPairDStream&lt;String, Integer&gt; wordDS = flatDS.mapToPair(  
+                word -&gt; new Tuple2&lt;&gt;(word, 1)  
+        );  
+  
+        JavaPairDStream&lt;String, Integer&gt; wordCountDS = wordDS.reduceByKey(Integer::sum);  
+  
+        //DStream确实就是对RDD的封装，但是不是所有的方法都进行了分装。有些方法不能使用：sortBy，sortByKey  
+        //如果特定场合下，就需要使用这些方法，那么就需要将DStream转换为RDD使用  
+  
+        //wordCountDS.print();  
+        wordCountDS.foreachRDD(  
+            rdd -&gt; {  
+                rdd.sortByKey().collect().forEach(System.out::println);  
+            }  
+        );  
+  
+        javaStreamingContext.start();  
+  
+        javaStreamingContext.awaitTermination();  
+  
+    }  
+}
+</code></pre>
+<h2 id="窗口操作"><a class="header" href="#窗口操作">窗口操作</a></h2>
+<p>生产环境中，窗口操作主要应用于这样的需求：最近N时间，每个M时间的数据变化</p>
+<p>需求：最近1个小时，每10分钟，气温的变化趋势</p>
+<h3 id="滑动窗口及窗口参数"><a class="header" href="#滑动窗口及窗口参数">滑动窗口及窗口参数</a></h3>
+<p>窗口可以移动的称之为移动窗口，但是窗口移动是有幅度的，默认移动幅度就是采集周期</p>
+<p>数据窗口范围扩大（6s），但是窗口移动幅度不变（3s），数据可能会有重复</p>
+<p>数据窗口范围和窗口移动幅度一致（3s），数据不会有重复</p>
+<p>窗口：其实就是数据的范围（时间）</p>
+<p>window方法可以改变窗口的数据范围（默认数据范围为采集周期） window方法可以传递2个参数</p>
+<p>第一个参数表示窗口的数据范围（时间）</p>
+<p>第二个参数表示窗口的移动幅度（时间），可以不用传递，默认使用的就是采集周期</p>
+<p>SparkStreaming在窗口移动时计算结果。</p>
+<p>执行<code>nc -lp 9999</code></p>
+<pre><code class="language-java">import org.apache.spark.SparkConf;  
+import org.apache.spark.streaming.Duration;  
+import org.apache.spark.streaming.api.java.JavaDStream;  
+import org.apache.spark.streaming.api.java.JavaPairDStream;  
+import org.apache.spark.streaming.api.java.JavaReceiverInputDStream;  
+import org.apache.spark.streaming.api.java.JavaStreamingContext;  
+import scala.Tuple2;  
+  
+import java.util.Arrays;  
+  
+public class SparkStreamingWindows {  
+    public static void main(String[] args) throws Exception {  
+        SparkConf conf = new SparkConf();  
+        conf.setAppName("SparkStreamingEnv01");  
+        conf.setMaster("local[2]");  
+        JavaStreamingContext javaStreamingContext = new JavaStreamingContext(conf, new Duration(3 * 1000));  
+  
+        //通过环境对象对接socket数据源，获取数据模型，进行数据处理  
+        JavaReceiverInputDStream&lt;String&gt; socketDS = javaStreamingContext.socketTextStream("localhost", 9999);  
+        JavaDStream&lt;String&gt; flatDS = socketDS.flatMap(  
+                line -&gt; Arrays.asList(line.split(" ")).iterator()  
+        );  
+  
+        JavaPairDStream&lt;String, Integer&gt; wordDS = flatDS.mapToPair(  
+                word -&gt; new Tuple2&lt;&gt;(word, 1)  
+        );  
+  
+        JavaPairDStream&lt;String, Integer&gt; windowDS = wordDS.window(new Duration(6 * 1000), new Duration(6 * 1000));  
+  
+        JavaPairDStream&lt;String, Integer&gt; wordCountDS = windowDS.reduceByKey(Integer::sum);  
+  
+        wordCountDS.print();  
+//        wordCountDS.foreachRDD(  
+//                rdd -&gt; {  
+//                    rdd.sortByKey().collect().forEach(System.out::println);  
+//                }  
+//        );  
+  
+        javaStreamingContext.start();  
+  
+        javaStreamingContext.awaitTermination();  
+  
+    }  
+}
+</code></pre>
+<h3 id="windowoperations"><a class="header" href="#windowoperations">WindowOperations</a></h3>
+<p>Window Operations可以设置窗口的大小和滑动窗口的间隔来动态的获取当前Streaming的允许状态。所有基于窗口的操作都需要两个参数，分别为窗口时长以及滑动步长。</p>
+<p>窗口时长：计算内容的时间范围；</p>
+<p>滑动步长：隔多久触发一次计算。</p>
+<p>注意：这两者都必须为采集批次大小的整数倍。</p>
+<p>如下图所示WordCount案例：窗口大小为批次的2倍，滑动步等于批次大小。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250115160633.png" alt="" /></p>
+<h3 id="window"><a class="header" href="#window">Window</a></h3>
+<p>1）基本语法：</p>
+<p>window(windowLength, slideInterval): 基于对源DStream窗口的批次进行计算返回一个新的DStream。</p>
+<p>2）需求：</p>
+<p>统计WordCount：3秒一个批次，窗口12秒，滑步6秒。</p>
+<pre><code class="language-java">import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.spark.api.java.function.FlatMapFunction;
+import org.apache.spark.api.java.function.Function2;
+import org.apache.spark.api.java.function.PairFunction;
+import org.apache.spark.streaming.Duration;
+import org.apache.spark.streaming.api.java.JavaDStream;
+import org.apache.spark.streaming.api.java.JavaInputDStream;
+import org.apache.spark.streaming.api.java.JavaPairDStream;
+import org.apache.spark.streaming.api.java.JavaStreamingContext;
+import org.apache.spark.streaming.kafka010.ConsumerStrategies;
+import org.apache.spark.streaming.kafka010.KafkaUtils;
+import org.apache.spark.streaming.kafka010.LocationStrategies;
+import scala.Tuple2;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+
+public class Test02_Window {
+    public static void main(String[] args) throws InterruptedException {
+        // 创建流环境
+        JavaStreamingContext javaStreamingContext = new JavaStreamingContext("local[*]", "window", Duration.apply(3000));
+        // 创建配置参数
+        HashMap&lt;String, Object&gt; map = new HashMap&lt;&gt;();
+        map.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,"hadoop102:9092,hadoop103:9092,hadoop104:9092");
+        map.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
+        map.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
+        map.put(ConsumerConfig.GROUP_ID_CONFIG,"atguigu");
+        map.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,"latest");
+
+        // 需要消费的主题
+        ArrayList&lt;String&gt; strings = new ArrayList&lt;&gt;();
+        strings.add("topicA");
+
+        JavaInputDStream&lt;ConsumerRecord&lt;String, String&gt;&gt; directStream = KafkaUtils.createDirectStream(javaStreamingContext, LocationStrategies.PreferBrokers(), ConsumerStrategies.&lt;String, String&gt;Subscribe(strings,map));
+
+        JavaDStream&lt;String&gt; stringJavaDStream = directStream.flatMap(new FlatMapFunction&lt;ConsumerRecord&lt;String, String&gt;, String&gt;() {
+            @Override
+            public Iterator&lt;String&gt; call(ConsumerRecord&lt;String, String&gt; stringStringConsumerRecord) throws Exception {
+                String[] split = stringStringConsumerRecord.value().split(" ");
+                return Arrays.asList(split).iterator();
+            }
+        });
+
+        JavaPairDStream&lt;String, Integer&gt; javaPairDStream = stringJavaDStream.mapToPair(new PairFunction&lt;String, String, Integer&gt;() {
+            @Override
+            public Tuple2&lt;String, Integer&gt; call(String s) throws Exception {
+                return new Tuple2&lt;&gt;(s, 1);
+            }
+        });
+
+        JavaPairDStream&lt;String, Integer&gt; window = javaPairDStream.window(Duration.apply(12000), Duration.apply(6000));
+        window.reduceByKey(new Function2&lt;Integer, Integer, Integer&gt;() {
+            @Override
+            public Integer call(Integer v1, Integer v2) throws Exception {
+                return v1+v2;
+            }
+        }).print();
+
+        // 执行流的任务
+        javaStreamingContext.start();
+        javaStreamingContext.awaitTermination();
+    }
+}
+</code></pre>
+<p>4）测试</p>
+<pre><code>[atguigu@hadoop102 ~]$ kafka-console-producer.sh --broker-list hadoop102:9092 --topic topicA hello spark
+</code></pre>
+<p>5）如果有多批数据进入窗口，最终也会通过window操作变成统一的RDD处理。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250115164720.png" alt="" /></p>
+<h3 id="reducebykeyandwindow"><a class="header" href="#reducebykeyandwindow">reduceByKeyAndWindow</a></h3>
+<p>1）基本语法</p>
+<p><code>reduceByKeyAndWindow(func, windowLength, slideInterval, [numTasks])</code>：当在一个(K,V)对的DStream上调用此函数，会返回一个新(K,V)对的DStream，此处通过对滑动窗口中批次数据使用reduce函数来整合每个key的value值。</p>
+<p>2）需求：</p>
+<p>统计WordCount：3秒一个批次，窗口12秒，滑步6秒。</p>
+<p>3）代码编写：</p>
+<pre><code class="language-java">import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.spark.api.java.function.FlatMapFunction;
+import org.apache.spark.api.java.function.Function2;
+import org.apache.spark.api.java.function.PairFunction;
+import org.apache.spark.streaming.Duration;
+import org.apache.spark.streaming.api.java.JavaDStream;
+import org.apache.spark.streaming.api.java.JavaInputDStream;
+import org.apache.spark.streaming.api.java.JavaPairDStream;
+import org.apache.spark.streaming.api.java.JavaStreamingContext;
+import org.apache.spark.streaming.kafka010.ConsumerStrategies;
+import org.apache.spark.streaming.kafka010.KafkaUtils;
+import org.apache.spark.streaming.kafka010.LocationStrategies;
+import scala.Tuple2;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+
+public class Test03_ReduceByKeyAndWindow {
+    public static void main(String[] args) throws InterruptedException {
+        // 创建流环境
+        JavaStreamingContext javaStreamingContext = new JavaStreamingContext("local[*]", "window", Duration.apply(3000L));
+        // 创建配置参数
+        HashMap&lt;String, Object&gt; map = new HashMap&lt;&gt;();
+        map.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,"hadoop102:9092,hadoop103:9092,hadoop104:9092");
+        map.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
+        map.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
+        map.put(ConsumerConfig.GROUP_ID_CONFIG,"atguigu");
+        map.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,"latest");
+
+        // 需要消费的主题
+        ArrayList&lt;String&gt; strings = new ArrayList&lt;&gt;();
+        strings.add("topicA");
+
+        JavaInputDStream&lt;ConsumerRecord&lt;String, String&gt;&gt; directStream = KafkaUtils.createDirectStream(javaStreamingContext, LocationStrategies.PreferBrokers(), ConsumerStrategies.&lt;String, String&gt;Subscribe(strings,map));
+
+        JavaDStream&lt;String&gt; stringJavaDStream = directStream.flatMap(new FlatMapFunction&lt;ConsumerRecord&lt;String, String&gt;, String&gt;() {
+            @Override
+            public Iterator&lt;String&gt; call(ConsumerRecord&lt;String, String&gt; stringStringConsumerRecord) throws Exception {
+                String[] split = stringStringConsumerRecord.value().split(" ");
+                return Arrays.asList(split).iterator();
+            }
+        });
+
+        JavaPairDStream&lt;String, Integer&gt; javaPairDStream = stringJavaDStream.mapToPair(new PairFunction&lt;String, String, Integer&gt;() {
+            @Override
+            public Tuple2&lt;String, Integer&gt; call(String s) throws Exception {
+                return new Tuple2&lt;&gt;(s, 1);
+            }
+        });
+
+        javaPairDStream.reduceByKeyAndWindow(new Function2&lt;Integer, Integer, Integer&gt;() {
+            @Override
+            public Integer call(Integer v1, Integer v2) throws Exception {
+                return v1 + v2;
+            }
+        },Duration.apply(12000L),Duration.apply(6000L)).print();
+
+        // 执行流的任务
+        javaStreamingContext.start();
+        javaStreamingContext.awaitTermination();
+
+    }
+}
+</code></pre>
+<p>2）测试</p>
+<pre><code>[atguigu@hadoop102 ~]$ kafka-console-producer.sh --broker-list hadoop102:9092 --topic topicA hello spark
+</code></pre>
+<h2 id="dstream输出"><a class="header" href="#dstream输出">DStream输出</a></h2>
+<p>DStream通常将数据输出到外部数据库或屏幕上。</p>
+<p>DStream与RDD中的惰性求值类似，如果一个DStream及其派生出的DStream都没有被执行输出操作，那么这些DStream就都不会被求值。如果StreamingContext中没有设定输出操作，整个Context就都不会启动。</p>
+<p>1）输出操作API如下：</p>
+<p><code>saveAsTextFiles(prefix, [suffix])</code>：以text文件形式存储这个DStream的内容。每一批次的存储文件名基于参数中的prefix和suffix。“<code>prefix-Time_IN_MS[.suffix]</code>”。</p>
+<p>注意：<strong>以上操作都是每一批次写出一次，会产生大量小文件，在生产环境，很少使用。</strong></p>
+<p><code>print()</code>：在运行流程序的驱动结点上打印DStream中每一批次数据的最开始10个元素。这用于开发和调试。</p>
+<p><code>foreachRDD(func)</code>：这是最通用的输出操作，即将函数func用于产生DStream的每一个RDD。其中参数传入的函数func应该实现将每一个RDD中数据推送到外部系统，如将RDD存入文件或者写入数据库。</p>
+<p>在企业开发中通常采用<code>foreachRDD()</code>，它用来对DStream中的RDD进行任意计算。这和transform()有些类似，都可以让我们访问任意RDD。在foreachRDD()中，可以重用我们在Spark中实现的所有行动操作(action算子)。比如，常见的用例之一是把数据写到如MySQL的外部数据库中。</p>
+<pre><code class="language-java">import org.apache.kafka.clients.consumer.ConsumerConfig;
+
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+
+import org.apache.spark.api.java.JavaPairRDD;
+
+import org.apache.spark.api.java.function.FlatMapFunction;
+
+import org.apache.spark.api.java.function.Function2;
+
+import org.apache.spark.api.java.function.PairFunction;
+
+import org.apache.spark.api.java.function.VoidFunction;
+
+import org.apache.spark.streaming.Duration;
+
+import org.apache.spark.streaming.api.java.JavaDStream;
+
+import org.apache.spark.streaming.api.java.JavaInputDStream;
+
+import org.apache.spark.streaming.api.java.JavaPairDStream;
+
+import org.apache.spark.streaming.api.java.JavaStreamingContext;
+
+import org.apache.spark.streaming.kafka010.ConsumerStrategies;
+
+import org.apache.spark.streaming.kafka010.KafkaUtils;
+
+import org.apache.spark.streaming.kafka010.LocationStrategies;
+
+import scala.Tuple2;
+
+import java.util.ArrayList;
+
+import java.util.Arrays;
+
+import java.util.HashMap;
+
+import java.util.Iterator;
+
+/**
+
+ * @author yhm
+
+ * @create 2022-09-01 16:47
+
+ */
+
+public class Test04_Save {
+
+    public static void main(String[] args) throws InterruptedException {
+
+        // 创建流环境
+
+        JavaStreamingContext javaStreamingContext = new JavaStreamingContext("local[*]", "window", Duration.apply(3000L));
+
+        // 创建配置参数
+
+        HashMap&lt;String, Object&gt; map = new HashMap&lt;&gt;();
+
+        map.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,"hadoop102:9092,hadoop103:9092,hadoop104:9092");
+
+        map.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
+
+        map.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
+
+        map.put(ConsumerConfig.GROUP_ID_CONFIG,"atguigu");
+
+        map.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,"latest");
+
+        // 需要消费的主题
+
+        ArrayList&lt;String&gt; strings = new ArrayList&lt;&gt;();
+
+        strings.add("topicA");
+
+        JavaInputDStream&lt;ConsumerRecord&lt;String, String&gt;&gt; directStream = KafkaUtils.createDirectStream(javaStreamingContext, LocationStrategies.PreferBrokers(), ConsumerStrategies.&lt;String, String&gt;Subscribe(strings,map));
+
+        JavaDStream&lt;String&gt; stringJavaDStream = directStream.flatMap(new FlatMapFunction&lt;ConsumerRecord&lt;String, String&gt;, String&gt;() {
+
+            @Override
+
+            public Iterator&lt;String&gt; call(ConsumerRecord&lt;String, String&gt; stringStringConsumerRecord) throws Exception {
+
+                String[] split = stringStringConsumerRecord.value().split(" ");
+
+                return Arrays.asList(split).iterator();
+
+            }
+
+        });
+
+        JavaPairDStream&lt;String, Integer&gt; javaPairDStream = stringJavaDStream.mapToPair(new PairFunction&lt;String, String, Integer&gt;() {
+
+            @Override
+
+            public Tuple2&lt;String, Integer&gt; call(String s) throws Exception {
+
+                return new Tuple2&lt;&gt;(s, 1);
+
+            }
+
+        });
+
+        JavaPairDStream&lt;String, Integer&gt; resultDStream = javaPairDStream.reduceByKeyAndWindow(new Function2&lt;Integer, Integer, Integer&gt;() {
+
+            @Override
+
+            public Integer call(Integer v1, Integer v2) throws Exception {
+
+                return v1 + v2;
+
+            }
+
+        }, Duration.apply(12000L), Duration.apply(6000L));
+
+        resultDStream.foreachRDD(new VoidFunction&lt;JavaPairRDD&lt;String, Integer&gt;&gt;() {
+
+            @Override
+
+            public void call(JavaPairRDD&lt;String, Integer&gt; stringIntegerJavaPairRDD) throws Exception {
+
+                // 获取mysql连接
+
+                // 写入到mysql中
+
+                // 关闭连接
+
+            }
+
+        });
+
+        // 执行流的任务
+
+        javaStreamingContext.start();
+
+        javaStreamingContext.awaitTermination();
+
+    }
+
+}
+</code></pre>
+<h2 id="关闭main线程"><a class="header" href="#关闭main线程">关闭main线程</a></h2>
+<h3 id="新增线程方式"><a class="header" href="#新增线程方式">新增线程方式</a></h3>
+<pre><code class="language-java">import org.apache.spark.SparkConf;
+import org.apache.spark.streaming.Duration;
+import org.apache.spark.streaming.api.java.JavaReceiverInputDStream;
+import org.apache.spark.streaming.api.java.JavaStreamingContext;
+
+public class SparkStreamingClose {
+    public static void main(String[] args) throws Exception {
+        SparkConf conf = new SparkConf();
+        conf.setAppName("SparkStreamingEnv01");
+        conf.setMaster("local[2]");
+        JavaStreamingContext javaStreamingContext = new JavaStreamingContext(conf, new Duration(3 * 1000));
+
+        //通过环境对象对接socket数据源，获取数据模型，进行数据处理
+        JavaReceiverInputDStream&lt;String&gt; socketDS = javaStreamingContext.socketTextStream("localhost", 9999);
+
+        socketDS.print();
+
+        javaStreamingContext.start();
+
+        //close方法就是用于释放资源，关闭环境，但不能在当前main方法中调用，需要在另外一个线程中调用，否则会导致程序卡死
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(3 * 1000);
+                    javaStreamingContext.close();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+        javaStreamingContext.awaitTermination();
+
+    }
+}
+</code></pre>
+<p>这种方式会抛出异常。</p>
+<pre><code>-------------------------------------------
+Time: 1736931924000 ms
+-------------------------------------------
+
+Exception in thread "receiver-supervisor-future-0" java.lang.Error: java.lang.InterruptedException: sleep interrupted
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1155)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:750)
+Caused by: java.lang.InterruptedException: sleep interrupted
+	at java.lang.Thread.sleep(Native Method)
+</code></pre>
+<h3 id="较为优雅的方式stop"><a class="header" href="#较为优雅的方式stop">较为优雅的方式（stop）</a></h3>
+<p><code>javaStreamingContext.stop(true, true);</code></p>
+<pre><code class="language-java">package com.zzw.bigdata.spark.sparkstreaming;
+
+import org.apache.spark.SparkConf;
+import org.apache.spark.streaming.Duration;
+import org.apache.spark.streaming.api.java.JavaReceiverInputDStream;
+import org.apache.spark.streaming.api.java.JavaStreamingContext;
+
+public class SparkStreamingClose {
+    public static void main(String[] args) throws Exception {
+        SparkConf conf = new SparkConf();
+        conf.setAppName("SparkStreamingEnv01");
+        conf.setMaster("local[2]");
+        JavaStreamingContext javaStreamingContext = new JavaStreamingContext(conf, new Duration(3 * 1000));
+
+        //通过环境对象对接socket数据源，获取数据模型，进行数据处理
+        JavaReceiverInputDStream&lt;String&gt; socketDS = javaStreamingContext.socketTextStream("localhost", 9999);
+
+        socketDS.print();
+
+        javaStreamingContext.start();
+
+        //close方法就是用于释放资源，关闭环境，但不能在当前main方法中调用，需要在另外一个线程中调用，否则会导致程序卡死
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(3 * 1000);
+                    javaStreamingContext.stop(true, true);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+        javaStreamingContext.awaitTermination();
+
+    }
+}
+
+</code></pre>
+<p>输出结果如下所示：</p>
+<pre><code>-------------------------------------------
+Time: 1736932401000 ms
+-------------------------------------------
+
+Exception in thread "receiver-supervisor-future-0" java.lang.Error: java.lang.InterruptedException: sleep interrupted
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1155)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:750)
+Caused by: java.lang.InterruptedException: sleep interrupted
+	at java.lang.Thread.sleep(Native Method)
+	at org.apache.spark.streaming.receiver.ReceiverSupervisor.$anonfun$restartReceiver$1(ReceiverSupervisor.scala:196)
+	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:23)
+	at scala.concurrent.Future$.$anonfun$apply$1(Future.scala:659)
+	at scala.util.Success.$anonfun$map$1(Try.scala:255)
+	at scala.util.Success.map(Try.scala:213)
+	at scala.concurrent.Future.$anonfun$map$1(Future.scala:292)
+	at scala.concurrent.impl.Promise.liftedTree1$1(Promise.scala:33)
+	at scala.concurrent.impl.Promise.$anonfun$transform$1(Promise.scala:33)
+	at scala.concurrent.impl.CallbackRunnable.run(Promise.scala:64)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	... 2 more
+-------------------------------------------
+Time: 1736932404000 ms
+-------------------------------------------
+
+-------------------------------------------
+Time: 1736932407000 ms
+-------------------------------------------
+</code></pre>
+<h3 id="使用kafka时优雅关闭"><a class="header" href="#使用kafka时优雅关闭">使用kafka时优雅关闭</a></h3>
+<p>流式任务需要7*24小时执行，但是有时涉及到升级代码需要主动停止程序，但是分布式程序没办法做到一个个进程去杀死，所以配置优雅的关闭就显得至关重要了。</p>
+<p>关闭方式：使用外部文件系统来控制内部程序关闭。</p>
+<p>1）主程序</p>
+<pre><code class="language-java">import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.spark.api.java.function.FlatMapFunction;
+import org.apache.spark.api.java.function.Function2;
+import org.apache.spark.api.java.function.PairFunction;
+import org.apache.spark.streaming.Duration;
+import org.apache.spark.streaming.StreamingContextState;
+import org.apache.spark.streaming.api.java.JavaDStream;
+import org.apache.spark.streaming.api.java.JavaInputDStream;
+import org.apache.spark.streaming.api.java.JavaPairDStream;
+import org.apache.spark.streaming.api.java.JavaStreamingContext;
+import org.apache.spark.streaming.kafka010.ConsumerStrategies;
+import org.apache.spark.streaming.kafka010.KafkaUtils;
+import org.apache.spark.streaming.kafka010.LocationStrategies;
+import scala.Tuple2;
+
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+
+public class Test05_Close {
+    public static void main(String[] args) throws InterruptedException {
+        // 创建流环境
+        JavaStreamingContext javaStreamingContext = new JavaStreamingContext("local[*]", "window", Duration.apply(3000L));
+        // 创建配置参数
+        HashMap&lt;String, Object&gt; map = new HashMap&lt;&gt;();
+        map.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,"hadoop102:9092,hadoop103:9092,hadoop104:9092");
+        map.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
+        map.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
+        map.put(ConsumerConfig.GROUP_ID_CONFIG,"atguigu");
+        map.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,"latest");
+
+        // 需要消费的主题
+        ArrayList&lt;String&gt; strings = new ArrayList&lt;&gt;();
+        strings.add("topicA");
+
+        JavaInputDStream&lt;ConsumerRecord&lt;String, String&gt;&gt; directStream = KafkaUtils.createDirectStream(javaStreamingContext, LocationStrategies.PreferBrokers(), ConsumerStrategies.&lt;String, String&gt;Subscribe(strings,map));
+
+        JavaDStream&lt;String&gt; stringJavaDStream = directStream.flatMap(new FlatMapFunction&lt;ConsumerRecord&lt;String, String&gt;, String&gt;() {
+            @Override
+            public Iterator&lt;String&gt; call(ConsumerRecord&lt;String, String&gt; stringStringConsumerRecord) throws Exception {
+                String[] split = stringStringConsumerRecord.value().split(" ");
+                return Arrays.asList(split).iterator();
+            }
+        });
+
+        JavaPairDStream&lt;String, Integer&gt; javaPairDStream = stringJavaDStream.mapToPair(new PairFunction&lt;String, String, Integer&gt;() {
+            @Override
+            public Tuple2&lt;String, Integer&gt; call(String s) throws Exception {
+                return new Tuple2&lt;&gt;(s, 1);
+            }
+        });
+
+        javaPairDStream.reduceByKeyAndWindow(new Function2&lt;Integer, Integer, Integer&gt;() {
+            @Override
+            public Integer call(Integer v1, Integer v2) throws Exception {
+                return v1 + v2;
+            }
+        },Duration.apply(12000L),Duration.apply(6000L)).print();
+
+        // 开启监控程序
+        new Thread(new MonitorStop(javaStreamingContext)).start();
+
+        // 执行流的任务
+        javaStreamingContext.start();
+        javaStreamingContext.awaitTermination();
+
+    }
+
+    public static class MonitorStop implements Runnable {
+
+        JavaStreamingContext javaStreamingContext = null;
+
+        public MonitorStop(JavaStreamingContext javaStreamingContext) {
+            this.javaStreamingContext = javaStreamingContext;
+        }
+
+        @Override
+        public void run() {
+            try {
+                FileSystem fs = FileSystem.get(new URI("hdfs://hadoop102:8020"), new Configuration(), "atguigu");
+                while (true){
+                    Thread.sleep(5000);
+                    boolean exists = fs.exists(new Path("hdfs://hadoop102:8020/stopSpark"));
+                    if (exists){
+                        StreamingContextState state = javaStreamingContext.getState();
+                        // 获取当前任务是否正在运行
+                        if (state == StreamingContextState.ACTIVE){
+                            // 优雅关闭
+                            javaStreamingContext.stop(true, true);
+                            System.exit(0);
+                        }
+                    }
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+}
+
+</code></pre>
+<p>2）测试</p>
+<p>（1）发送数据</p>
+<pre><code>[atguigu@hadoop102 ~]$ kafka-console-producer.sh --broker-list hadoop102:9092 --topic topicA hello spark
+</code></pre>
+<p>（2）启动Hadoop集群</p>
+<pre><code>[atguigu@hadoop102 hadoop-3.1.3]$ sbin/start-dfs.sh
+
+[atguigu@hadoop102 hadoop-3.1.3]$ hadoop fs -mkdir /stopSpark
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../Spark/Spark数据源.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../Spark/Spark数据源.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
